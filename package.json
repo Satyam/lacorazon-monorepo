@@ -1,0 +1,11 @@
+{
+  "name": "lacorazon-monorepo",
+  "workspaces": [
+    "packages/post-server",
+    "packages/vainilla-client"
+  ],
+  "scripts": {
+    "build": "npm run build -w vainilla-client",
+    "start": "npm start -w post-server"
+  }
+}
