@@ -39,10 +39,10 @@ app.post(
 app.post('/api/ventas', express.json(), authMiddleware, postHandler(ventas));
 app.post('/api/users', express.json(), authMiddleware, postHandler(users));
 
-app.use(express.static('../../public'));
+app.use(express.static('../public'));
 
 app.get('*', (_, res) => {
-  res.sendFile(join(process.cwd(), '../../public/index.html'));
+  res.sendFile(join(process.cwd(), '../public/index.html'));
 });
 
 app.listen(port, () => {

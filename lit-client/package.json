@@ -1,0 +1,35 @@
+{
+  "name": "lacorazon-lit-client",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A lit version of La Corazón client",
+  "main": "my-element.js",
+  "module": "my-element.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/lacorazon-monorepo.git"
+  },
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/lacorazon-monorepo/issues"
+  },
+  "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme",
+  "dependencies": {
+    "lit": "^2.0.0",
+    "bootstrap": "^5.1.3",
+    "bootstrap-icons": "^1.7.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.30.0",
+    "@webcomponents/webcomponentsjs": "^2.6.0",
+    "eslint": "^7.32.0",
+    "typescript": "^4.3.5"
+  }
+}

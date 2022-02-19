@@ -3,8 +3,8 @@ import copy from 'rollup-plugin-copy';
 import bundleHtml from './buildhtml';
 import { join } from 'path';
 
-const PUBLIC = '../../public';
-const node_modules = '../../node_modules';
+const PUBLIC = '../public';
+const node_modules = '../node_modules';
 export default {
   input: 'src/index.ts',
   output: {
