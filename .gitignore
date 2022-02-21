@@ -108,3 +108,4 @@ db.sqlite.sql
 db.sqlite
 .rollup.cache
 public/
+bootstrapBase.ts
