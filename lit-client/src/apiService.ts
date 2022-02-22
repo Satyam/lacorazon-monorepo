@@ -1,9 +1,9 @@
 import { ReactiveControllerHost } from 'lit';
-import { initialState, StatusRenderer, Task } from '@lit-labs/task';
+import { StatusRenderer, Task } from '@lit-labs/task';
 
 export class ApiService<
   IN extends Record<string, VALUE> = Record<string, VALUE>,
-  OUT extends Record<string, VALUE> = IN,
+  OUT extends Record<string, VALUE> | Array<Record<string, VALUE>> = IN,
   OPT extends Record<string, VALUE> = Record<string, VALUE>,
   OPERATION = {
     op: string;
@@ -13,7 +13,7 @@ export class ApiService<
   }
 > {
   host: ReactiveControllerHost;
-  value?: string[];
+  value?: OUT;
   private task!: Task;
   private _service: string;
   private _operation: OPERATION;
@@ -28,11 +28,8 @@ export class ApiService<
     this._operation = operation;
     this.task = new Task(
       host,
-      ([service, operation]: [string, OPERATION]) => {
-        if (operation) {
-          return initialState;
-        }
-        return fetch(`${window.origin}/api/${service}`, {
+      ([service, operation]: [string, OPERATION]) =>
+        fetch(`${window.origin}/api/${service}`, {
           method: 'POST',
           headers: {
             'Content-type': 'application/json; charset=utf-8',
@@ -46,8 +43,7 @@ export class ApiService<
           .then((resp) => {
             if (resp.error) return Promise.reject(resp.data);
             return resp.data;
-          });
-      },
+          }),
       () => [this.service, this.operation] as [string, OPERATION]
     );
   }

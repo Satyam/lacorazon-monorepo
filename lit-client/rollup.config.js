@@ -7,7 +7,7 @@ import { join } from 'path';
 const PUBLIC = '../public';
 const node_modules = '../node_modules';
 export default {
-  input: 'src/my-element.ts',
+  input: 'src/index.ts',
   output: {
     dir: PUBLIC,
     format: 'es',
