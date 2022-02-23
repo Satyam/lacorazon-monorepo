@@ -31,16 +31,8 @@ export default {
             ),
             join(node_modules, 'lit/polyfill-support.js'),
             join(node_modules, 'bootstrap/dist/css/bootstrap.min.css'),
-            join(node_modules, 'bootstrap-icons/font/bootstrap-icons.css'),
           ],
           dest: PUBLIC,
-        },
-        {
-          src: join(
-            node_modules,
-            'bootstrap-icons/font/fonts/bootstrap-icons.woff2'
-          ),
-          dest: join(PUBLIC, 'fonts'),
         },
       ],
     }),

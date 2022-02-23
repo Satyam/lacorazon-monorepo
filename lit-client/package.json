@@ -7,8 +7,7 @@
   "module": "my-element.js",
   "type": "module",
   "scripts": {
-    "build": "rollup -c -w",
-    "build:css": "./wrapBootstrap.mjs"
+    "build": "rollup -c -w"
   },
   "repository": {
     "type": "git",
