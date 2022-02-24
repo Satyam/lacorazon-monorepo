@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import './listVendedores';
+import './navbar';
 import { ROUTER_EVENT, RouterEvent } from './utils';
 
 @customElement('app-root')
@@ -17,7 +18,7 @@ export class AppRoot extends LitElement {
     super.disconnectedCallback();
   }
   override render() {
-    return html`<list-vendedores></list-vendedores>`;
+    return html`<nav-bar></nav-bar> <list-vendedores></list-vendedores>`;
   }
 }
 
