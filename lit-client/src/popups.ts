@@ -1,6 +1,7 @@
 import './icons';
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { BootBase } from './bootstrapBase';
 import { getTarget } from './utils';
 
@@ -80,13 +81,14 @@ export class ConfirmaDialog extends LitElement {
 
   override render() {
     return html`
-      <div class=${`modal${this.show ? ' show' : ''}`} tabindex="-1">
+      <div class=${classMap({ modal: true, show: this.show })} tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div
-              class=${`modal-header ${
-                this.danger ? 'bg-danger text-white' : ''
-              }`}
+              class=${classMap({
+                'modal-header': true,
+                'bg-danger text-white': this.danger,
+              })}
             >
               <h5 class="modal-title">${this.header}</h5>
               <button
@@ -100,7 +102,11 @@ export class ConfirmaDialog extends LitElement {
             <div class="modal-footer">
               <button
                 type="button"
-                class=${`btn ${this.danger ? 'btn-danger' : 'btn-primary'}`}
+                class=${classMap({
+                  btn: true,
+                  'btn-danger': this.danger,
+                  'btn-primary': !this.danger,
+                })}
                 @click=${this.clickHandler}
                 data-action="yes"
               >
