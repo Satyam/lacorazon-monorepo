@@ -1,7 +1,24 @@
 import './icons';
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
+import { getTarget } from './utils';
+
+export const CONFIRMA_EVENT: 'confirmaEvent' = 'confirmaEvent' as const;
+
+type ConfirmaEventDetail = 'yes' | 'no';
+
+export class ConfirmaEvent extends CustomEvent<ConfirmaEventDetail> {
+  constructor(detail: ConfirmaEventDetail) {
+    super(CONFIRMA_EVENT, { detail });
+  }
+}
+
+declare global {
+  interface WindowEventMap {
+    [CONFIRMA_EVENT]: ConfirmaEvent;
+  }
+}
 
 @customElement('loading-card')
 export class LoadingCard extends LitElement {
@@ -23,18 +40,29 @@ export class ErrorCard extends LitElement {
   msg = '';
 
   override render() {
-    return html`
-      <div id="error" class="alert alert-danger">
-        <icon-danger></icon-danger>${this.msg}
-      </div>
-    `;
+    return this.msg.length
+      ? html`
+          <div class="alert alert-danger">
+            <icon-danger></icon-danger> ${this.msg}
+          </div>
+        `
+      : null;
   }
 }
 
 @customElement('confirma-dialog')
 export class ConfirmaDialog extends LitElement {
-  static override readonly styles = [BootBase.styles];
+  static override readonly styles = [
+    BootBase.styles,
+    css`
+      .show {
+        display: block;
+      }
+    `,
+  ];
 
+  @property({ type: Boolean })
+  show = false;
   @property({ type: String })
   msg = '';
   @property({ type: String })
@@ -42,19 +70,17 @@ export class ConfirmaDialog extends LitElement {
   @property({ type: Boolean })
   danger = false;
 
-  yesHandler(ev: Event) {
+  clickHandler(ev: Event) {
     ev.stopPropagation();
+    const button = getTarget(ev);
     this.dispatchEvent(
-      new Event('yesEvent', { bubbles: true, composed: true })
+      new ConfirmaEvent(button.dataset.action as ConfirmaEventDetail)
     );
   }
-  noHandler(ev: Event) {
-    ev.stopPropagation();
-    this.dispatchEvent(new Event('noEvent', { bubbles: true, composed: true }));
-  }
+
   override render() {
     return html`
-      <div id="confirm" class="modal fade" tabindex="-1">
+      <div class=${`modal${this.show ? ' show' : ''}`} tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div
@@ -65,7 +91,8 @@ export class ConfirmaDialog extends LitElement {
               <h5 class="modal-title">${this.header}</h5>
               <button
                 type="button"
-                class="btn-close action"
+                class="btn-close"
+                @click=${this.clickHandler}
                 data-action="no"
               ></button>
             </div>
@@ -74,14 +101,16 @@ export class ConfirmaDialog extends LitElement {
               <button
                 type="button"
                 class=${`btn ${this.danger ? 'btn-danger' : 'btn-primary'}`}
-                @click=${this.yesHandler}
+                @click=${this.clickHandler}
+                data-action="yes"
               >
                 Aceptar
               </button>
               <button
                 type="button"
-                class="btn btn-secondary action"
-                @click=${this.noHandler}
+                class="btn btn-secondary"
+                @click=${this.clickHandler}
+                data-action="no"
               >
                 Cancelar
               </button>
@@ -96,12 +125,14 @@ export class ConfirmaDialog extends LitElement {
 @customElement('not-found')
 export class NotFound extends LitElement {
   static override readonly styles = [BootBase.styles];
+
+  @property({ type: Boolean })
+  show = false;
+
   override render() {
-    return html`
-      <div id="notFound">
-        <div class="alert alert-warning">Path not found</div>
-      </div>
-    `;
+    return this.show
+      ? html`<div class="alert alert-warning">Path not found</div>`
+      : null;
   }
 }
 
