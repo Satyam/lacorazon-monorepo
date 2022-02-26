@@ -102,6 +102,7 @@ export class ListVendedores extends LitElement {
         danger
         @confirmaEvent=${this.doDelete}
       ></confirma-dialog>
+      <h1>Vendedores</h1>
       <table
         class="table table-striped table-hover table-bordered table-responsive table-sm"
         @click="${this.clickListener}"
