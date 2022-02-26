@@ -66,7 +66,7 @@ const routes: Array<Route> = [
   // },
   {
     path: '*',
-    litElement: () => html`<not-found></not-found>`,
+    litElement: () => html`<not-found ?show=${true}></not-found>`,
   },
 ];
 
