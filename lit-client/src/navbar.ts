@@ -1,10 +1,11 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
-import { getTarget, router } from './utils';
+import './icons';
+import { getTarget, router, getClosest } from './utils';
 import { apiFetch } from './apiService';
 import { classMap } from 'lit/directives/class-map.js';
-import { logout } from './login';
+import { logout, LoginEvent, LOGIN_EVENT } from './login';
 
 export const NAV_EVENT: 'navEvent' = 'navEvent' as const;
 
@@ -23,9 +24,18 @@ declare global {
 }
 
 @customElement('nav-link')
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class NavLink extends LitElement {
-  static override readonly styles = [BootBase.styles];
+  static override readonly styles = [
+    BootBase.styles,
+    css`
+      a {
+        color: #644240 !important;
+      }
+      a:hover {
+        color: #332221 !important;
+      }
+    `,
+  ];
 
   @property({ type: String })
   path = '';
@@ -34,11 +44,11 @@ export class NavLink extends LitElement {
 
   private clickHandler(ev: Event) {
     ev.preventDefault();
-    const $el = getTarget<HTMLAnchorElement>(ev);
+    const $el = getClosest<HTMLAnchorElement>(getTarget(ev), 'a');
     const path = $el.pathname;
     if (path === location.pathname) return;
 
-    this.dispatchEvent(new NavEvent(this.path));
+    this.dispatchEvent(new NavEvent(path));
   }
   override render() {
     return html`
@@ -49,15 +59,31 @@ export class NavLink extends LitElement {
         })}
         @click=${this.clickHandler}
         href=${this.path}
-        ><slot></slot
-      ></a>
+      >
+        <slot></slot>
+      </a>
     `;
   }
 }
 
 @customElement('nav-bar')
 export class NavBar extends LitElement {
-  static override readonly styles = [BootBase.styles];
+  static override readonly styles = [
+    BootBase.styles,
+    css`
+      .navbar {
+        background-color: #e4ccaa !important;
+        color: #644240;
+      }
+      .navbar-brand {
+        margin: auto 1em;
+      }
+      .navbar-brand img {
+        width: 1em;
+        height: 1em;
+      }
+    `,
+  ];
 
   @state()
   private _activeItem = '';
@@ -65,6 +91,22 @@ export class NavBar extends LitElement {
   @state()
   private _collapsed = false;
 
+  @state()
+  private _currentUser: User | null = null;
+
+  private loginEventHandler = (ev: LoginEvent) => {
+    this._currentUser = ev.detail;
+
+    console.log(location.pathname, ev.detail);
+  };
+  override connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(LOGIN_EVENT, this.loginEventHandler);
+  }
+  override disconnectedCallback() {
+    window.removeEventListener(LOGIN_EVENT, this.loginEventHandler);
+    super.disconnectedCallback();
+  }
   private goHome(ev: Event) {
     ev.preventDefault();
     router.push('/');
@@ -95,7 +137,6 @@ export class NavBar extends LitElement {
   override render() {
     return html`
       <nav
-        id="navbar"
         class="navbar navbar-light navbar-expand-lg"
         @navEvent=${this.menuHandler}
       >
@@ -112,49 +153,53 @@ export class NavBar extends LitElement {
             show: this._collapsed,
           })}
         >
-          <ul class="navbar-nav me-auto logged-in" @click=${this.menuHandler}>
-            <li class="nav-item">
-              <nav-link path="/usuarios" activePath=${this._activeItem}
-                >Usuarios</nav-link
-              >
-            </li>
-            <li class="nav-item">
-              <nav-link path="/vendedores" activePath=${this._activeItem}
-                >Vendedores</nav-link
-              >
-            </li>
-            <li class="nav-item">
-              <nav-link path="/distribuidores" activePath=${this._activeItem}
-                >Distribuidores</nav-link
-              >
-            </li>
-            <li class="nav-item">
-              <nav-link path="/ventas" activePath=${this._activeItem}
-                >Ventas</nav-link
-              >
-            </li>
-          </ul>
+          ${this._currentUser
+            ? html`<ul class="navbar-nav me-auto logged-in">
+                <li class="nav-item">
+                  <nav-link path="/usuarios" activePath=${this._activeItem}
+                    >Usuarios</nav-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <nav-link path="/vendedores" activePath=${this._activeItem}
+                    >Vendedores</nav-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <nav-link
+                    path="/distribuidores"
+                    activePath=${this._activeItem}
+                    >Distribuidores</nav-link
+                  >
+                </li>
+                <li class="nav-item">
+                  <nav-link path="/ventas" activePath=${this._activeItem}
+                    >Ventas</nav-link
+                  >
+                </li>
+              </ul>`
+            : null}
           <span class="navbar-text ms-auto">
-            <i class="bi bi-person-x logged-out"> Invitado</i>
-            <i class="bi bi-person-check-fill logged-in">
-              <span class="user-name"></span
-            ></i>
+            ${this._currentUser
+              ? html`<icon-logged-in></icon-logged-in> ${this._currentUser
+                    .nombre}`
+              : html`<icon-logged-out></icon-logged-out> Invitado`}
           </span>
-          <ul class="navbar-nav" @click=${this.menuHandler}>
-            <li class="nav-item logged-out">
-              <nav-link path="/login" activePath=${this._activeItem}
-                >Login</nav-link
-              >
-            </li>
-            <li class="nav-item logged-in">
-              <nav-link path="/logout" activePath=${this._activeItem}
-                >Logout</nav-link
-              >
-            </li>
+          <ul class="navbar-nav">
+            ${this._currentUser
+              ? html`<li class="nav-item logged-in">
+                  <nav-link path="/logout" activePath=${this._activeItem}
+                    >Logout</nav-link
+                  >
+                </li>`
+              : html`<li class="nav-item logged-out">
+                  <nav-link path="/login" activePath=${this._activeItem}
+                    >Login</nav-link
+                  >
+                </li>`}
           </ul>
         </div>
       </nav>
-      <h1></h1>
     `;
   }
 }
