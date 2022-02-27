@@ -4,15 +4,14 @@ import { BootBase } from './bootstrapBase';
 import { apiFetch } from './apiService';
 import './form/textField';
 import './form/formWrapper';
-import { FormSubmit, FormWrapper } from './form/formWrapper';
-import { getTarget } from './utils';
+import { FormSubmit } from './form/formWrapper';
+import { router } from './utils';
 
 export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
 
-type LoginEventDetail = User | null;
-
-export class LoginEvent extends CustomEvent<LoginEventDetail> {
-  constructor(detail: LoginEventDetail) {
+type CurrentUser = Omit<User, 'password'> | null;
+export class LoginEvent extends CustomEvent<CurrentUser> {
+  constructor(detail: CurrentUser) {
     super(LOGIN_EVENT, { detail });
   }
 }
@@ -23,12 +22,12 @@ declare global {
   }
 }
 
-let currentUser: User | null = null;
+let currentUser: CurrentUser | null = null;
 
 export const isLoggedIn = () => !!currentUser;
 
 export function checkLoggedIn() {
-  return apiFetch<{}, User>('auth', {
+  return apiFetch<{}, CurrentUser>('auth', {
     op: 'isLoggedIn',
   }).then((user) => {
     if (user) {
@@ -61,7 +60,17 @@ export class LoginForm extends LitElement {
     `,
   ];
   submit(ev: FormSubmit) {
-    console.log('form submit', ev, getTarget<FormWrapper>(ev).values);
+    const data = ev.values;
+    if (data) {
+      apiFetch<Partial<User>, CurrentUser>('auth', {
+        op: 'login',
+        data,
+      }).then((user) => {
+        window.dispatchEvent(new LoginEvent(user));
+        setTimeout(checkLoggedIn, 1_800_000);
+        router.replace('/');
+      });
+    }
   }
   override render() {
     return html`
@@ -87,48 +96,3 @@ export class LoginForm extends LitElement {
     `;
   }
 }
-/*import { getById, getFirstByClass, getFirstByTag } from './gets';
-import apiService from './apiService';
-import Form from './form';
-import { show, hide, router } from './utils';
-
-export function setUser(user: Partial<User>) {
-  if (user && user.nombre) {
-    const $container = getById('container');
-    $container.classList.replace('not-logged-in', 'is-logged-in');
-    const $navbar = getById('navbar');
-    getFirstByClass($navbar, 'user-name').textContent = user.nombre;
-  }
-}
-
-
-export const login: Handler<void> = ($el) => {
-  const $login = $el || getById('login');
-  const form = new Form<Partial<User>>(
-    getFirstByTag<HTMLFormElement>($login, 'form'),
-    (data) => {
-      if (data) {
-        apiService<Partial<User>>('auth', {
-          op: 'login',
-          data,
-        }).then((user) => {
-          setUser(user);
-          setTimeout(checkLoggedIn, 1_800_000);
-          router.replace('/');
-        });
-      }
-    }
-  );
-
-  return {
-    render: () => {
-      form.resetForm();
-      show($login);
-    },
-    close: () => {
-      form.destroy();
-      hide($login);
-    },
-  };
-};
-*/
