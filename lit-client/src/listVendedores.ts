@@ -58,7 +58,6 @@ export class ListVendedores extends LitElement {
   private clickListener(ev: Event) {
     const $t = getTarget(ev);
     const action = getClosest($t, '[data-action]')?.dataset.action;
-    console.log(action, this._ask);
     if (action) {
       const id = getClosest($t, 'tr').dataset.id;
       this._id = id;
