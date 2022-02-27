@@ -9,7 +9,7 @@ type OPERATION<IN, OPT> = {
 };
 export const apiFetch = <
   IN extends Record<string, VALUE> = Record<string, VALUE>,
-  OUT extends Record<string, VALUE> | Array<Record<string, VALUE>> = IN,
+  OUT extends Record<string, VALUE> | Array<Record<string, VALUE>> | null = IN,
   OPT extends Record<string, VALUE> = Record<string, VALUE>
 >(
   service: string,
