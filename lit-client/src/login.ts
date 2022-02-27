@@ -2,6 +2,10 @@ import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import { apiFetch } from './apiService';
+import './form/textField';
+import './form/formWrapper';
+import { FormSubmit, FormWrapper } from './form/formWrapper';
+import { getTarget } from './utils';
 
 export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
 
@@ -56,39 +60,30 @@ export class LoginForm extends LitElement {
       }
     `,
   ];
+  submit(ev: FormSubmit) {
+    console.log('form submit', ev, getTarget<FormWrapper>(ev).values);
+  }
   override render() {
     return html`
       <h1>Login</h1>
-      <form novalidate>
-        <label class="form-group row">
-          <div class="col-sm-2 col-form-label">Email</div>
-          <div class="col-sm-10">
-            <input
-              name="email"
-              class="form-control"
-              placeholder="Email"
-              required
-            />
-            <div class="invalid-feedback">
-              Debe indicar la dirección de correo registrada
-            </div>
-          </div>
-        </label>
-        <label class="form-group row">
-          <div class="col-sm-2 col-form-label">Contraseña</div>
-          <div class="col-sm-10">
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              placeholder="Contraseña"
-              required
-            />
-            <div class="invalid-feedback">Debe indicar una contraseña</div>
-          </div>
-        </label>
-        <button type="submit" class="btn btn-primary" disabled>Acceder</button>
-      </form>
+      <form-wrapper novalidate @formSubmit=${this.submit}>
+        <text-field
+          label="Email"
+          name="email"
+          placeholder="e-Mail"
+          errorFeedback="Debe indicar la dirección de correo registrada"
+          required
+        ></text-field>
+        <text-field
+          label="Contraseña"
+          name="password"
+          placeholder="Contraseña"
+          required
+          password
+          errorFeedback="Debe indicar una contraseña"
+        ></text-field>
+        <button type="submit" class="btn btn-primary">Acceder</button>
+      </form-wrapper>
     `;
   }
 }
