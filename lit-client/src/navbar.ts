@@ -96,9 +96,8 @@ export class NavBar extends LitElement {
 
   private loginEventHandler = (ev: LoginEvent) => {
     this._currentUser = ev.detail;
-
-    console.log(location.pathname, ev.detail);
   };
+
   override connectedCallback() {
     super.connectedCallback();
     window.addEventListener(LOGIN_EVENT, this.loginEventHandler);
