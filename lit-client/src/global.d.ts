@@ -1,6 +1,6 @@
 declare module '*.html';
 type ID = string | number;
-type VALUE = string | number | boolean;
+type VALUE = string | number | boolean | Date;
 type Fila = Consignacion | Distribuidor | Salida | User | Venta;
 
 type Consignacion = {
