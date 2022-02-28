@@ -11,6 +11,7 @@ type Route = {
   path: string;
   litElement: (
     params: Record<string, VALUE>,
+    refresh: boolean,
     opts?: Record<string, VALUE>
   ) => TemplateResult;
   rxRoute?: RegExp;
@@ -77,6 +78,9 @@ export class AppRoot extends LitElement {
   @state()
   private _currentPath = location.pathname;
 
+  @state()
+  private _refresh = false;
+
   constructor() {
     super();
     routes.forEach((r) => {
@@ -97,9 +101,7 @@ export class AppRoot extends LitElement {
     if (path !== this._currentPath) {
       this._currentPath = path;
     }
-    if (refresh) {
-      this.requestUpdate();
-    }
+    this._refresh = !!refresh;
   };
 
   override connectedCallback() {
@@ -118,6 +120,7 @@ export class AppRoot extends LitElement {
     return route
       ? route.litElement(
           path.match(route.rxRoute || '')?.groups || {},
+          this._refresh,
           Object.fromEntries(new URLSearchParams(location.search))
         )
       : '';
