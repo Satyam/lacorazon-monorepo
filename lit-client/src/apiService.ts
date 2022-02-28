@@ -2,6 +2,7 @@ import { ReactiveControllerHost } from 'lit';
 import { StatusRenderer, Task } from '@lit-labs/task';
 
 type OPERATION<IN, OPT> = {
+  service: string;
   op: string;
   id?: ID;
   data?: IN;
@@ -12,10 +13,9 @@ export const apiFetch = <
   OUT extends Record<string, VALUE> | Array<Record<string, VALUE>> | null = IN,
   OPT extends Record<string, VALUE> = Record<string, VALUE>
 >(
-  service: string,
   operation: OPERATION<IN, OPT>
 ): Promise<OUT> =>
-  fetch(`${window.origin}/api/${service}`, {
+  fetch(`${window.origin}/api/${operation.service}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json; charset=utf-8',
@@ -39,31 +39,16 @@ export class ApiService<
   host: ReactiveControllerHost;
   value?: OUT;
   private task!: Task;
-  private _service: string;
   private _operation: OPERATION<IN, OPT>;
 
-  constructor(
-    host: ReactiveControllerHost,
-    service: string,
-    operation: OPERATION<IN, OPT>
-  ) {
+  constructor(host: ReactiveControllerHost, operation: OPERATION<IN, OPT>) {
     this.host = host;
-    this._service = service;
     this._operation = operation;
     this.task = new Task(
       host,
-      ([service, operation]: [string, OPERATION<IN, OPT>]) =>
-        apiFetch<IN, OUT, OPT>(service, operation),
-      () => [this.service, this.operation] as [string, OPERATION<IN, OPT>]
+      ([operation]: [OPERATION<IN, OPT>]) => apiFetch<IN, OUT, OPT>(operation),
+      () => [this.operation] as [OPERATION<IN, OPT>]
     );
-  }
-
-  set service(service: string) {
-    this._service = service;
-    this.host.requestUpdate();
-  }
-  get service() {
-    return this._service;
   }
 
   set operation(operation) {

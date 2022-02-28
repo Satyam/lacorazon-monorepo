@@ -123,7 +123,8 @@ export class NavBar extends LitElement {
 
     switch (path) {
       case '/logout':
-        apiFetch('auth', {
+        apiFetch({
+          service: 'auth',
           op: 'logout',
         }).then(logout, logout);
         break;

@@ -27,7 +27,8 @@ let currentUser: CurrentUser | null = null;
 export const isLoggedIn = () => !!currentUser;
 
 export function checkLoggedIn() {
-  return apiFetch<{}, CurrentUser>('auth', {
+  return apiFetch<{}, CurrentUser>({
+    service: 'auth',
     op: 'isLoggedIn',
   }).then((user) => {
     if (user) {
@@ -62,7 +63,8 @@ export class LoginForm extends LitElement {
   submit(ev: FormSubmit) {
     const data = ev.values;
     if (data) {
-      apiFetch<Partial<User>, CurrentUser>('auth', {
+      apiFetch<Partial<User>, CurrentUser>({
+        service: 'auth',
         op: 'login',
         data,
       }).then((user) => {

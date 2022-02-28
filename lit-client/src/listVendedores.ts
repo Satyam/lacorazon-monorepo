@@ -39,13 +39,10 @@ const renderRow = (row: Vendedor, id: ID) => html`
 export class ListVendedores extends LitElement {
   static override readonly styles = [BootBase.styles];
 
-  private apiListVendedores = new ApiService<{}, Vendedor[]>(
-    this,
-    'vendedores',
-    {
-      op: 'list',
-    }
-  );
+  private apiListVendedores = new ApiService<{}, Vendedor[]>(this, {
+    service: 'vendedores',
+    op: 'list',
+  });
 
   @state()
   private _ask = false;
@@ -81,7 +78,8 @@ export class ListVendedores extends LitElement {
   private doDelete(ev: ConfirmaEvent) {
     this._ask = false;
     if (ev.detail === 'yes') {
-      apiFetch('vendedores', {
+      apiFetch({
+        service: 'vendedores',
         op: 'remove',
         id: this._id,
       })
