@@ -1,6 +1,7 @@
 import { LitElement, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import './listVendedores';
+import './listVentas';
 import './navbar';
 import './home';
 import './popups';
@@ -45,11 +46,10 @@ const routes: Array<Route> = [
   //   module: showVendedor(),
   //   heading: 'Vendedor',
   // },
-  // {
-  //   path: '/ventas',
-  //   module: listVentas(),
-  //   heading: 'Ventas',
-  // },
+  {
+    path: '/ventas',
+    litElement: () => html`<list-ventas></list-ventas>`,
+  },
   // {
   //   path: '/venta/edit/:id',
   //   module: edVenta,
