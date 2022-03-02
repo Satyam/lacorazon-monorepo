@@ -1,5 +1,5 @@
 import { LitElement, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
 @customElement('icon-pencil')
 export class IconPencil extends LitElement {
@@ -180,6 +180,52 @@ export class IconQuestion extends LitElement {
   }
 }
 
+@customElement('icon-check-false')
+export class IconCheckFalse extends LitElement {
+  override render() {
+    return html`<svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path
+        d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"
+      />
+    </svg>`;
+  }
+}
+
+@customElement('icon-check-true')
+export class IconCheckTrue extends LitElement {
+  override render() {
+    return html`<svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path
+        d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"
+      />
+    </svg>`;
+  }
+}
+
+@customElement('icon-check')
+export class IconCheck extends LitElement {
+  @property({ type: Boolean })
+  value = false;
+
+  override render() {
+    return this.value
+      ? html`<icon-check-true></icon-check-true>`
+      : html`<icon-check-false></icon-check-false>`;
+  }
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     'icon-pencil': IconPencil;
@@ -191,5 +237,8 @@ declare global {
     'icon-logged-out': IconLoggedOut;
     'icon-logged-in': IconLoggedIn;
     'icon-question': IconQuestion;
+    'icon-check-false': IconCheckFalse;
+    'icon-check-true': IconCheckTrue;
+    'icon-check': IconCheck;
   }
 }
