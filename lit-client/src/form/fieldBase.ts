@@ -1,4 +1,4 @@
-import { LitElement, html, css, TemplateResult } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef } from 'lit/directives/ref.js';
 import { BootBase } from '../bootstrapBase';
@@ -7,10 +7,12 @@ import { getTarget } from '../utils';
 export class InputChanged extends Event {
   name: string;
   value: string;
-  constructor(name: string, value: string) {
+  isDirty: boolean;
+  constructor(name: string, value: string, isDirty: boolean) {
     super('inputChanged', { composed: true, bubbles: true });
     this.name = name;
     this.value = value;
+    this.isDirty = isDirty;
   }
 }
 
@@ -31,7 +33,7 @@ export class FieldBase extends LitElement {
   @property({ type: String })
   name = '';
 
-  @property({ type: String, reflect: true })
+  @property({ type: String })
   value = '';
 
   @property({ type: String })
@@ -52,31 +54,55 @@ export class FieldBase extends LitElement {
   @property({ type: Boolean })
   disabled = false;
 
-  fieldRef: Ref<HTMLInputElement> = createRef();
+  protected fieldRef: Ref<HTMLInputElement> = createRef();
+
+  protected fieldEl() {
+    return this.fieldRef.value!;
+  }
+
+  public defaultValue?: string;
+
+  public get isDirty() {
+    return this.value !== this.defaultValue;
+  }
+
+  protected override firstUpdated() {
+    this.defaultValue = this.fieldEl().defaultValue;
+  }
 
   public checkValidity() {
-    const field = this.fieldRef.value;
-    if (field) {
-      const valid = field.checkValidity();
-      field.classList.add(valid ? 'is-valid' : 'is-invalid');
-      return valid;
-    } else {
-      return false;
-    }
-  }
-  protected inputHandler(ev: Event) {
-    ev.preventDefault();
-    this.fieldRef.value?.classList.remove('is-valid', 'is-invalid');
-    this.value = getTarget<HTMLInputElement>(ev).value;
-    return this.dispatchEvent(new InputChanged(this.name, this.value));
+    const field = this.fieldEl();
+    const valid = field.checkValidity();
+    field.classList.add(valid ? 'is-valid' : 'is-invalid');
+    return valid;
   }
 
-  protected fieldFrame(content: TemplateResult) {
+  public reset() {
+    if (this.defaultValue) {
+      this.value = this.defaultValue;
+      this.dispatchEvent(new InputChanged(this.name, this.value, false));
+    }
+  }
+
+  protected inputHandler(ev: Event) {
+    ev.preventDefault();
+    this.fieldEl().classList.remove('is-valid', 'is-invalid');
+    this.value = getTarget<HTMLInputElement>(ev).value;
+    return this.dispatchEvent(
+      new InputChanged(this.name, this.value, this.value !== this.defaultValue)
+    );
+  }
+
+  protected inputControl() {
+    return html``;
+  }
+
+  protected override render() {
     return html`
       <label class="form-group row">
         <div class="col-sm-2 col-form-label">${this.label}</div>
         <div class="col-sm-10">
-          ${content}
+          ${this.inputControl()}
           ${this.errorFeedback
             ? html`<div class="invalid-feedback">${this.errorFeedback}</div>`
             : null}

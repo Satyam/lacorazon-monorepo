@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import { apiFetch } from './apiService';
 import './form/textField';
@@ -60,6 +60,10 @@ export class LoginForm extends LitElement {
       }
     `,
   ];
+
+  @state()
+  private _disabled = true;
+
   submit(ev: FormSubmit) {
     const data = ev.values;
     if (data) {
@@ -93,7 +97,13 @@ export class LoginForm extends LitElement {
           password
           errorFeedback="Debe indicar una contraseña"
         ></text-field>
-        <button type="submit" class="btn btn-primary">Acceder</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          ?disabled=${this._disabled}
+        >
+          Acceder
+        </button>
       </form-wrapper>
     `;
   }
