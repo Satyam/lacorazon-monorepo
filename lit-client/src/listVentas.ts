@@ -35,11 +35,14 @@ export class ListVentas extends LitElement {
   private _id?: ID;
 
   private clickListener(ev: Event) {
-    const $t = getTarget(ev);
-    const action = getClosest($t, '[data-action]')?.dataset.action;
+    ev.preventDefault();
+    const $t = getTarget<HTMLAnchorElement>(ev);
+    const { action, idvendedor: idVendedor } = getClosest(
+      $t,
+      '[data-action]'
+    )?.dataset;
     if (action) {
       const id = getClosest($t, 'tr').dataset.id;
-      this._id = id;
       switch (action) {
         case 'add':
           router.push('/venta/new');
@@ -47,10 +50,14 @@ export class ListVentas extends LitElement {
         case 'show':
           router.push(`/venta/${id}`);
           break;
+        case 'showVendedor':
+          router.push(`/vendedor/${idVendedor}`);
+          break;
         case 'edit':
           router.push(`/venta/edit/${id}`);
           break;
         case 'delete':
+          this._id = id;
           this._ask = true;
           break;
       }
@@ -71,20 +78,30 @@ export class ListVentas extends LitElement {
         });
     }
   }
-  renderRow = (row: VentaYVendedor, id: ID) => html`
-    <tr data-id=${id}>
+  renderRow = (row: VentaYVendedor) => html`
+    <tr data-id=${row.id}>
       <td title="Ver detalles" data-action="show">
         <a href="#">${formatDate(row.fecha)}</a>
       </td>
       <td>${row.concepto}</td>
-      ${this.idVendedor
-        ? null
-        : html` <td title="Ver detalle del vendedor" data-action="showVendedor">
-            <a href="#">${row.vendedor}</a>
-          </td>`}
+      ${
+        this.idVendedor
+          ? null
+          : html`
+              <td
+                title="Ver detalle del vendedor"
+                data-action="showVendedor"
+                data-idVendedor=${row.idVendedor || 0}
+              >
+                <a href="/vendedor/${row.idVendedor}">${row.vendedor}</a>
+              </td>
+            `
+      }
       <td class="text-end">${row.cantidad}</td>
       <td class="text-end">${formatCurrency(row.precioUnitario)}</td>
-      <td class="text-center">${row.iva}</td>
+      <td class="text-center"><icon-check ?value=${
+        row.iva
+      }></icon-check></icon-check></td>
       <td class="text-end">
         ${formatCurrency((row.cantidad || 0) * (row.precioUnitario || 0))}
       </td>
