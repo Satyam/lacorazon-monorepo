@@ -8,8 +8,8 @@ import { ApiService, apiFetch } from './apiService';
 import { getClosest, getTarget, router } from './utils';
 import { ConfirmaEvent } from './popups';
 
-const renderRow = (row: Vendedor, id: ID) => html`
-  <tr data-id=${id}>
+const renderRow = (row: Vendedor) => html`
+  <tr data-id=${row.id}>
     <td title="Ver detalles" data-action="show">
       <a href="#">${row.nombre}</a>
     </td>
