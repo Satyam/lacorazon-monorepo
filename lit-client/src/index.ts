@@ -2,6 +2,7 @@ import { LitElement, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import './listVendedores';
 import './listVentas';
+import './showVendedor';
 import './navbar';
 import './home';
 import './popups';
@@ -41,11 +42,11 @@ const routes: Array<Route> = [
   //   module: edVendedor,
   //   heading: 'Agregar vendedor',
   // },
-  // {
-  //   path: '/vendedor/:id',
-  //   module: showVendedor(),
-  //   heading: 'Vendedor',
-  // },
+  {
+    path: '/vendedor/:id',
+    litElement: ({ id }) =>
+      html`<show-vendedor idVendedor=${id as ID}></show-vendedor>`,
+  },
   {
     path: '/ventas',
     litElement: () => html`<list-ventas></list-ventas>`,
