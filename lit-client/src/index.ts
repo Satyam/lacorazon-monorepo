@@ -8,6 +8,7 @@ import './home';
 import './popups';
 import { BootBase } from './bootstrapBase';
 import { ROUTER_EVENT, RouterEvent } from './utils';
+import { checkLoggedIn } from './login';
 
 type Route = {
   path: string;
@@ -105,12 +106,18 @@ export class AppRoot extends LitElement {
     this._refresh = !!refresh;
   };
 
+  historyChangeHandler = () => {
+    this._currentPath = location.pathname;
+  };
+
   override connectedCallback() {
     super.connectedCallback();
     window.addEventListener(ROUTER_EVENT, this.routerEventHandler);
+    window.addEventListener('popstate', this.historyChangeHandler);
   }
   override disconnectedCallback() {
     window.removeEventListener(ROUTER_EVENT, this.routerEventHandler);
+    window.removeEventListener('popstate', this.historyChangeHandler);
     super.disconnectedCallback();
   }
 
@@ -125,6 +132,10 @@ export class AppRoot extends LitElement {
           Object.fromEntries(new URLSearchParams(location.search))
         )
       : '';
+  }
+
+  protected override firstUpdated(): void {
+    checkLoggedIn();
   }
 
   override render() {
