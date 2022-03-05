@@ -1,5 +1,5 @@
 import './icons';
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { BootBase } from './bootstrapBase';
@@ -47,7 +47,7 @@ export class ErrorCard extends LitElement {
             <icon-danger></icon-danger> ${this.msg}
           </div>
         `
-      : null;
+      : nothing;
   }
 }
 
@@ -138,7 +138,7 @@ export class NotFound extends LitElement {
   override render() {
     return this.show
       ? html`<div class="alert alert-warning">Path not found</div>`
-      : null;
+      : nothing;
   }
 }
 

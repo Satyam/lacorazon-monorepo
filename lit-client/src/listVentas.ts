@@ -1,6 +1,6 @@
 import './icons';
 import './popups';
-import { LitElement, html } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { BootBase } from './bootstrapBase';
@@ -86,7 +86,7 @@ export class ListVentas extends LitElement {
       <td>${row.concepto}</td>
       ${
         this.idVendedor
-          ? null
+          ? nothing
           : html`
               <td
                 title="Ver detalle del vendedor"
@@ -146,7 +146,7 @@ export class ListVentas extends LitElement {
             <th>Fecha</th>
             <th>Concepto</th>
             ${this.idVendedor
-              ? null
+              ? nothing
               : html`<th class="idVendedor">Vendedor</th>`}
 
             <th>Cantidad</th>

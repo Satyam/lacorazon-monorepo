@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import './icons';
@@ -178,7 +178,7 @@ export class NavBar extends LitElement {
                   >
                 </li>
               </ul>`
-            : null}
+            : nothing}
           <span class="navbar-text ms-auto">
             ${this._currentUser
               ? html`<icon-logged-in></icon-logged-in> ${this._currentUser

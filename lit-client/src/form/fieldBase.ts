@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef } from 'lit/directives/ref.js';
 import { BootBase } from '../bootstrapBase';
@@ -106,7 +106,9 @@ export class FieldBase extends LitElement {
           ${this.errorFeedback
             ? html`<div class="invalid-feedback">${this.errorFeedback}</div>`
             : null}
-          ${this.hint ? html`<div class="form-text">${this.hint}</div>` : null}
+          ${this.hint
+            ? html`<div class="form-text">${this.hint}</div>`
+            : nothing}
         </div>
       </label>
     `;
