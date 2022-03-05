@@ -5,6 +5,7 @@ import { ApiService } from './apiService';
 import './form/textField';
 import './form/formWrapper';
 import './popups';
+import './accordion';
 
 @customElement('show-vendedor')
 export class ShowVendedor extends LitElement {
@@ -66,6 +67,20 @@ export class ShowVendedor extends LitElement {
               </div>
             </label>
           </form>
+          <accordion-base>
+            <accordion-panel
+              name="ventas"
+              heading="Ventas"
+              .content=${html`<list-ventas idVendedor=${this.idVendedor}`}
+            ></accordion-panel>
+            <accordion-panel
+              name="consigna"
+              heading="Consigna"
+              .content=${html`<h2>
+                Aquí debería estar la información de libros en consigna
+              </h2>`}
+            ></accordion-panel>
+          </accordion-base>
         `,
         error: (error) =>
           html`<error-card .msg=${(error as Error).toString()}></error-card>`,
