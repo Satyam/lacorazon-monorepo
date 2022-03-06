@@ -2,8 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import { apiFetch } from './apiService';
-import './form/textField';
-import './form/formWrapper';
+import './form';
 import { FormSubmit } from './form/formWrapper';
 import { router } from './utils';
 
@@ -85,13 +84,13 @@ export class LoginForm extends LitElement {
     return html`
       <h1>Login</h1>
       <form-wrapper novalidate @formSubmit=${this.submit}>
-        <text-field
+        <email-field
           label="Email"
           name="email"
           placeholder="e-Mail"
           errorFeedback="Debe indicar la dirección de correo registrada"
           required
-        ></text-field>
+        ></email-field>
         <text-field
           label="Contraseña"
           name="password"
