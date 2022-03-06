@@ -2,8 +2,7 @@ import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import { ApiService } from './apiService';
-import './form/textField';
-import './form/formWrapper';
+import './form';
 import './popups';
 import './accordion';
 
@@ -40,33 +39,22 @@ export class ShowVendedor extends LitElement {
         initial: () => html`<p>Inicial</p>`,
         pending: () => html`<loading-card></loading-card>`,
         complete: (data) => html`
-          <form>
-            <label class="form-group row">
-              <div class="col-sm-2 col-form-label">Nombre</div>
-              <div class="col-sm-10">
-                <input
-                  name="nombre"
-                  value=${data.nombre}
-                  class="form-control"
-                  placeholder="Nombre"
-                  readonly
-                />
-              </div>
-            </label>
-            <label class="form-group row">
-              <div class="col-sm-2 col-form-label">Email</div>
-              <div class="col-sm-10">
-                <input
-                  type="email"
-                  name="email"
-                  value=${data.email || '-'}
-                  class="form-control"
-                  placeholder="Email"
-                  readonly
-                />
-              </div>
-            </label>
-          </form>
+          <form-wrapper>
+            <text-field
+              label="Nombre"
+              name="nombre"
+              value=${data.nombre}
+              placeholder="Nombre"
+              readonly
+            ></text-field>
+            <text-field
+              label="Email"
+              name="email"
+              value=${data.email || '-'}
+              placeholder="Email"
+              readonly
+            ></text-field>
+          </form-wrapper>
           <accordion-base>
             <accordion-panel
               name="ventas"
