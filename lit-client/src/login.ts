@@ -88,7 +88,7 @@ export class LoginForm extends LitElement {
           label="Email"
           name="email"
           placeholder="e-Mail"
-          errorFeedback="Debe indicar la dirección de correo registrada"
+          errorFeedback="Debe indicar una dirección de correo válida y que coincida con la registrada"
           required
         ></email-field>
         <text-field

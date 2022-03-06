@@ -47,13 +47,13 @@ export class ShowVendedor extends LitElement {
               placeholder="Nombre"
               readonly
             ></text-field>
-            <text-field
+            <email-field
               label="Email"
               name="email"
               value=${data.email || '-'}
               placeholder="Email"
               readonly
-            ></text-field>
+            ></email-field>
           </form-wrapper>
           <accordion-base>
             <accordion-panel

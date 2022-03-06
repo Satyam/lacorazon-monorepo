@@ -1,5 +1,5 @@
 import { LitElement, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 
 import { FieldBase, InputChanged } from './fieldBase';
 import { getTarget } from '../utils';
@@ -19,6 +19,9 @@ export class FormSubmit extends Event {
 export class FormWrapper extends LitElement {
   @property({ type: Boolean })
   novalidate = false;
+
+  @state()
+  wasValidated = false;
 
   _values: FieldData = {};
   _dirtyFields: DirtyFields = {};
@@ -72,6 +75,7 @@ export class FormWrapper extends LitElement {
       fieldValues[submitButton.name] = true;
     }
     const fields = this.elements(true);
+    this.wasValidated = true;
     if (
       fields?.every((f) => {
         if (f.checkValidity()) {

@@ -24,6 +24,12 @@ export class FieldBase extends LitElement {
       label {
         margin: 0.3rem 0;
       }
+      @media (min-width: 576px) {
+        .input-group {
+          /* to cancel out the width from input-group, taken from  col-sm-10 -*/
+          width: 83.3333%;
+        }
+      }
     `,
   ];
 
@@ -70,11 +76,16 @@ export class FieldBase extends LitElement {
     this.defaultValue = this.fieldEl().defaultValue;
   }
 
+  protected extraValidationCheck(_field: HTMLInputElement) {
+    return true;
+  }
+
   public checkValidity() {
     const field = this.fieldEl();
-    const valid = field.checkValidity();
-    field.classList.add(valid ? 'is-valid' : 'is-invalid');
-    return valid;
+    const isValid = this.extraValidationCheck(field) && field.checkValidity();
+    field.classList.add(isValid ? 'is-valid' : 'is-invalid');
+
+    return isValid;
   }
 
   public reset() {
@@ -101,7 +112,7 @@ export class FieldBase extends LitElement {
     return html`
       <label class="form-group row">
         <div class="col-sm-2 col-form-label">${this.label}</div>
-        <div class="col-sm-10">
+        <div class="input-group col-sm-10">
           ${this.inputControl()}
           ${this.errorFeedback
             ? html`<div class="invalid-feedback">${this.errorFeedback}</div>`
