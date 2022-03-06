@@ -66,7 +66,7 @@ export class ListVentas extends LitElement {
 
   private doDelete(ev: ConfirmaEvent) {
     this._ask = false;
-    if (ev.detail === 'yes') {
+    if (ev.confirma) {
       apiFetch({
         service: 'ventas',
         op: 'remove',

@@ -36,9 +36,11 @@ type RouterEventDetail = {
   method: 'push' | 'replace';
 };
 
-export class RouterEvent extends CustomEvent<RouterEventDetail> {
-  constructor(detail: RouterEventDetail) {
-    super(ROUTER_EVENT, { detail });
+export class RouterEvent extends Event {
+  routing: RouterEventDetail;
+  constructor(routing: RouterEventDetail) {
+    super(ROUTER_EVENT);
+    this.routing = routing;
   }
 }
 

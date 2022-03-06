@@ -99,7 +99,7 @@ export class AppRoot extends LitElement {
     });
   }
   routerEventHandler = (ev: RouterEvent) => {
-    const { path, refresh } = ev.detail;
+    const { path, refresh } = ev.routing;
     if (path !== this._currentPath) {
       this._currentPath = path;
     }

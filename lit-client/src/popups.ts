@@ -7,16 +7,18 @@ import { getTarget } from './utils';
 
 export const CONFIRMA_EVENT: 'confirmaEvent' = 'confirmaEvent' as const;
 
-type ConfirmaEventDetail = 'yes' | 'no';
+type ConfirmaResult = boolean;
 
-export class ConfirmaEvent extends CustomEvent<ConfirmaEventDetail> {
-  constructor(detail: ConfirmaEventDetail) {
-    super(CONFIRMA_EVENT, { detail });
+export class ConfirmaEvent extends Event {
+  confirma: ConfirmaResult;
+  constructor(confirma: ConfirmaResult) {
+    super(CONFIRMA_EVENT, { composed: true, bubbles: true });
+    this.confirma = confirma;
   }
 }
 
 declare global {
-  interface WindowEventMap {
+  interface HTMLElementEventMap {
     [CONFIRMA_EVENT]: ConfirmaEvent;
   }
 }
@@ -74,9 +76,7 @@ export class ConfirmaDialog extends LitElement {
   clickHandler(ev: Event) {
     ev.stopPropagation();
     const button = getTarget(ev);
-    this.dispatchEvent(
-      new ConfirmaEvent(button.dataset.action as ConfirmaEventDetail)
-    );
+    this.dispatchEvent(new ConfirmaEvent(button.dataset.action === 'yes'));
   }
 
   override render() {

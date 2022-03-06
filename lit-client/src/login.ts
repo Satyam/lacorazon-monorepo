@@ -10,9 +10,12 @@ import { router } from './utils';
 export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
 
 type CurrentUser = Omit<User, 'password'> | null;
-export class LoginEvent extends CustomEvent<CurrentUser> {
-  constructor(detail: CurrentUser) {
-    super(LOGIN_EVENT, { detail });
+
+export class LoginEvent extends Event {
+  currentUser: CurrentUser;
+  constructor(currentUser: CurrentUser) {
+    super(LOGIN_EVENT);
+    this.currentUser = currentUser;
   }
 }
 

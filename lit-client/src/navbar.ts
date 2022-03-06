@@ -9,16 +9,18 @@ import { logout, LoginEvent, LOGIN_EVENT } from './login';
 
 export const NAV_EVENT: 'navEvent' = 'navEvent' as const;
 
-type NavEventDetail = string;
+type NavEventPath = string;
 
-export class NavEvent extends CustomEvent<NavEventDetail> {
-  constructor(detail: NavEventDetail) {
-    super(NAV_EVENT, { detail, bubbles: true, composed: true });
+export class NavEvent extends Event {
+  pathName: NavEventPath;
+  constructor(pathName: NavEventPath) {
+    super(NAV_EVENT, { bubbles: true, composed: true });
+    this.pathName = pathName;
   }
 }
 
 declare global {
-  interface WindowEventMap {
+  interface HTMLElementEventMap {
     [NAV_EVENT]: NavEvent;
   }
 }
@@ -95,7 +97,7 @@ export class NavBar extends LitElement {
   private _currentUser: User | null = null;
 
   private loginEventHandler = (ev: LoginEvent) => {
-    this._currentUser = ev.detail;
+    this._currentUser = ev.currentUser;
   };
 
   override connectedCallback() {
@@ -117,11 +119,11 @@ export class NavBar extends LitElement {
   }
   private menuHandler(ev: NavEvent) {
     ev.preventDefault();
-    const path = ev.detail;
+    const pathName = ev.pathName;
 
-    this._activeItem = path;
+    this._activeItem = pathName;
 
-    switch (path) {
+    switch (pathName) {
       case '/logout':
         apiFetch({
           service: 'auth',
@@ -130,7 +132,7 @@ export class NavBar extends LitElement {
         break;
       default:
         this._collapsed = false;
-        router.push(path);
+        router.push(pathName);
         break;
     }
   }
