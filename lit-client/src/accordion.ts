@@ -17,9 +17,6 @@ export class AccordionEvent extends Event {
 }
 
 declare global {
-  interface WindowEventMap {
-    [ACCORDION_EVENT]: AccordionEvent;
-  }
   interface HTMLElementEventMap {
     [ACCORDION_EVENT]: AccordionEvent;
   }
@@ -47,6 +44,7 @@ export class AccordionBase extends LitElement {
     super();
     this.addEventListener(ACCORDION_EVENT, this.toggleHandler);
   }
+
   private getPanels(): AccordionPanel[] {
     const slot = this.shadowRoot?.querySelector('slot');
     return slot
