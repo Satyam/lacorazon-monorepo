@@ -3,6 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import './listVendedores';
 import './listVentas';
 import './showVendedor';
+import './showVenta';
 import './navbar';
 import './home';
 import './popups';
@@ -62,11 +63,10 @@ const routes: Array<Route> = [
   //   module: edVenta,
   //   heading: 'Agregar venta',
   // },
-  // {
-  //   path: '/venta/:id',
-  //   module: showVenta(),
-  //   heading: 'Venta',
-  // },
+  {
+    path: '/venta/:id',
+    litElement: ({ id }) => html`<show-venta idVenta=${id as ID}></show-venta>`,
+  },
   {
     path: '*',
     litElement: () => html`<not-found ?show=${true}></not-found>`,

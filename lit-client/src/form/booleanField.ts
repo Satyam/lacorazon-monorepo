@@ -1,4 +1,4 @@
-import { html, css } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
