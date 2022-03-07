@@ -4,7 +4,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { FieldBase, InputChanged } from './fieldBase';
 import { getTarget } from '../utils';
 
-export type FieldData = Record<string, VALUE>;
+export type FieldData = Record<string, VALUE | undefined>;
 export type DirtyFields = Record<string, boolean>;
 
 export class FormSubmit extends Event {
@@ -44,13 +44,15 @@ export class FormWrapper extends LitElement {
 
   private submitButtons: HTMLButtonElement[] = [];
 
-  private elements(onlyFieldBase: true): FieldBase[];
+  private elements(onlyFieldBase: true): FieldBase<VALUE>[];
   private elements(onlyFieldBase: false): HTMLElement[];
-  private elements(onlyFieldBase: boolean): HTMLElement[] | FieldBase[] {
+  private elements(onlyFieldBase: boolean): HTMLElement[] | FieldBase<VALUE>[] {
     const slot = this.shadowRoot?.querySelector('slot');
     const elements = slot?.assignedElements({ flatten: true });
     if (onlyFieldBase) {
-      return elements?.filter((el) => el instanceof FieldBase) as FieldBase[];
+      return elements?.filter(
+        (el) => el instanceof FieldBase
+      ) as FieldBase<VALUE>[];
     } else {
       return elements as HTMLElement[];
     }
@@ -68,7 +70,7 @@ export class FormWrapper extends LitElement {
   };
 
   private submitHandler = (ev: Event) => {
-    const fieldValues: Record<string, VALUE> = {};
+    const fieldValues: FieldData = {};
 
     const submitButton = getTarget<HTMLButtonElement>(ev);
     if (submitButton.name) {
@@ -90,7 +92,7 @@ export class FormWrapper extends LitElement {
     }
   };
 
-  private inputChanged = (ev: InputChanged) => {
+  private inputChanged = (ev: InputChanged<VALUE>) => {
     this.submitButtons.forEach((btn) => {
       btn.disabled = !ev.isDirty;
     });
