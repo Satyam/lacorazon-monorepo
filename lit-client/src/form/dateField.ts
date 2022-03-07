@@ -30,12 +30,6 @@ export class DateField extends FieldBase<Date> {
   }
 
   override inputControl() {
-    console.log(
-      this.value,
-      this.value instanceof Date,
-      this.value.toISOString(),
-      datePart(this.value)
-    );
     return html`
       <input
         type="date"
