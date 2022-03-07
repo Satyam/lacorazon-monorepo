@@ -3,26 +3,31 @@ import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 
-@customElement('text-field')
-export class TextField extends FieldBase<string> {
-  @property({ type: String })
-  override value = '';
+@customElement('currency-field')
+export class CurrencyField extends FieldBase<number> {
+  @property({ type: Number })
+  override value = 0;
 
-  @property({ type: Boolean })
-  password = false;
+  protected override get fieldValue(): number {
+    return Number(this.fieldEl().value);
+  }
+  protected override set fieldValue(v: number) {
+    this.fieldEl().value = String(v);
+  }
 
   // Not sure why I had to do this.
   override reset() {
     super.reset();
-    this.fieldEl().value = this.value;
+    this.fieldValue = this.value;
   }
 
   override inputControl() {
     return html`
+      <span class="input-group-text">€</span>
       <input
-        type=${this.password ? 'password' : 'text'}
+        type="number"
         name=${this.name}
-        value=${this.value}
+        value=${String(this.value)}
         class="form-control"
         placeholder=${this.placeholder}
         ?required=${this.required}
@@ -37,6 +42,6 @@ export class TextField extends FieldBase<string> {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'text-field': TextField;
+    'currency-field': CurrencyField;
   }
 }

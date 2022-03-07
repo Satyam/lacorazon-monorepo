@@ -2,13 +2,12 @@ import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef } from 'lit/directives/ref.js';
 import { BootBase } from '../bootstrapBase';
-import { getTarget } from '../utils';
 
-export class InputChanged extends Event {
+export class InputChanged<T> extends Event {
   name: string;
-  value: string;
+  value: T;
   isDirty: boolean;
-  constructor(name: string, value: string, isDirty: boolean) {
+  constructor(name: string, value: T, isDirty: boolean) {
     super('inputChanged', { composed: true, bubbles: true });
     this.name = name;
     this.value = value;
@@ -17,7 +16,7 @@ export class InputChanged extends Event {
 }
 
 @customElement('field-base')
-export class FieldBase extends LitElement {
+export abstract class FieldBase<T extends unknown> extends LitElement {
   static override readonly styles = [
     BootBase.styles,
     css`
@@ -39,8 +38,7 @@ export class FieldBase extends LitElement {
   @property({ type: String })
   name = '';
 
-  @property({ type: String })
-  value = '';
+  value?: T;
 
   @property({ type: String })
   placeholder = '';
@@ -66,14 +64,21 @@ export class FieldBase extends LitElement {
     return this.fieldRef.value!;
   }
 
-  public defaultValue?: string;
+  protected get fieldValue(): T {
+    return this.fieldEl().value as T;
+  }
+
+  protected set fieldValue(v: T) {
+    this.fieldEl().value = String(v);
+  }
+  public defaultValue?: T;
 
   public get isDirty() {
     return this.value !== this.defaultValue;
   }
 
   protected override firstUpdated() {
-    this.defaultValue = this.fieldEl().defaultValue;
+    this.defaultValue = this.fieldValue;
   }
 
   protected extraValidationCheck(_field: HTMLInputElement) {
@@ -98,7 +103,7 @@ export class FieldBase extends LitElement {
   protected inputHandler(ev: Event) {
     ev.preventDefault();
     this.fieldEl().classList.remove('is-valid', 'is-invalid');
-    this.value = getTarget<HTMLInputElement>(ev).value;
+    this.value = this.fieldValue;
     return this.dispatchEvent(
       new InputChanged(this.name, this.value, this.value !== this.defaultValue)
     );
@@ -123,11 +128,5 @@ export class FieldBase extends LitElement {
         </div>
       </label>
     `;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'field-base': FieldBase;
   }
 }
