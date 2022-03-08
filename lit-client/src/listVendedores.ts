@@ -4,7 +4,12 @@ import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { BootBase } from './bootstrapBase';
-import { ApiService, apiFetch } from './apiService';
+import {
+  ApiService,
+  apiFetch,
+  listVendedoresOp,
+  removeVendedorOp,
+} from './api';
 import { getClosest, getTarget, router } from './utils';
 import { ConfirmaEvent } from './popups';
 
@@ -39,10 +44,10 @@ const renderRow = (row: Vendedor) => html`
 export class ListVendedores extends LitElement {
   static override readonly styles = [BootBase.styles];
 
-  private apiListVendedores = new ApiService<{}, Vendedor[]>(this, {
-    service: 'vendedores',
-    op: 'list',
-  });
+  private apiListVendedores = new ApiService<undefined, Vendedor[]>(
+    this,
+    listVendedoresOp()
+  );
 
   @state()
   private _ask = false;
@@ -78,11 +83,7 @@ export class ListVendedores extends LitElement {
   private doDelete(ev: ConfirmaEvent) {
     this._ask = false;
     if (ev.confirma) {
-      apiFetch({
-        service: 'vendedores',
-        op: 'remove',
-        id: this._id,
-      })
+      apiFetch<undefined>(removeVendedorOp(this._id!))
         .then(() => router.replace(`/vendedores`, true))
         .catch((error) => {
           this._error = error.toString();

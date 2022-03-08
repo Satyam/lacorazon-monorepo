@@ -1,7 +1,7 @@
 import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
-import { ApiService } from './apiService';
+import { ApiService, getVendedorOp } from './api';
 import './form';
 import './popups';
 import './accordion';
@@ -20,15 +20,14 @@ export class ShowVendedor extends LitElement {
   @property()
   idVendedor?: ID;
 
-  private _apiShowVendedor?: ApiService<{}, Vendedor>;
+  private _apiShowVendedor?: ApiService<undefined, Vendedor>;
 
   override willUpdate(props: PropertyValues) {
     if (props.has('idVendedor')) {
-      this._apiShowVendedor = new ApiService<{}, Vendedor>(this, {
-        service: 'vendedores',
-        op: 'get',
-        id: this.idVendedor,
-      });
+      this._apiShowVendedor = new ApiService<undefined, Vendedor>(
+        this,
+        getVendedorOp(this.idVendedor!)
+      );
     }
   }
 

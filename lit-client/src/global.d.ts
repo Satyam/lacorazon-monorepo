@@ -1,6 +1,9 @@
 declare module '*.html';
 type ID = string | number;
 type VALUE = string | number | boolean | Date;
+type AnyRow = Record<string, VALUE>;
+
+// types related to data sets
 type Fila = Consignacion | Distribuidor | Salida | User | Venta;
 
 type Consignacion = {
@@ -56,20 +59,29 @@ type Venta = {
   precioUnitario?: number;
   iva?: boolean;
 };
-/*
-type HandlerReturn<RParams, SearchOpts extends any = {}> = {
-  render: (r: RParams, s?: SearchOpts) => void;
-  close: () => void;
-};
-type Handler<RParams, SearchOpts extends any = {}> = (
-  el?: HTMLElement
-) => HandlerReturn<RParams, SearchOpts>;
 
-type Route<RParams, SearchOpts extends any = {}> = {
-  path: string;
-  module: HandlerReturn<RParams, SearchOpts>;
-  heading?: string;
-  $_rx?: RegExp;
-};
-*/
 type VentaYVendedor = Venta & { vendedor?: string };
+
+// types related to src/api/*.ts
+
+type OptionsType = Record<string, number | string | boolean>;
+
+type OPERATION<IN> = {
+  service: string;
+  op: string;
+  id?: ID;
+  data?: IN;
+  options?: OptionsType;
+};
+
+type RequestTransformer<IN> = {
+  [key in keyof IN]: (outVal: IN[key], key: keyof IN, row: IN) => VALUE;
+};
+
+type ReplyTransformer<OUT> = {
+  [key in keyof OUT]: (
+    inVal: VALUE,
+    key: keyof OUT,
+    row: Record<string, VALUE>
+  ) => OUT[key];
+};

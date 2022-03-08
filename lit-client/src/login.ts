@@ -1,14 +1,12 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
-import { apiFetch } from './apiService';
+import { apiFetch, isLoggedInOp, currentUserOp, CurrentUser } from './api';
 import './form';
 import { FormSubmit } from './form/formWrapper';
 import { router } from './utils';
 
 export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
-
-type CurrentUser = Omit<User, 'password'> | null;
 
 export class LoginEvent extends Event {
   currentUser: CurrentUser;
@@ -24,15 +22,12 @@ declare global {
   }
 }
 
-let currentUser: CurrentUser | null = null;
+let currentUser: CurrentUser = null;
 
 export const isLoggedIn = () => !!currentUser;
 
 export function checkLoggedIn() {
-  return apiFetch<{}, CurrentUser>({
-    service: 'auth',
-    op: 'isLoggedIn',
-  }).then((user) => {
+  return apiFetch<undefined>(isLoggedInOp()).then((user) => {
     if (user) {
       currentUser = user;
       window.dispatchEvent(new LoginEvent(currentUser));
@@ -69,11 +64,7 @@ export class LoginForm extends LitElement {
   submit(ev: FormSubmit) {
     const data = ev.values;
     if (data) {
-      apiFetch<Partial<User>, CurrentUser>({
-        service: 'auth',
-        op: 'login',
-        data,
-      }).then((user) => {
+      apiFetch<Partial<User>, CurrentUser>(currentUserOp(data)).then((user) => {
         window.dispatchEvent(new LoginEvent(user));
         setTimeout(checkLoggedIn, 1_800_000);
         router.replace('/');
