@@ -3,6 +3,14 @@ type ID = string | number;
 type VALUE = string | number | boolean | Date;
 type AnyRow = Record<string, VALUE>;
 
+type ArrayElementType<T> = T extends (infer U)[]
+  ? U
+  : T extends (...args: unknown[]) => infer U
+  ? U
+  : T extends Promise<infer U>
+  ? U
+  : T;
+
 // types related to data sets
 type Fila = Consignacion | Distribuidor | Salida | User | Venta;
 
@@ -75,13 +83,17 @@ type OPERATION<IN> = {
 };
 
 type RequestTransformer<IN> = {
-  [key in keyof IN]: (outVal: IN[key], key: keyof IN, row: IN) => VALUE;
+  [key in keyof Partial<IN>]: (
+    outVal: IN[key],
+    key: keyof IN,
+    row: IN
+  ) => VALUE;
 };
 
 type ReplyTransformer<OUT> = {
-  [key in keyof OUT]: (
+  [key in keyof Partial<ArrayElementType<OUT>>]: (
     inVal: VALUE,
-    key: keyof OUT,
+    key: keyof ArrayElementType<OUT>,
     row: Record<string, VALUE>
-  ) => OUT[key];
+  ) => ArrayElementType<OUT>[key];
 };

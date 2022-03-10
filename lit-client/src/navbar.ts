@@ -3,7 +3,7 @@ import { customElement, state, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import './icons';
 import { getTarget, router, getClosest } from './utils';
-import { apiFetch, logoutOp } from './api';
+import { apiLogout } from './api';
 import { classMap } from 'lit/directives/class-map.js';
 import { logout, LoginEvent, LOGIN_EVENT } from './login';
 
@@ -125,7 +125,7 @@ export class NavBar extends LitElement {
 
     switch (pathName) {
       case '/logout':
-        apiFetch(logoutOp()).then(logout, logout);
+        apiLogout().then(logout, logout);
         break;
       default:
         this._collapsed = false;

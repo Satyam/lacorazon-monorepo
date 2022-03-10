@@ -1,12 +1,13 @@
-export const listVendedoresOp = (
-  options?: OptionsType
-): OPERATION<undefined> => ({
+import { apiFetch, ApiService } from './apiService';
+import { ReactiveControllerHost } from 'lit';
+
+const listVendedoresOp = (options?: OptionsType): OPERATION<undefined> => ({
   service: 'vendedores',
   op: 'list',
   options,
 });
 
-export const getVendedorOp = (
+const getVendedorOp = (
   id: ID,
   options?: OptionsType
 ): OPERATION<undefined> => ({
@@ -16,7 +17,7 @@ export const getVendedorOp = (
   options,
 });
 
-export const removeVendedorOp = (
+const removeVendedorOp = (
   id: ID,
   options?: OptionsType
 ): OPERATION<undefined> => ({
@@ -25,3 +26,16 @@ export const removeVendedorOp = (
   id,
   options,
 });
+
+export class ApiTaskListVendedores extends ApiService<undefined, Vendedor> {
+  constructor(host: ReactiveControllerHost, options?: OptionsType) {
+    super(host, listVendedoresOp(options));
+  }
+}
+
+export class ApiTaskGetVendedor extends ApiService<undefined, Vendedor> {
+  constructor(host: ReactiveControllerHost, id: ID, options?: OptionsType) {
+    super(host, getVendedorOp(id, options));
+  }
+}
+export const apiRemoveVendedor = (id: ID) => apiFetch(removeVendedorOp(id));

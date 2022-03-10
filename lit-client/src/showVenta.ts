@@ -1,7 +1,7 @@
 import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
-import { ApiService, getVentaOp } from './api';
+import { ApiService, ApiTaskGetVenta } from './api';
 import './form';
 import './popups';
 import './accordion';
@@ -24,10 +24,7 @@ export class ShowVenta extends LitElement {
 
   override willUpdate(props: PropertyValues) {
     if (props.has('idVenta')) {
-      this._apiShowVenta = new ApiService<undefined, VentaYVendedor>(
-        this,
-        getVentaOp(this.idVenta!)
-      );
+      this._apiShowVenta = new ApiTaskGetVenta(this, this.idVenta!);
     }
   }
 
@@ -42,7 +39,7 @@ export class ShowVenta extends LitElement {
             <date-field
               label="Fecha"
               name="fecha"
-              .value=${new Date(data.fecha)}
+              .value=${data.fecha}
               readonly
             ></date-field>
             <text-field

@@ -1,7 +1,12 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
-import { apiFetch, isLoggedInOp, currentUserOp, CurrentUser } from './api';
+import {
+  apiGetCurrentUser,
+  apiLogout,
+  apiIsLoggedIn,
+  CurrentUser,
+} from './api';
 import './form';
 import { FormSubmit } from './form/formWrapper';
 import { router } from './utils';
@@ -27,8 +32,9 @@ let currentUser: CurrentUser = null;
 export const isLoggedIn = () => !!currentUser;
 
 export function checkLoggedIn() {
-  return apiFetch<undefined>(isLoggedInOp()).then((user) => {
+  return apiIsLoggedIn().then((user) => {
     if (user) {
+      // @ts-ignore
       currentUser = user;
       window.dispatchEvent(new LoginEvent(currentUser));
       setTimeout(checkLoggedIn, 1_800_000);
@@ -44,7 +50,7 @@ export function checkLoggedIn() {
 
 export function logout() {
   // To ensure everything is erased, do actually navigate and get everything refreshed
-  location.replace('/');
+  apiLogout().then(() => location.replace('/'));
 }
 
 @customElement('login-form')
@@ -64,7 +70,8 @@ export class LoginForm extends LitElement {
   submit(ev: FormSubmit) {
     const data = ev.values;
     if (data) {
-      apiFetch<Partial<User>, CurrentUser>(currentUserOp(data)).then((user) => {
+      apiGetCurrentUser(data).then((user) => {
+        // @ts-ignore
         window.dispatchEvent(new LoginEvent(user));
         setTimeout(checkLoggedIn, 1_800_000);
         router.replace('/');

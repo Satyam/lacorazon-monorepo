@@ -1,13 +1,16 @@
-export const isLoggedInOp = (options?: OptionsType): OPERATION<undefined> => ({
+import { apiFetch } from './apiService';
+
+export type SafeUserData = Omit<User, 'password'>;
+export type CurrentUser = SafeUserData | null;
+export type LoginInfo = Pick<User, 'email' | 'password'>;
+
+const isLoggedInOp = (options?: OptionsType): OPERATION<undefined> => ({
   service: 'auth',
   op: 'isLoggedIn',
   options,
 });
 
-export type CurrentUser = Omit<User, 'password'> | null;
-export type LoginInfo = Pick<User, 'email' | 'password'>;
-
-export const currentUserOp = (
+const currentUserOp = (
   data: LoginInfo,
   options?: OptionsType
 ): OPERATION<LoginInfo> => ({
@@ -17,8 +20,17 @@ export const currentUserOp = (
   options,
 });
 
-export const logoutOp = (options?: OptionsType): OPERATION<undefined> => ({
+const logoutOp = (options?: OptionsType): OPERATION<undefined> => ({
   service: 'auth',
   op: 'logout',
   options,
 });
+
+export const apiGetCurrentUser = (data: LoginInfo, options?: OptionsType) =>
+  apiFetch<LoginInfo, SafeUserData>(currentUserOp(data, options));
+
+export const apiLogout = (options?: OptionsType) =>
+  apiFetch<undefined>(logoutOp(options));
+
+export const apiIsLoggedIn = (options?: OptionsType) =>
+  apiFetch<undefined, SafeUserData>(isLoggedInOp(options));

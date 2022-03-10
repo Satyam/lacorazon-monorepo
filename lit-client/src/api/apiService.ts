@@ -24,10 +24,18 @@ const requestTransform = <IN>(
   return op;
 };
 
-const replyTransform = <OUT extends AnyRow>(
-  data: OUT | OUT[],
+// function replyTransform<OUT extends AnyRow>(
+//   data: AnyRow,
+//   rpt: ReplyTransformer<OUT>
+// ): OUT;
+// function replyTransform<OUT extends AnyRow[]>(
+//   data: AnyRow[],
+//   rpt: ReplyTransformer<ArrayElementType<OUT>>
+// ): OUT;
+function replyTransform<OUT extends AnyRow>(
+  data: AnyRow | AnyRow[],
   rpt: ReplyTransformer<OUT>
-) => {
+): OUT | OUT[] {
   const t = (row: AnyRow) => {
     const rep: AnyRow = Object.assign({}, row);
     for (const key in rpt) {
@@ -35,21 +43,46 @@ const replyTransform = <OUT extends AnyRow>(
     }
     return rep as OUT;
   };
-  if (data && rpt) {
-    return Array.isArray(data) ? data.map((row) => t(row)) : t(data);
-  }
-  return {};
-};
+  if (Array.isArray(data)) return data.map((row) => t(row)) as unknown as OUT[];
+  return t(data) as OUT;
+}
 
-export const apiFetch = <
-  IN extends AnyRow | undefined = AnyRow,
-  OUT extends AnyRow | AnyRow[] | null | undefined = IN
+// export function apiFetch<
+//   IN extends AnyRow | undefined = undefined,
+//   OUT extends null | undefined = undefined
+// >(
+//   operation: OPERATION<IN>,
+//   transformRequest?: RequestTransformer<IN>,
+//   transformReply?: ReplyTransformer<OUT>
+// ): Promise<OUT>;
+
+// export function apiFetch<
+//   IN extends AnyRow | undefined = undefined,
+//   OUT extends AnyRow = AnyRow
+// >(
+//   operation: OPERATION<IN>,
+//   transformRequest?: RequestTransformer<IN>,
+//   transformReply?: ReplyTransformer<OUT>
+// ): Promise<OUT>;
+
+// export function apiFetch<
+//   IN extends AnyRow | undefined = undefined,
+//   OUT extends AnyRow[] = AnyRow[]
+// >(
+//   operation: OPERATION<IN>,
+//   transformRequest?: RequestTransformer<IN>,
+//   transformReply?: ReplyTransformer<ArrayElementType<OUT>>
+// ): Promise<OUT>;
+
+export function apiFetch<
+  IN extends AnyRow | undefined,
+  OUT extends AnyRow = AnyRow
 >(
   operation: OPERATION<IN>,
   transformRequest?: RequestTransformer<IN>,
   transformReply?: ReplyTransformer<OUT>
-): Promise<OUT> =>
-  fetch(`${window.origin}/api/${operation.service}`, {
+): Promise<OUT | OUT[] | null> {
+  return fetch(`${window.origin}/api/${operation.service}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json; charset=utf-8',
@@ -65,16 +98,21 @@ export const apiFetch = <
       return Promise.reject(resp.statusText);
     })
     .then((resp) => {
-      if (resp.error) return Promise.reject(resp.data);
-      return transformReply
-        ? replyTransform(resp.data, transformReply)
-        : resp.data;
-    });
+      const { data, error } = resp;
+      if (error) return Promise.reject(resp.data);
+      if (transformReply) {
+        if (!data) return data as null;
 
-export class ApiService<
-  IN extends AnyRow | undefined = AnyRow,
-  OUT extends AnyRow | AnyRow[] | undefined = IN
-> {
+        if (Array.isArray(data)) {
+          return replyTransform<OUT>(data as AnyRow[], transformReply) as OUT[];
+        }
+        return replyTransform<OUT>(data as AnyRow, transformReply);
+      }
+      return data;
+    });
+}
+
+export class ApiService<IN extends AnyRow | undefined, OUT extends AnyRow> {
   host: ReactiveControllerHost;
   value?: OUT;
   private task!: Task;
