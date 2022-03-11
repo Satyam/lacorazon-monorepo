@@ -41,7 +41,7 @@ export function checkLoggedIn() {
       if (currentUser) {
         currentUser = null;
         window.dispatchEvent(new LoginEvent(currentUser));
-        setImmediate(logout);
+        setTimeout(logout, 0);
       }
     }
   });
