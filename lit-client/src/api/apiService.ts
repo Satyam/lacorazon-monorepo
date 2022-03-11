@@ -24,12 +24,12 @@ const requestTransform = <IN>(
   return op;
 };
 
-function replyTransform(
+function replyTransform<OUT>(
   data: AnyRow | AnyRow[],
-  rpt: ReplyTransformer
+  rpt: ReplyTransformer<OUT>
 ): unknown {
   const t = (row: AnyRow) => {
-    const rep: AnyRow = Object.assign({}, row);
+    const rep = Object.assign({}, row) as ArrayElementType<OUT>;
     for (const key in rpt) {
       rep[key] = rpt[key](row[key], key, row);
     }
@@ -42,7 +42,7 @@ function replyTransform(
 export function apiFetch<IN extends AnyRow | undefined, OUT>(
   operation: OPERATION<IN>,
   transformRequest?: RequestTransformer<IN>,
-  transformReply?: ReplyTransformer
+  transformReply?: ReplyTransformer<OUT>
 ): Promise<OUT> {
   return fetch(`${window.origin}/api/${operation.service}`, {
     method: 'POST',
@@ -84,7 +84,7 @@ export class ApiService<IN extends AnyRow | undefined, OUT> {
     host: ReactiveControllerHost,
     operation: OPERATION<IN>,
     transformRequest?: RequestTransformer<IN>,
-    transformReply?: ReplyTransformer
+    transformReply?: ReplyTransformer<OUT>
   ) {
     this.host = host;
     this._operation = operation;

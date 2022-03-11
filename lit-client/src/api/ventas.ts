@@ -28,7 +28,7 @@ const listVentasOp = (options?: OptionsType): OPERATION<undefined> => ({
 //   fecha: (date) => date.toISOString(),
 // };
 
-const ventasReplyConversion: ReplyTransformer = {
+const ventasReplyConversion: ReplyTransformer<VentaYVendedor> = {
   fecha: (isoDate) => new Date(isoDate as string),
 };
 

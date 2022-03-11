@@ -90,10 +90,10 @@ type RequestTransformer<IN> = {
   ) => VALUE;
 };
 
-type ReplyTransformer = {
-  [key: string]: (
+type ReplyTransformer<OUT> = {
+  [key in keyof Partial<ArrayElementType<OUT>>]: (
     inVal: VALUE,
-    key: string,
+    key: keyof ArrayElementType<OUT>,
     row: Record<string, VALUE>
-  ) => VALUE;
+  ) => ArrayElementType<OUT>[key];
 };
