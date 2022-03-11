@@ -4,6 +4,7 @@ import './listVendedores';
 import './listVentas';
 import './showVendedor';
 import './showVenta';
+import './editVenta';
 import './navbar';
 import './home';
 import './popups';
@@ -53,16 +54,14 @@ const routes: Array<Route> = [
     path: '/ventas',
     litElement: () => html`<list-ventas></list-ventas>`,
   },
-  // {
-  //   path: '/venta/edit/:id',
-  //   module: edVenta,
-  //   heading: 'Modificar venta',
-  // },
-  // {
-  //   path: '/venta/new',
-  //   module: edVenta,
-  //   heading: 'Agregar venta',
-  // },
+  {
+    path: '/venta/edit/:id',
+    litElement: ({ id }) => html`<edit-venta idVenta=${id as ID}></edit-venta>`,
+  },
+  {
+    path: '/venta/new',
+    litElement: () => html`<edit-venta></edit-venta>`,
+  },
   {
     path: '/venta/:id',
     litElement: ({ id }) => html`<show-venta idVenta=${id as ID}></show-venta>`,
