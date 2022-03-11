@@ -7,6 +7,7 @@ import { getTarget } from '../utils';
 export type FieldData = Record<string, VALUE | undefined>;
 export type DirtyFields = Record<string, boolean>;
 
+export const FORM_SUBMIT_EVENT: 'formSubmit' = 'formSubmit' as const;
 export class FormSubmit extends Event {
   values: FieldData;
   constructor(values: FieldData) {
@@ -14,7 +15,32 @@ export class FormSubmit extends Event {
     this.values = values;
   }
 }
+export const FORM_CHANGED_EVENT: 'formChanged' = 'formChanged' as const;
+export class FormChanged extends Event {
+  form: FormWrapper;
+  fieldName: string;
+  value: VALUE;
+  isDirty: boolean;
+  constructor(
+    form: FormWrapper,
+    fieldName: string,
+    value: VALUE,
+    isDirty: boolean
+  ) {
+    super(FORM_CHANGED_EVENT, { composed: true, bubbles: true });
+    this.form = form;
+    this.fieldName = fieldName;
+    this.value = value;
+    this.isDirty = isDirty;
+  }
+}
 
+declare global {
+  interface HTMLElementEventMap {
+    [FORM_SUBMIT_EVENT]: FormSubmit;
+    [FORM_CHANGED_EVENT]: FormChanged;
+  }
+}
 @customElement('form-wrapper')
 export class FormWrapper extends LitElement {
   @property({ type: Boolean })
@@ -93,11 +119,14 @@ export class FormWrapper extends LitElement {
   };
 
   private inputChanged = (ev: InputChanged<VALUE>) => {
+    ev.stopPropagation();
+    const { isDirty, name, value } = ev;
     this.submitButtons.forEach((btn) => {
-      btn.disabled = !ev.isDirty;
+      btn.disabled = !isDirty;
     });
-    this._dirtyFields[ev.name] = ev.isDirty;
-    this._values[ev.name] = ev.value;
+    this._dirtyFields[name] = isDirty;
+    this._values[name] = value;
+    this.dispatchEvent(new FormChanged(this, name, value, this.isDirty));
   };
 
   protected override firstUpdated(): void {
