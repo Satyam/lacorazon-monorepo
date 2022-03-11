@@ -34,7 +34,6 @@ export const isLoggedIn = () => !!currentUser;
 export function checkLoggedIn() {
   return apiIsLoggedIn().then((user) => {
     if (user) {
-      // @ts-ignore
       currentUser = user;
       window.dispatchEvent(new LoginEvent(currentUser));
       setTimeout(checkLoggedIn, 1_800_000);
@@ -71,7 +70,6 @@ export class LoginForm extends LitElement {
     const data = ev.values;
     if (data) {
       apiGetCurrentUser(data).then((user) => {
-        // @ts-ignore
         window.dispatchEvent(new LoginEvent(user));
         setTimeout(checkLoggedIn, 1_800_000);
         router.replace('/');

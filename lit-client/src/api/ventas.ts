@@ -28,11 +28,11 @@ const listVentasOp = (options?: OptionsType): OPERATION<undefined> => ({
 //   fecha: (date) => date.toISOString(),
 // };
 
-const ventasReplyConversion: ReplyTransformer<VentaYVendedor> = {
+const ventasReplyConversion: ReplyTransformer = {
   fecha: (isoDate) => new Date(isoDate as string),
 };
 
-export class ApiTaskListVentas extends ApiService<undefined, VentaYVendedor> {
+export class ApiTaskListVentas extends ApiService<undefined, VentaYVendedor[]> {
   constructor(host: ReactiveControllerHost, options?: OptionsType) {
     super(host, listVentasOp(options), undefined, ventasReplyConversion);
   }
@@ -43,4 +43,5 @@ export class ApiTaskGetVenta extends ApiService<undefined, VentaYVendedor> {
     super(host, getVentaOp(id, options), undefined, ventasReplyConversion);
   }
 }
-export const apiRemoveVenta = (id: ID) => apiFetch(removeVentaOp(id));
+export const apiRemoveVenta = (id: ID) =>
+  apiFetch<undefined, null>(removeVentaOp(id));

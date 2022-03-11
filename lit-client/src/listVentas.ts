@@ -162,7 +162,6 @@ export class ListVentas extends LitElement {
           ${this.apiListVentas.render({
             initial: () => html`<p>Inicial</p>`,
             pending: () => html`<loading-card></loading-card>`,
-            // @ts-ignore
             complete: (data) => repeat(data, (data) => data.id, this.renderRow),
             error: (error) =>
               html`<error-card

@@ -27,7 +27,7 @@ const removeVendedorOp = (
   options,
 });
 
-export class ApiTaskListVendedores extends ApiService<undefined, Vendedor> {
+export class ApiTaskListVendedores extends ApiService<undefined, Vendedor[]> {
   constructor(host: ReactiveControllerHost, options?: OptionsType) {
     super(host, listVendedoresOp(options));
   }
@@ -38,4 +38,5 @@ export class ApiTaskGetVendedor extends ApiService<undefined, Vendedor> {
     super(host, getVendedorOp(id, options));
   }
 }
-export const apiRemoveVendedor = (id: ID) => apiFetch(removeVendedorOp(id));
+export const apiRemoveVendedor = (id: ID) =>
+  apiFetch<undefined, null>(removeVendedorOp(id));

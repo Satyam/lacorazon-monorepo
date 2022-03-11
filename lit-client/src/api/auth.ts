@@ -29,8 +29,7 @@ const logoutOp = (options?: OptionsType): OPERATION<undefined> => ({
 export const apiGetCurrentUser = (data: LoginInfo, options?: OptionsType) =>
   apiFetch<LoginInfo, SafeUserData>(currentUserOp(data, options));
 
-export const apiLogout = (options?: OptionsType) =>
-  apiFetch<undefined>(logoutOp(options));
+export const apiLogout = (options?: OptionsType) => apiFetch(logoutOp(options));
 
 export const apiIsLoggedIn = (options?: OptionsType) =>
   apiFetch<undefined, SafeUserData>(isLoggedInOp(options));
