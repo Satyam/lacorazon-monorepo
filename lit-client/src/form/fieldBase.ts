@@ -3,18 +3,25 @@ import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef } from 'lit/directives/ref.js';
 import { BootBase } from '../bootstrapBase';
 
+export const INPUT_CHANGED_EVENT: 'inputChanged' = 'inputChanged' as const;
+
 export class InputChanged<T> extends Event {
   name: string;
   value: T;
   isDirty: boolean;
   constructor(name: string, value: T, isDirty: boolean) {
-    super('inputChanged', { composed: true, bubbles: true });
+    super(INPUT_CHANGED_EVENT, { composed: true, bubbles: true });
     this.name = name;
     this.value = value;
     this.isDirty = isDirty;
   }
 }
 
+declare global {
+  interface HTMLElementEventMap {
+    [INPUT_CHANGED_EVENT]: InputChanged<VALUE>;
+  }
+}
 @customElement('field-base')
 export abstract class FieldBase<T extends unknown> extends LitElement {
   static override readonly styles = [
