@@ -4,7 +4,6 @@ import { BootBase } from './bootstrapBase';
 import { ApiService, ApiTaskGetVenta } from './api';
 import './form';
 import './popups';
-import './accordion';
 
 @customElement('show-venta')
 export class ShowVenta extends LitElement {
@@ -20,18 +19,18 @@ export class ShowVenta extends LitElement {
   @property()
   idVenta?: ID;
 
-  private _apiShowVenta?: ApiService<undefined, VentaYVendedor>;
+  private _apiGetVenta?: ApiService<undefined, VentaYVendedor>;
 
   override willUpdate(props: PropertyValues) {
     if (props.has('idVenta')) {
-      this._apiShowVenta = new ApiTaskGetVenta(this, this.idVenta!);
+      this._apiGetVenta = new ApiTaskGetVenta(this, this.idVenta!);
     }
   }
 
   override render() {
     return html`
       <h1>Ventas</h1>
-      ${this._apiShowVenta?.render({
+      ${this._apiGetVenta?.render({
         initial: () => html`<p>Inicial</p>`,
         pending: () => html`<loading-card></loading-card>`,
         complete: (data) => html`
