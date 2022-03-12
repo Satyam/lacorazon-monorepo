@@ -61,34 +61,26 @@ export class FormWrapper extends LitElement {
   }
 
   public get isDirty() {
-    const elements = this.elements(true);
-    if (elements) {
-      return elements.some((f) => f.isDirty);
-    }
-    return false;
+    return this.fields()?.some((f) => f.isDirty);
   }
 
   private submitButtons: HTMLButtonElement[] = [];
 
-  private elements(onlyFieldBase: true): FieldBase<VALUE>[];
-  private elements(onlyFieldBase: false): HTMLElement[];
-  private elements(onlyFieldBase: boolean): HTMLElement[] | FieldBase<VALUE>[] {
+  private elements(): HTMLElement[] | FieldBase<VALUE>[] {
     const slot = this.shadowRoot?.querySelector('slot');
-    const elements = slot?.assignedElements({ flatten: true });
-    if (onlyFieldBase) {
-      return elements?.filter(
-        (el) => el instanceof FieldBase
-      ) as FieldBase<VALUE>[];
-    } else {
-      return elements as HTMLElement[];
-    }
+    return slot?.assignedElements({ flatten: true }) as
+      | HTMLElement[]
+      | FieldBase<VALUE>[];
+  }
+
+  private fields(): FieldBase<VALUE>[] {
+    return this.elements().filter(
+      (el) => el instanceof FieldBase && el.name.length
+    ) as FieldBase<VALUE>[];
   }
 
   public reset(): void {
-    const elements = this.elements(true);
-    if (elements) {
-      elements.forEach((el) => el.reset());
-    }
+    this.fields()?.forEach((el) => el.reset());
   }
 
   private resetHandler = () => {
@@ -102,10 +94,9 @@ export class FormWrapper extends LitElement {
     if (submitButton.name) {
       fieldValues[submitButton.name] = true;
     }
-    const fields = this.elements(true);
     this.wasValidated = true;
     if (
-      fields?.every((f) => {
+      this.fields()?.every((f) => {
         if (f.checkValidity()) {
           fieldValues[f.name] = f.value;
           return true;
@@ -130,28 +121,23 @@ export class FormWrapper extends LitElement {
   };
 
   protected override firstUpdated(): void {
-    const els = this.elements(false);
-    if (els) {
-      els.forEach((el) => {
-        if (el instanceof FieldBase) {
-          this._values[el.name] = el.value;
-          this._dirtyFields[el.name] = false;
-        } else {
-          const tag = el.nodeName;
-          if (tag === 'BUTTON' || tag === 'INPUT') {
-            switch ((el as HTMLButtonElement).type) {
-              case 'submit':
-                this.submitButtons.push(el as HTMLButtonElement);
-                el.addEventListener('click', this.submitHandler);
-                break;
-              case 'reset':
-                el.addEventListener('click', this.resetHandler);
-                break;
-            }
-          }
+    this.fields()?.forEach((el) => {
+      this._values[el.name] = el.value;
+      this._dirtyFields[el.name] = false;
+    });
+    this.elements()
+      .filter((el) => ['BUTTON', 'INPUT'].includes(el.nodeName))
+      ?.forEach((btn) => {
+        switch ((btn as HTMLButtonElement).type) {
+          case 'submit':
+            this.submitButtons.push(btn as HTMLButtonElement);
+            btn.addEventListener('click', this.submitHandler);
+            break;
+          case 'reset':
+            btn.addEventListener('click', this.resetHandler);
+            break;
         }
       });
-    }
   }
 
   override render() {
