@@ -108,6 +108,7 @@ export abstract class FieldBase<T extends unknown> extends LitElement {
   }
 
   protected inputHandler(ev: Event) {
+    if (this.name.length === 0) return;
     ev.preventDefault();
     this.fieldEl().classList.remove('is-valid', 'is-invalid');
     this.value = this.fieldValue;
