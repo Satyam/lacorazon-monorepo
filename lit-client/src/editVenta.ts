@@ -36,8 +36,7 @@ export class EditVenta extends LitElement {
   }
 
   submit(ev: FormSubmit) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { vendedor, precioTotal, ...data } = ev.values;
+    const data = ev.values;
     if (this.idVenta) {
       apiUpdateVenta({ id: this.idVenta, ...data } as Venta).then(() =>
         this.requestUpdate()
@@ -77,11 +76,17 @@ export class EditVenta extends LitElement {
           name="concepto"
           value=${data.concepto || ''}
         ></text-field>
-        <text-field
+        <select-field
           label="Vendedor"
-          name="vendedor"
-          value=${data.vendedor || '-'}
-        ></text-field>
+          name="idVendedor"
+          value=${data.idVendedor || ''}
+          .options=${[
+            ['ro', 'Roxana'],
+            ['ra', 'Raed'],
+            ['rora', 'Roxana y Raed'],
+          ]}
+        >
+        </select-field>
         <number-field
           label="Cantidad"
           name="cantidad"
@@ -99,7 +104,6 @@ export class EditVenta extends LitElement {
         ></boolean-field>
         <currency-field
           label="Precio Total"
-          name="precioTotal"
           value=${(data.cantidad || 0) * (data.precioUnitario || 0)}
           readonly
           ${ref(this.fieldRef)}
