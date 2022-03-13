@@ -1,4 +1,4 @@
-import { apiFetch } from './apiService';
+import apiFetch from './apiFetch';
 
 export type SafeUserData = Omit<User, 'password'>;
 export type CurrentUser = SafeUserData | null;

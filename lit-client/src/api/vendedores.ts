@@ -1,4 +1,4 @@
-import { apiFetch } from './apiService';
+import apiFetch from './apiFetch';
 
 const listVendedoresOp = (options?: OptionsType): OPERATION<undefined> => ({
   service: 'vendedores',

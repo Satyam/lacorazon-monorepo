@@ -70,3 +70,5 @@ export function apiFetch<IN extends AnyRow | undefined, OUT>(
       return data;
     });
 }
+
+export default apiFetch;

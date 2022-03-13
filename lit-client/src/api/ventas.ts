@@ -1,4 +1,4 @@
-import { apiFetch } from './apiService';
+import apiFetch from './apiFetch';
 
 const removeVentaOp = (
   id: ID,
