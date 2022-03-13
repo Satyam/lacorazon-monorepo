@@ -1,36 +1,26 @@
 import apiFetch from './apiFetch';
 
-const listVendedoresOp = (options?: OptionsType): OPERATION<undefined> => ({
-  service: 'vendedores',
-  op: 'list',
-  options,
-});
-
-const getVendedorOp = (
-  id: ID,
-  options?: OptionsType
-): OPERATION<undefined> => ({
-  service: 'vendedores',
-  op: 'get',
-  id,
-  options,
-});
-
-const removeVendedorOp = (
-  id: ID,
-  options?: OptionsType
-): OPERATION<undefined> => ({
-  service: 'vendedores',
-  op: 'remove',
-  id,
-  options,
-});
+const service = 'vendedores';
 
 export const apiListVendedores = (options?: OptionsType) =>
-  apiFetch<undefined, Vendedor[]>(listVendedoresOp(options));
+  apiFetch<undefined, Vendedor[]>({
+    service,
+    op: 'list',
+    options,
+  });
 
 export const apiGetVendedor = (id: ID, options?: OptionsType) =>
-  apiFetch<undefined, Vendedor>(getVendedorOp(id, options));
+  apiFetch<undefined, Vendedor>({
+    service,
+    op: 'get',
+    id,
+    options,
+  });
 
-export const apiRemoveVendedor = (id: ID) =>
-  apiFetch<undefined, null>(removeVendedorOp(id));
+export const apiRemoveVendedor = (id: ID, options?: OptionsType) =>
+  apiFetch<undefined, null>({
+    service,
+    op: 'remove',
+    id,
+    options,
+  });
