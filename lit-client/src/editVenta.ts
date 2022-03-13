@@ -1,50 +1,34 @@
-import { LitElement, html, css } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { BootBase } from './bootstrapBase';
+import { PageBase } from './pageBase';
 import { router } from './utils';
-import {
-  ApiService,
-  ApiTaskGetVenta,
-  apiCreateVenta,
-  apiUpdateVenta,
-} from './api';
+import { apiGetVenta, apiCreateVenta, apiUpdateVenta } from './api';
 import { FormSubmit, FormChanged, NumberField } from './form';
 import './form';
 import './popups';
 
 @customElement('edit-venta')
-export class EditVenta extends LitElement {
-  static override readonly styles = [
-    BootBase.styles,
-    css`
-      label {
-        margin: 0.3rem 0;
-      }
-    `,
-  ];
-
+export class EditVenta extends PageBase<VentaYVendedor> {
   @property()
   idVenta?: ID;
 
-  private _apiGetVenta?: ApiService<undefined, VentaYVendedor>;
-
-  override willUpdate() {
-    if (this.idVenta && !this._apiGetVenta) {
-      this._apiGetVenta = new ApiTaskGetVenta(this, this.idVenta);
-    }
+  override dataLoader() {
+    return apiGetVenta(this.idVenta!);
   }
 
   submit(ev: FormSubmit) {
     const data = ev.values;
+    this._loading = true;
     if (this.idVenta) {
-      apiUpdateVenta({ id: this.idVenta, ...data } as Venta).then(() =>
-        this.requestUpdate()
+      apiUpdateVenta({ id: this.idVenta, ...data } as Venta).then(
+        this.apiThen,
+        this.apiCatch
       );
     } else {
       apiCreateVenta(data as Venta).then((resp) => {
         router.replace(`/venta/edit/${resp.id}`);
-      });
+      }, this.apiCatch);
     }
   }
 
@@ -112,28 +96,22 @@ export class EditVenta extends LitElement {
       </form-wrapper>
     `;
   }
-  override render() {
+  override pageBody(data: VentaYVendedor) {
     return html`
       <h1>Ventas</h1>
-      ${this.idVenta
-        ? this._apiGetVenta?.render({
-            initial: () => html`<p>Inicial</p>`,
-            pending: () => html`<loading-card></loading-card>`,
-            complete: (data) => this.renderForm(data),
-            error: (error) =>
-              html`<error-card
-                .msg=${(error as Error).toString()}
-              ></error-card>`,
-          })
-        : this.renderForm({
-            id: 0,
-            concepto: '',
-            fecha: new Date(),
-            idVendedor: 0,
-            cantidad: 1,
-            precioUnitario: 12,
-            iva: false,
-          })}
+      ${this.renderForm(
+        this.idVenta
+          ? data
+          : ({
+              id: 0,
+              concepto: '',
+              fecha: new Date(),
+              idVendedor: 0,
+              cantidad: 1,
+              precioUnitario: 12,
+              iva: false,
+            } as VentaYVendedor)
+      )}
     `;
   }
 }

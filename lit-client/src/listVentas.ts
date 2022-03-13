@@ -1,10 +1,13 @@
 import './icons';
 import './popups';
-import { LitElement, html, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { BootBase } from './bootstrapBase';
-import { apiRemoveVenta, ApiTaskListVentas } from './api';
+
+import { PageBase } from './pageBase';
+
+import { apiRemoveVenta, apiListVentas } from './api';
+
 import {
   getClosest,
   getTarget,
@@ -15,21 +18,18 @@ import {
 import { ConfirmaEvent } from './popups';
 
 @customElement('list-ventas')
-export class ListVentas extends LitElement {
-  static override readonly styles = [BootBase.styles];
-
-  private apiListVentas = new ApiTaskListVentas(this);
-
+export class ListVentas extends PageBase<VentaYVendedor[]> {
   @property({ type: String })
   idVendedor?: ID;
 
   @state()
   private _ask = false;
 
-  @state()
-  private _error?: string;
-
   private _id?: ID;
+
+  override dataLoader() {
+    return apiListVentas();
+  }
 
   private clickListener(ev: Event) {
     ev.preventDefault();
@@ -64,13 +64,14 @@ export class ListVentas extends LitElement {
   private doDelete(ev: ConfirmaEvent) {
     this._ask = false;
     if (ev.confirma) {
-      apiRemoveVenta(this._id!)
-        .then(() => router.replace(`/ventas`, true))
-        .catch((error) => {
-          this._error = error.toString();
-        });
+      this._loading = true;
+      apiRemoveVenta(this._id!).then(
+        () => router.replace(`/ventas`, true),
+        this.apiCatch
+      );
     }
   }
+
   renderRow = (row: VentaYVendedor) => html`
     <tr data-id=${row.id}>
       <td title="Ver detalles" data-action="show">
@@ -120,9 +121,8 @@ export class ListVentas extends LitElement {
     </tr>
   `;
 
-  override render() {
+  override pageBody(data: VentaYVendedor[]) {
     return html`
-      <error-card msg=${this._error || ''}></error-card>
       <confirma-dialog
         ?show=${this._ask}
         msg="¿Quiere borrar esta venta?"
@@ -159,15 +159,7 @@ export class ListVentas extends LitElement {
           </tr>
         </thead>
         <tbody>
-          ${this.apiListVentas.render({
-            initial: () => html`<p>Inicial</p>`,
-            pending: () => html`<loading-card></loading-card>`,
-            complete: (data) => repeat(data, (data) => data.id, this.renderRow),
-            error: (error) =>
-              html`<error-card
-                .msg=${(error as Error).toString()}
-              ></error-card>`,
-          })}
+          ${repeat(data, (data) => data.id, this.renderRow)}
         </tbody>
       </table>
     `;

@@ -1,5 +1,4 @@
-import { apiFetch, ApiService } from './apiService';
-import { ReactiveControllerHost } from 'lit';
+import { apiFetch } from './apiService';
 
 const removeVentaOp = (
   id: ID,
@@ -55,17 +54,19 @@ const ventasReplyConversion: ReplyTransformer<VentaYVendedor> = {
   fecha: (isoDate) => new Date(isoDate as string),
 };
 
-export class ApiTaskListVentas extends ApiService<undefined, VentaYVendedor[]> {
-  constructor(host: ReactiveControllerHost, options?: OptionsType) {
-    super(host, listVentasOp(options), undefined, ventasReplyConversion);
-  }
-}
+export const apiListVentas = (options?: OptionsType) =>
+  apiFetch<undefined, VentaYVendedor[]>(
+    listVentasOp(options),
+    undefined,
+    ventasReplyConversion
+  );
 
-export class ApiTaskGetVenta extends ApiService<undefined, VentaYVendedor> {
-  constructor(host: ReactiveControllerHost, id: ID, options?: OptionsType) {
-    super(host, getVentaOp(id, options), undefined, ventasReplyConversion);
-  }
-}
+export const apiGetVenta = (id: ID, options?: OptionsType) =>
+  apiFetch<undefined, VentaYVendedor>(
+    getVentaOp(id, options),
+    undefined,
+    ventasReplyConversion
+  );
 
 export const apiRemoveVenta = (id: ID, options?: OptionsType) =>
   apiFetch<undefined, null>(removeVentaOp(id, options));
