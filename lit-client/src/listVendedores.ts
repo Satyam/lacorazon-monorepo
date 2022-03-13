@@ -1,10 +1,12 @@
 import './icons';
 import './popups';
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { BootBase } from './bootstrapBase';
-import { ApiTaskListVendedores, apiRemoveVendedor } from './api';
+
+import { PageBase } from './pageBase';
+
+import { apiListVendedores, apiRemoveVendedor } from './api';
 import { getClosest, getTarget, router } from './utils';
 import { ConfirmaEvent } from './popups';
 
@@ -36,19 +38,15 @@ const renderRow = (row: Vendedor) => html`
 `;
 
 @customElement('list-vendedores')
-export class ListVendedores extends LitElement {
-  static override readonly styles = [BootBase.styles];
-
-  private apiListVendedores = new ApiTaskListVendedores(this);
-
+export class ListVendedores extends PageBase<Vendedor[]> {
   @state()
   private _ask = false;
 
-  @state()
-  private _error?: string;
-
   private _id?: ID;
 
+  override dataLoader() {
+    return apiListVendedores();
+  }
   private clickListener(ev: Event) {
     const $t = getTarget(ev);
     const action = getClosest($t, '[data-action]')?.dataset.action;
@@ -75,17 +73,15 @@ export class ListVendedores extends LitElement {
   private doDelete(ev: ConfirmaEvent) {
     this._ask = false;
     if (ev.confirma) {
-      apiRemoveVendedor(this._id!)
-        .then(() => router.replace(`/vendedores`, true))
-        .catch((error) => {
-          this._error = error.toString();
-        });
+      apiRemoveVendedor(this._id!).then(
+        () => router.replace(`/vendedores`, true),
+        this.apiCatch
+      );
     }
   }
 
-  override render() {
+  override pageBody(data: Vendedor[]) {
     return html`
-      <error-card msg=${this._error || ''}></error-card>
       <confirma-dialog
         ?show=${this._ask}
         msg="¿Quiere borrar este vendedor?"
@@ -114,15 +110,7 @@ export class ListVendedores extends LitElement {
           </tr>
         </thead>
         <tbody>
-          ${this.apiListVendedores.render({
-            initial: () => html`<p>Inicial</p>`,
-            pending: () => html`<loading-card></loading-card>`,
-            complete: (data) => repeat(data, (data) => data.id, renderRow),
-            error: (error) =>
-              html`<error-card
-                .msg=${(error as Error).toString()}
-              ></error-card>`,
-          })}
+          ${repeat(data, (data) => data.id, renderRow)}
         </tbody>
       </table>
     `;

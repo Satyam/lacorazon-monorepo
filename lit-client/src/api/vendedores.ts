@@ -1,5 +1,4 @@
-import { apiFetch, ApiService } from './apiService';
-import { ReactiveControllerHost } from 'lit';
+import { apiFetch } from './apiService';
 
 const listVendedoresOp = (options?: OptionsType): OPERATION<undefined> => ({
   service: 'vendedores',
@@ -27,16 +26,11 @@ const removeVendedorOp = (
   options,
 });
 
-export class ApiTaskListVendedores extends ApiService<undefined, Vendedor[]> {
-  constructor(host: ReactiveControllerHost, options?: OptionsType) {
-    super(host, listVendedoresOp(options));
-  }
-}
+export const apiListVendedores = (options?: OptionsType) =>
+  apiFetch<undefined, Vendedor[]>(listVendedoresOp(options));
 
-export class ApiTaskGetVendedor extends ApiService<undefined, Vendedor> {
-  constructor(host: ReactiveControllerHost, id: ID, options?: OptionsType) {
-    super(host, getVendedorOp(id, options));
-  }
-}
+export const apiGetVendedor = (id: ID, options?: OptionsType) =>
+  apiFetch<undefined, Vendedor>(getVendedorOp(id, options));
+
 export const apiRemoveVendedor = (id: ID) =>
   apiFetch<undefined, null>(removeVendedorOp(id));
