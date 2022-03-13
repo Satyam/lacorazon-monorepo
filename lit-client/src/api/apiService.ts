@@ -1,6 +1,3 @@
-import { ReactiveControllerHost } from 'lit';
-import { StatusRenderer, Task } from '@lit-labs/task';
-
 const requestTransform = <IN>(
   op: OPERATION<IN | IN[]>,
   rqt: RequestTransformer<IN>
@@ -72,39 +69,4 @@ export function apiFetch<IN extends AnyRow | undefined, OUT>(
       }
       return data;
     });
-}
-
-export class ApiService<IN extends AnyRow | undefined, OUT> {
-  host: ReactiveControllerHost;
-  value?: OUT;
-  private task!: Task;
-  private _operation: OPERATION<IN>;
-
-  constructor(
-    host: ReactiveControllerHost,
-    operation: OPERATION<IN>,
-    transformRequest?: RequestTransformer<IN>,
-    transformReply?: ReplyTransformer<OUT>
-  ) {
-    this.host = host;
-    this._operation = operation;
-    this.task = new Task<[OPERATION<IN>], OUT>(
-      host,
-      ([operation]: [OPERATION<IN>]) =>
-        apiFetch<IN, OUT>(operation, transformRequest, transformReply),
-      () => [this.operation] as [OPERATION<IN>]
-    );
-  }
-
-  set operation(operation) {
-    this._operation = operation;
-    this.host.requestUpdate();
-  }
-  get operation() {
-    return this._operation;
-  }
-
-  render(renderFunctions: StatusRenderer<OUT>) {
-    return this.task.render(renderFunctions);
-  }
 }
