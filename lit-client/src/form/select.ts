@@ -14,8 +14,14 @@ export class SelectField extends FieldBase<string> {
   @property({ type: Number })
   size = 0;
 
+  @property({ type: String })
+  labelFieldName = '';
+
+  @property({ type: String })
+  valueFieldName = '';
+
   @property({ attribute: false })
-  options: string[][] = [];
+  options: AnyRow[] = [];
   // Not sure why I had to do this.
   override reset() {
     super.reset();
@@ -36,8 +42,11 @@ export class SelectField extends FieldBase<string> {
       >
         ${this.options.map(
           (opt) =>
-            html`<option value=${opt[0]} ?selected=${opt[0] === this.value}>
-              ${opt[1]}
+            html`<option
+              value=${String(opt[this.valueFieldName])}
+              ?selected=${String(opt[this.valueFieldName]) === this.value}
+            >
+              ${opt[this.labelFieldName]}
             </option>`
         )}
       </select>

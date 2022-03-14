@@ -1,9 +1,14 @@
 import { html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { PageBase } from './pageBase';
 import { router } from './utils';
-import { apiGetVenta, apiCreateVenta, apiUpdateVenta } from './api';
+import {
+  apiGetVenta,
+  apiCreateVenta,
+  apiUpdateVenta,
+  apiListVendedores,
+} from './api';
 import { FormSubmit, FormChanged, NumberField } from './form';
 import './form';
 import './popups';
@@ -13,8 +18,15 @@ export class EditVenta extends PageBase<VentaYVendedor> {
   @property()
   idVenta?: ID;
 
+  @state()
+  _options: AnyRow[] = [];
+
   override dataLoader() {
-    return apiGetVenta(this.idVenta!);
+    return apiListVendedores()
+      .then((data) => {
+        this._options = data;
+      }, this.apiCatch)
+      .then(() => apiGetVenta(this.idVenta!));
   }
 
   submit(ev: FormSubmit) {
@@ -64,11 +76,9 @@ export class EditVenta extends PageBase<VentaYVendedor> {
           label="Vendedor"
           name="idVendedor"
           value=${data.idVendedor || ''}
-          .options=${[
-            ['ro', 'Roxana'],
-            ['ra', 'Raed'],
-            ['rora', 'Roxana y Raed'],
-          ]}
+          labelFieldName="nombre"
+          valueFieldName="id"
+          .options=${this._options}
         >
         </select-field>
         <number-field
