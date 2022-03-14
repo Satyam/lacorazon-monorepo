@@ -37,10 +37,9 @@ export class PageBase<Data> extends LitElement {
   }
 
   override willUpdate() {
-    if (!this._data) {
-      this._loading = true;
-      this.dataLoader().then(this.apiThen, this.apiCatch);
-    }
+    if (this._data || this._loading) return;
+    this._loading = true;
+    this.dataLoader().then(this.apiThen, this.apiCatch);
   }
 
   protected pageBody(data: Data) {
