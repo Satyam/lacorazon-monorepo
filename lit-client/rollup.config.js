@@ -30,7 +30,9 @@ export default {
               '@webcomponents/webcomponentsjs/webcomponents-loader.js'
             ),
             join(node_modules, 'lit/polyfill-support.js'),
+            join(node_modules, 'lit/polyfill-support.js.map'),
             join(node_modules, 'bootstrap/dist/css/bootstrap.min.css'),
+            join(node_modules, 'bootstrap/dist/css/bootstrap.min.css.map'),
           ],
           dest: PUBLIC,
         },
