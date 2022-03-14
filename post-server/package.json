@@ -1,5 +1,5 @@
 {
-  "name": "post-server",
+  "name": "@lacorazon/post-server",
   "version": "1.0.0",
   "description": "Server using POST requests with predefined ops format",
   "type": "module",

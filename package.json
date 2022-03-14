@@ -1,5 +1,5 @@
 {
-  "name": "lacorazon-monorepo",
+  "name": "@lacorazon/monorepo",
   "workspaces": [
     "post-server",
     "vainilla-client",

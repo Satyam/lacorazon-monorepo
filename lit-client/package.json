@@ -1,10 +1,10 @@
 {
-  "name": "lacorazon-lit-client",
+  "name": "@lacorazon/lit-client",
   "private": true,
   "version": "1.0.0",
   "description": "A lit version of La Corazón client",
-  "main": "my-element.js",
-  "module": "my-element.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "build": "rollup -c -w"
