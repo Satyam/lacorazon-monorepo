@@ -61,7 +61,6 @@ export class ShowVenta extends PageBase<VentaYVendedor> {
           readonly
         ></currency-field>
       </form-wrapper>
-      })}
     `;
   }
 }

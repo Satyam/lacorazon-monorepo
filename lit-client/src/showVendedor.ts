@@ -48,7 +48,6 @@ export class ShowVendedor extends PageBase<Vendedor> {
           </h2>`}
         ></accordion-panel>
       </accordion-base>
-      })}
     `;
   }
 }
