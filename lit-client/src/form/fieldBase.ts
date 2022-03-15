@@ -1,4 +1,4 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { LitElement, html, css, nothing, HTMLTemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef } from 'lit/directives/ref.js';
 import { BootBase } from '../bootstrapBase';
@@ -117,9 +117,7 @@ export abstract class FieldBase<T extends unknown> extends LitElement {
     );
   }
 
-  protected inputControl() {
-    return html``;
-  }
+  protected abstract inputControl(): HTMLTemplateResult;
 
   protected override render() {
     return html`

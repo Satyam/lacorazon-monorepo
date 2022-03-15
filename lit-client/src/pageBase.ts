@@ -1,10 +1,10 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, HTMLTemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import './popups';
 
 @customElement('page-base')
-export class PageBase<Data> extends LitElement {
+export abstract class PageBase<Data> extends LitElement {
   static override readonly styles = [
     BootBase.styles,
     css`
@@ -32,9 +32,7 @@ export class PageBase<Data> extends LitElement {
     this._loading = false;
   };
 
-  protected dataLoader(): Promise<Data> {
-    return Promise.reject();
-  }
+  protected abstract dataLoader(): Promise<Data>;
 
   override willUpdate() {
     if (this._data || this._loading) return;
@@ -42,9 +40,7 @@ export class PageBase<Data> extends LitElement {
     this.dataLoader().then(this.apiThen, this.apiCatch);
   }
 
-  protected pageBody(data: Data) {
-    return html`${data}`;
-  }
+  protected abstract pageBody(data: Data): HTMLTemplateResult;
 
   override render() {
     if (this._error) {
