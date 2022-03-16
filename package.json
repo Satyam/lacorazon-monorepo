@@ -4,7 +4,8 @@
     "post-server",
     "vainilla-client",
     "lit-client",
-    "post-client"
+    "post-client",
+    "lit-form"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",

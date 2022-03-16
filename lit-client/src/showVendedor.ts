@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { PageBase } from './pageBase';
 import { apiGetVendedor } from '@lacorazon/post-client';
-import './form';
+import '@lacorazon/lit-form';
 import './popups';
 import './accordion';
 

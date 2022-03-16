@@ -9,8 +9,7 @@ import {
   apiUpdateVenta,
   apiListVendedores,
 } from '@lacorazon/post-client';
-import { FormSubmit, FormChanged, NumberField } from './form';
-import './form';
+import { FormSubmit, FormChanged, NumberField } from '@lacorazon/lit-form';
 import './popups';
 
 @customElement('edit-venta')

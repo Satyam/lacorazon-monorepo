@@ -1,0 +1,26 @@
+{
+  "name": "@lacorazon/lit-form",
+  "version": "1.0.0",
+  "description": "Lit-based web-components for form control",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "build1": "rm -rf dist/* && tsc -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/lacorazon-monorepo.git"
+  },
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/lacorazon-monorepo/issues"
+  },
+  "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme",
+  "dependencies": {
+    "lit": "^2.2.1"
+  }
+}

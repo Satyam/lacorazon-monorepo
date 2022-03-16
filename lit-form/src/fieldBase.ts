@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing, HTMLTemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { Ref, createRef } from 'lit/directives/ref.js';
-import { BootBase } from '../bootstrapBase';
+import { BootBase } from './bootstrapBase';
 
 export const INPUT_CHANGED_EVENT: 'inputChanged' = 'inputChanged' as const;
 
@@ -17,13 +17,8 @@ export class InputChanged<T> extends Event {
   }
 }
 
-declare global {
-  interface HTMLElementEventMap {
-    [INPUT_CHANGED_EVENT]: InputChanged<VALUE>;
-  }
-}
 @customElement('field-base')
-export abstract class FieldBase<T extends unknown> extends LitElement {
+export abstract class FieldBase<T> extends LitElement {
   static override readonly styles = [
     BootBase.styles,
     css`
@@ -72,7 +67,7 @@ export abstract class FieldBase<T extends unknown> extends LitElement {
   }
 
   protected get fieldValue(): T {
-    return this.fieldEl().value as T;
+    return this.fieldEl().value as unknown as T;
   }
 
   protected set fieldValue(v: T) {

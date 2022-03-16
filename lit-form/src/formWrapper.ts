@@ -2,10 +2,7 @@ import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 import { FieldBase, InputChanged } from './fieldBase';
-import { getTarget } from '../utils';
-
-export type FieldData = Record<string, VALUE | undefined>;
-export type DirtyFields = Record<string, boolean>;
+import { getTarget } from './utils';
 
 export const FORM_SUBMIT_EVENT: 'formSubmit' = 'formSubmit' as const;
 export class FormSubmit extends Event {
@@ -35,12 +32,6 @@ export class FormChanged extends Event {
   }
 }
 
-declare global {
-  interface HTMLElementEventMap {
-    [FORM_SUBMIT_EVENT]: FormSubmit;
-    [FORM_CHANGED_EVENT]: FormChanged;
-  }
-}
 @customElement('form-wrapper')
 export class FormWrapper extends LitElement {
   @property({ type: Boolean })

@@ -7,8 +7,8 @@ import {
   apiIsLoggedIn,
   CurrentUser,
 } from '@lacorazon/post-client';
-import './form';
-import { FormSubmit } from './form/formWrapper';
+import '@lacorazon/lit-form';
+import { FormSubmit } from '@lacorazon/lit-form';
 import { router } from './utils';
 
 export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
