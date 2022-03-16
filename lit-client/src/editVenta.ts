@@ -8,7 +8,7 @@ import {
   apiCreateVenta,
   apiUpdateVenta,
   apiListVendedores,
-} from './api';
+} from '@lacorazon/post-client';
 import { FormSubmit, FormChanged, NumberField } from './form';
 import './form';
 import './popups';

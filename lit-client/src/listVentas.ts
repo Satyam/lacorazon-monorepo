@@ -6,7 +6,7 @@ import { repeat } from 'lit/directives/repeat.js';
 
 import { PageBase } from './pageBase';
 
-import { apiRemoveVenta, apiListVentas } from './api';
+import { apiRemoveVenta, apiListVentas } from '@lacorazon/post-client';
 
 import {
   getClosest,

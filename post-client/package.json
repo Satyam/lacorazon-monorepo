@@ -1,0 +1,23 @@
+{
+  "name": "@lacorazon/post-client",
+  "version": "1.0.0",
+  "description": "Wrappers around the `fetch` api to contact @lacorazon/post-server",
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist/* && tsc -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/lacorazon-monorepo.git"
+  },
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/lacorazon-monorepo/issues"
+  },
+  "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme"
+}

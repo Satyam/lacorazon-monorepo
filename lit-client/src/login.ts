@@ -6,7 +6,7 @@ import {
   apiLogout,
   apiIsLoggedIn,
   CurrentUser,
-} from './api';
+} from '@lacorazon/post-client';
 import './form';
 import { FormSubmit } from './form/formWrapper';
 import { router } from './utils';

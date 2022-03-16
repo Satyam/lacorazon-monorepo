@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { PageBase } from './pageBase';
-import { apiGetVendedor } from './api';
+import { apiGetVendedor } from '@lacorazon/post-client';
 import './form';
 import './popups';
 import './accordion';
