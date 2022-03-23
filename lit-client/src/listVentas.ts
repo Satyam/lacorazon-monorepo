@@ -78,24 +78,20 @@ export class ListVentas extends PageBase<VentaYVendedor[]> {
         <a href="#">${formatDate(row.fecha)}</a>
       </td>
       <td>${row.concepto}</td>
-      ${
-        this.idVendedor
-          ? nothing
-          : html`
-              <td
-                title="Ver detalle del vendedor"
-                data-action="showVendedor"
-                data-idVendedor=${row.idVendedor || 0}
-              >
-                <a href="/vendedor/${row.idVendedor}">${row.vendedor}</a>
-              </td>
-            `
-      }
+      ${this.idVendedor
+        ? nothing
+        : html`
+            <td
+              title="Ver detalle del vendedor"
+              data-action="showVendedor"
+              data-idVendedor=${row.idVendedor || 0}
+            >
+              <a href="/vendedor/${row.idVendedor}">${row.vendedor}</a>
+            </td>
+          `}
       <td class="text-end">${row.cantidad}</td>
       <td class="text-end">${formatCurrency(row.precioUnitario)}</td>
-      <td class="text-center"><icon-check ?value=${
-        row.iva
-      }></icon-check></icon-check></td>
+      <td class="text-center"><icon-check ?value=${row.iva}></icon-check></td>
       <td class="text-end">
         ${formatCurrency((row.cantidad || 0) * (row.precioUnitario || 0))}
       </td>
