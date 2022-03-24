@@ -5,12 +5,14 @@
     "vainilla-client",
     "lit-client",
     "post-client",
-    "lit-form"
+    "lit-form",
+    "preact-client"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
     "build:lit": "npm run build -w lit-client",
     "build:post": "npm run build -w post-client",
+    "build:preact": "npm run build -w preact-client",
     "start": "npm start -w post-server"
   }
 }
