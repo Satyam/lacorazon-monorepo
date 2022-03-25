@@ -11,6 +11,8 @@ import { Alert } from 'react-bootstrap';
 // import ListVentas from 'routes/ventas/ListVentas';
 // import EditVenta from 'routes/ventas/EditVenta';
 // import ShowVenta from 'routes/ventas/ShowVenta';
+import ListVendedores from 'routes/vendedor/ListVendedores';
+import ShowVendedor from 'routes/vendedor/ShowVendedor';
 // import Profile from 'routes/Profile';
 
 const NotFoundPage: FunctionComponent<{ path?: string }> = ({ path }) => (
@@ -35,6 +37,8 @@ const Routes: FunctionComponent = () => (
     <Route path="/venta/edit/:id" component={EditVenta} />
     <Route path="/venta/:id" component={ShowVenta} /> */}
     {/* <Route path="/profile" component={Profile} /> */}
+    <Route component={ListVendedores} path="/vendedores" />
+    <Route component={ShowVendedor} path="/vendedor/:id" />
     <Route default component={NotFoundPage} />
   </Router>
 );

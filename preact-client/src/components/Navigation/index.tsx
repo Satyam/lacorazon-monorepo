@@ -44,6 +44,11 @@ export const Navigation: FunctionComponent = () => {
                 Ventas
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Link} href="/vendedores">
+                Vendedores
+              </Nav.Link>
+            </Nav.Item>
             <NavDropdown title={locale}>
               {locales.map((l) => (
                 <NavDropdown.Item
