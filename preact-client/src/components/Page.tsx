@@ -1,6 +1,5 @@
 import { h, FunctionComponent } from 'preact';
 import { Container, Row, Col } from 'react-bootstrap';
-import styles from './styles.module.css';
 
 const Page: FunctionComponent<{
   wide?: boolean;
@@ -12,8 +11,8 @@ const Page: FunctionComponent<{
     <Container fluid>
       <Row>
         <Col sm="12" md={{ span: wide ? 12 : 8, offset: wide ? 0 : 2 }}>
-          <div className={styles.spacing}>
-            <h1 className={styles.heading}>{heading}</h1>
+          <div className="mt-1">
+            <h1>{heading}</h1>
             {children}
           </div>
         </Col>
