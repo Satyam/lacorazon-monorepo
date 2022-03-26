@@ -28,7 +28,7 @@ export const Navigation: FunctionComponent = () => {
         </Navbar.Brand>
         <Navbar.Toggle onClick={toggle} />
         <Navbar.Collapse>
-          <Nav className="ml-auto">
+          <Nav className="me-auto">
             <Nav.Item>
               <Nav.Link as={Link} href="/users">
                 Usuarios
@@ -49,6 +49,8 @@ export const Navigation: FunctionComponent = () => {
                 Vendedores
               </Nav.Link>
             </Nav.Item>
+          </Nav>
+          <Nav className="ms-auto">
             <NavDropdown title={locale}>
               {locales.map((l) => (
                 <NavDropdown.Item
