@@ -11,8 +11,8 @@ import { Alert } from 'react-bootstrap';
 // import ListVentas from 'routes/ventas/ListVentas';
 // import EditVenta from 'routes/ventas/EditVenta';
 // import ShowVenta from 'routes/ventas/ShowVenta';
-import ListVendedores from 'routes/vendedor/ListVendedores';
-import ShowVendedor from 'routes/vendedor/ShowVendedor';
+import ListVendedores from 'components/vendedor/ListVendedores';
+import ShowVendedor from 'components/vendedor/ShowVendedor';
 // import Profile from 'routes/Profile';
 
 const NotFoundPage: FunctionComponent<{ path?: string }> = ({ path }) => (

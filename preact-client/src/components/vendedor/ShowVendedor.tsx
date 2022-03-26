@@ -12,7 +12,7 @@ import { apiGetVendedor } from '@lacorazon/post-client';
 
 import 'preactDeclarations';
 
-export const ShowUser: FunctionComponent<{ id: ID }> = ({ id }) => {
+const ShowUser: FunctionComponent<{ id: ID }> = ({ id }) => {
   const {
     isLoading,
     isError,
