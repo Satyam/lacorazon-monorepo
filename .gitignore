@@ -109,3 +109,4 @@ db.sqlite
 .rollup.cache
 public/
 build/
+pending/
