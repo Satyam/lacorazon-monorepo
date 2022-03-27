@@ -3,7 +3,11 @@ import { route } from 'preact-router';
 import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
-import { ButtonIconAdd, ButtonIconDelete, ButtonSet } from 'components/Icons';
+import {
+  ButtonIconAdd,
+  ButtonIconEdit,
+  ButtonIconDelete,
+} from 'components/Icons';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
 
@@ -26,7 +30,11 @@ export const EditVendedor: FunctionComponent<{ id: ID }> = ({ id }) => {
     isError,
     error,
     data: vendedor,
-  } = useQuery<Vendedor, Error>([VENDEDORES_KEY, id], () => apiGetVendedor(id));
+  } = useQuery<Vendedor, Error>(
+    [VENDEDORES_KEY, id],
+    () => apiGetVendedor(id),
+    { enabled: !!id }
+  );
   const queryClient = useQueryClient();
 
   const deleteVendedor = useMutation<null, Error, ID>(apiRemoveVendedor, {
@@ -72,7 +80,6 @@ export const EditVendedor: FunctionComponent<{ id: ID }> = ({ id }) => {
         openLoading('Actualizando usuario');
       },
       onSuccess: () => {
-        // Invalidate and refetch
         queryClient.invalidateQueries([VENDEDORES_KEY, id]);
       },
       onError: (error, vendedor) => {
@@ -113,33 +120,35 @@ export const EditVendedor: FunctionComponent<{ id: ID }> = ({ id }) => {
       {id && !vendedor ? (
         <Alert color="danger">El usuario no existe o fue borrado</Alert>
       ) : (
-        <form-wrapper onFormSubmit={onSubmit}>
+        <form-wrapper onformSubmit={onSubmit}>
           <text-field
             label="Nombre"
             name="nombre"
             value={vendedor?.nombre}
             placeholder="Nombre"
-            readonly
           />
           <email-field
             label="Email"
             name="email"
             value={vendedor?.email || '-'}
             placeholder="Email"
-            readonly
           />
-          <ButtonSet>
-            <ButtonIconAdd type="submit">
-              {id ? 'Modificar' : 'Agregar'}
+          {id ? (
+            <ButtonIconEdit type="submit" className="me-1" disabled>
+              Modificar
+            </ButtonIconEdit>
+          ) : (
+            <ButtonIconAdd type="submit" className="me-1" disabled>
+              Agregar
             </ButtonIconAdd>
-            <ButtonIconDelete
-              data-id={id}
-              data-nombre={vendedor && vendedor.nombre}
-              onClick={onDeleteClick}
-            >
-              Borrar
-            </ButtonIconDelete>
-          </ButtonSet>
+          )}
+          <ButtonIconDelete
+            data-id={id}
+            data-nombre={vendedor && vendedor.nombre}
+            onClick={onDeleteClick}
+          >
+            Borrar
+          </ButtonIconDelete>
         </form-wrapper>
       )}
     </Page>
