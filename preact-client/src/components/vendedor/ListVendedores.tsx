@@ -11,8 +11,7 @@ import {
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
-
-import { getTarget } from 'utils';
+import { getRowDataset } from 'utils';
 
 const VENDEDORES_KEY = 'vendedores';
 const ListVendedores: FunctionComponent = () => {
@@ -42,27 +41,26 @@ const ListVendedores: FunctionComponent = () => {
   };
   const onShow = (ev: MouseEvent) => {
     ev.stopPropagation();
-    route(`/vendedor/${getTarget(ev).dataset.id}`);
+    route(`/vendedor/${getRowDataset<{ id: ID }>(ev).id}`);
   };
   const onDelete = (ev: MouseEvent) => {
     ev.stopPropagation();
-    const { nombre, id } = getTarget(ev).dataset;
+    const { nombre, id } = getRowDataset<{ id: ID; nombre: string }>(ev);
     if (id) {
       confirmDelete(`al usuario ${nombre}`, () => deleteVendedor.mutate(id));
     }
   };
   const onEdit = (ev: MouseEvent) => {
     ev.stopPropagation();
-    route(`/vendedor/edit/${getTarget(ev).dataset.id}`);
+    route(`/vendedor/edit/${getRowDataset<{ id: ID }>(ev)?.id}`);
   };
 
   const rowVendedor = (vendedor: Vendedor) => {
     const id = vendedor.id;
     return (
-      <tr key={id}>
+      <tr key={id} data-id={id} data-nombre={vendedor.nombre}>
         <td
           onClick={onShow}
-          data-id={id}
           className="link"
           title={`Ver detalles\n${vendedor.nombre}`}
         >
@@ -74,13 +72,10 @@ const ListVendedores: FunctionComponent = () => {
             <ButtonIconEdit
               // @ts-ignore
               onClick={onEdit}
-              data-id={id}
             />
             <ButtonIconDelete
               // @ts-ignore
               onClick={onDelete}
-              data-id={id}
-              data-nombre={vendedor.nombre}
             />
           </ButtonGroup>
         </td>
