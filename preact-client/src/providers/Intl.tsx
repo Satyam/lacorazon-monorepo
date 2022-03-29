@@ -1,4 +1,4 @@
-import { FunctionComponent, h, createContext } from 'preact';
+import { h, createContext, ComponentChildren } from 'preact';
 import { useContext, useState, useMemo } from 'preact/hooks';
 
 import { format } from 'date-fns';
@@ -6,6 +6,7 @@ import { enUS, es } from 'date-fns/locale';
 
 // import { registerLocale, setDefaultLocale } from 'react-datepicker';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const localeTables: { [index: string]: any } = { 'en-US': enUS, 'es-ES': es };
 
 // Object.keys(localeTables).forEach((l) => registerLocale(l, localeTables[l]));
@@ -35,10 +36,15 @@ const initialValues = {
 };
 export const IntlContext = createContext<intlType>(initialValues);
 
-export const IntlProvider: FunctionComponent<{
+export const IntlProvider = ({
+  locale: l = navigator.language,
+  currency: c = 'EUR',
+  children,
+}: {
   locale?: string;
   currency?: string;
-}> = ({ locale: l = navigator.language, currency: c = 'EUR', children }) => {
+  children: ComponentChildren;
+}) => {
   const [locale, setLocale] = useState(l);
   const [currency, setCurrency] = useState(c);
 

@@ -1,4 +1,4 @@
-import { FunctionComponent, h } from 'preact';
+import { h } from 'preact';
 import { route } from 'preact-router';
 import { Table, ButtonGroup, Alert } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
@@ -14,7 +14,7 @@ import { useModals } from 'providers/Modals';
 import { getRowDataset } from 'utils';
 
 const VENDEDORES_KEY = 'vendedores';
-const ListVendedores: FunctionComponent = () => {
+const ListVendedores = () => {
   const {
     isLoading,
     isError,

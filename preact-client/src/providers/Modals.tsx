@@ -1,5 +1,5 @@
 /* eslint-disable no-spaced-func */
-import { FunctionComponent, h, createContext } from 'preact';
+import { h, createContext, ComponentChildren } from 'preact';
 
 import { useState, useContext, useCallback, useMemo } from 'preact/hooks';
 
@@ -23,7 +23,11 @@ const initialValue = {
 
 export const ModalsContext = createContext<ModalsType>(initialValue);
 
-export const ModalsProvider: FunctionComponent = ({ children }) => {
+export const ModalsProvider = ({
+  children,
+}: {
+  children: ComponentChildren;
+}) => {
   const [t, setLoading] = useState<string | undefined>(undefined);
 
   const [delParams, setDelParams] = useState<{

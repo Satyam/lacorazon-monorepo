@@ -1,18 +1,18 @@
-import { h, FunctionComponent } from 'preact';
-// import icon from './loading.gif';
+import { h, ComponentChildren } from 'preact';
 import { Modal, ModalHeader, ModalBody } from 'react-bootstrap';
 import styles from './styles.module.css';
 
-const Loading: FunctionComponent<{
-  title?: string;
-  noIcon?: boolean;
-  isOpen?: boolean;
-}> = ({
+const Loading = ({
   title = 'Cargando ....',
   children,
   noIcon,
   isOpen = true,
   ...props
+}: {
+  title?: string;
+  noIcon?: boolean;
+  isOpen?: boolean;
+  children: ComponentChildren;
 }) => (
   <Modal show={isOpen} {...props}>
     <ModalHeader className={styles.loadingHeader}>{title}</ModalHeader>

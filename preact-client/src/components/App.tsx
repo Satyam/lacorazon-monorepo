@@ -1,11 +1,11 @@
-import { FunctionComponent, h } from 'preact';
+import { h } from 'preact';
 
 import Providers from './Providers';
 import ErrorBoundary from './ErrorBoundary';
 import { Navigation } from 'components/Navigation';
 import Routes from './Routes';
 
-const App: FunctionComponent = () => (
+const App = () => (
   <Providers>
     <ErrorBoundary>
       <Navigation />

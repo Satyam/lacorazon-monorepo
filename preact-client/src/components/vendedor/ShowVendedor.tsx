@@ -1,7 +1,6 @@
-import { h, FunctionComponent } from 'preact';
+import { h } from 'preact';
 import { Alert } from 'react-bootstrap';
 
-// import { TextField, EmailField } from '@lacorazon/lit-form';
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { Accordion, AccordionPanel } from 'components/Accordion';
@@ -12,7 +11,7 @@ import { apiGetVendedor } from '@lacorazon/post-client';
 
 import 'preactDeclarations';
 
-const ShowUser: FunctionComponent<{ id: ID }> = ({ id }) => {
+const ShowUser = ({ id }: { id: ID }) => {
   const {
     isLoading,
     isError,

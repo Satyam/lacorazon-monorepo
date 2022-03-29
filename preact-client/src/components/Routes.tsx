@@ -1,4 +1,4 @@
-import { FunctionComponent, h } from 'preact';
+import { h } from 'preact';
 import { Route, Router } from 'preact-router';
 import { Alert } from 'react-bootstrap';
 
@@ -16,14 +16,14 @@ import ShowVendedor from 'components/vendedor/ShowVendedor';
 import EditVendedor from 'components/vendedor/EditVendedor';
 // import Profile from 'routes/Profile';
 
-const NotFoundPage: FunctionComponent<{ path?: string }> = ({ path }) => (
+const NotFoundPage = ({ path }: { path?: string }) => (
   <Alert variant="warning">
     <Alert.Heading>Not Found</Alert.Heading>
     <p>{path}</p>
   </Alert>
 );
 
-const Routes: FunctionComponent = () => (
+const Routes = () => (
   <Router>
     {/* <Route path="/users" component={Users} />
     <Route path="/user/new" component={EditUser} />

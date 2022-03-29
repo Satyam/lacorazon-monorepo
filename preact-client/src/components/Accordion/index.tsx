@@ -1,6 +1,6 @@
 import {
   h,
-  FunctionComponent,
+  ComponentChildren,
   cloneElement,
   toChildArray,
   isValidElement,
@@ -17,12 +17,12 @@ type AccordionPanelProps = {
   open?: boolean;
 };
 
-export const AccordionPanel: FunctionComponent<AccordionPanelProps> = ({
+export const AccordionPanel = ({
   label,
   name,
   open,
   children,
-}) => (
+}: AccordionPanelProps & { children: ComponentChildren }) => (
   <div className="card">
     <div className="card-header p-0">
       <Button color="secondary" size="sm" data-name={name}>

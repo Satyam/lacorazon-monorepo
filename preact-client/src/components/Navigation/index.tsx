@@ -1,4 +1,4 @@
-import { h, FunctionComponent } from 'preact';
+import { h } from 'preact';
 import { Link } from 'preact-router/match';
 import { useState } from 'preact/hooks';
 import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
@@ -9,7 +9,7 @@ import { useIntl } from 'providers/Intl';
 
 import styles from './styles.module.css';
 
-export const Navigation: FunctionComponent = () => {
+export const Navigation = () => {
   const [isOpen, setOpen] = useState(false);
   // const { isAuthenticated, loginWithPopup, logout, user } = useAuth0();
   const { locale, setLocale, locales } = useIntl();

@@ -1,11 +1,17 @@
-import { h, FunctionComponent } from 'preact';
+import { h, ComponentChildren } from 'preact';
 import { Container, Row, Col } from 'react-bootstrap';
 
-const Page: FunctionComponent<{
+const Page = ({
+  wide,
+  title,
+  heading,
+  children,
+}: {
   wide?: boolean;
   title?: string;
   heading: string;
-}> = ({ wide, title, heading, children }) => {
+  children: ComponentChildren;
+}) => {
   if (title) document.title = `La Corazón - ${title}`;
   return (
     <Container fluid>

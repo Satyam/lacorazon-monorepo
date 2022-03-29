@@ -1,8 +1,12 @@
-import { FunctionComponent, h, Fragment } from 'preact';
+import { h, ComponentChildren, Fragment } from 'preact';
 import { useErrorBoundary } from 'preact/hooks';
 import { Alert } from 'react-bootstrap';
 
-export const ErrorBoundary: FunctionComponent = ({ children }) => {
+export const ErrorBoundary = ({
+  children,
+}: {
+  children: ComponentChildren;
+}) => {
   const [error, resetError] = useErrorBoundary((error) =>
     console.error(error.message)
   );

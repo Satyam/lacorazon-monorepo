@@ -1,4 +1,4 @@
-import { h, FunctionComponent } from 'preact';
+import { h } from 'preact';
 import {
   Modal,
   ModalHeader,
@@ -9,10 +9,13 @@ import {
 
 import styles from './styles.module.css';
 
-const ConfirmDelete: FunctionComponent<{
+const ConfirmDelete = ({
+  descr,
+  onClose,
+}: {
   descr?: string;
   onClose: (result: boolean) => void;
-}> = ({ descr, onClose }) => (
+}) => (
   <Modal show={!!descr}>
     <ModalHeader className={styles.confirmDeleteHeader}>
       Confirmación borrado

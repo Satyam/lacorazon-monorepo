@@ -1,4 +1,4 @@
-import { FunctionComponent, h } from 'preact';
+import { h } from 'preact';
 import { route } from 'preact-router';
 import { Alert } from 'react-bootstrap';
 
@@ -24,7 +24,7 @@ import { FormSubmit } from '@lacorazon/lit-form';
 
 const VENDEDORES_KEY = 'vendedores';
 
-export const EditVendedor: FunctionComponent<{ id: ID }> = ({ id }) => {
+export const EditVendedor = ({ id }: { id: ID }) => {
   const {
     isLoading,
     isError,
