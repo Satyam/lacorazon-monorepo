@@ -1,5 +1,5 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { h, render } from 'preact';
 import '@lacorazon/lit-form';
 import App from 'components/App';
 
-export default App;
+render(h(App, {}), document.body);

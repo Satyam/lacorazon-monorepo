@@ -1,5 +1,5 @@
 import { h, FunctionComponent } from 'preact';
-import icon from './loading.gif';
+// import icon from './loading.gif';
 import { Modal, ModalHeader, ModalBody } from 'react-bootstrap';
 import styles from './styles.module.css';
 
@@ -19,7 +19,7 @@ const Loading: FunctionComponent<{
     <ModalBody className={styles.loadingContainer}>
       {children}
       {!noIcon && (
-        <img className={styles.loadingImg} src={icon} alt="loading..." />
+        <img className={styles.loadingImg} src="loading.gif" alt="loading..." />
       )}
     </ModalBody>
   </Modal>

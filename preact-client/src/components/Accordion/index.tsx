@@ -7,7 +7,6 @@ import {
   VNode,
 } from 'preact';
 import { useState } from 'preact/hooks';
-import invariant from 'invariant';
 import { Button } from 'react-bootstrap';
 import { FaCaretUp, FaCaretDown } from 'react-icons/fa';
 import classNames from 'classnames';
@@ -58,8 +57,6 @@ export const Accordion: React.FC<AccordionProps> = ({
   const [nowOpen, setOpen] = useState<string[]>(initiallyOpen);
 
   const elements = toChildArray(children) as VNode<AccordionPanelProps>[];
-
-  invariant(elements.length > 1, 'Accordion should have multiple panels');
 
   if (mutuallyExclusive && nowOpen.length > 1) {
     setOpen([nowOpen[0]]);

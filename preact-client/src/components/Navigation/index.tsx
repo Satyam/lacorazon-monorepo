@@ -5,8 +5,6 @@ import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
 
 import { FaUser } from 'react-icons/fa';
 
-import laCorazon from 'assets/La Corazon.png';
-
 import { useIntl } from 'providers/Intl';
 
 import styles from './styles.module.css';
@@ -23,8 +21,7 @@ export const Navigation: FunctionComponent = () => {
     <div>
       <Navbar expand="md" variant="light" className={styles.navbar}>
         <Navbar.Brand href="/" className={styles.navbrand}>
-          <img src={laCorazon} alt="La Corazón" />
-          La Corazón
+          <img src="/La Corazon.png" alt="La Corazón" /> La Corazón
         </Navbar.Brand>
         <Navbar.Toggle onClick={toggle} />
         <Navbar.Collapse>
