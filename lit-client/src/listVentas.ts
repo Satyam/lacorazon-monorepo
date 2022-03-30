@@ -1,4 +1,4 @@
-import './icons';
+import '@lacorazon/lit-icons';
 import './popups';
 import { html, nothing } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
@@ -103,7 +103,7 @@ export class ListVentas extends PageBase<VentaYVendedor[]> {
             data-action="edit"
             title="Modificar"
           >
-            <icon-pencil></icon-pencil>
+            <icon-edit></icon-edit>
           </button>
           <button
             class="btn btn-outline-danger"
@@ -149,7 +149,7 @@ export class ListVentas extends PageBase<VentaYVendedor[]> {
                 data-action="add"
                 title="Agregar"
               >
-                <icon-cart></icon-cart>
+                <icon-addto-cart></icon-addto-cart>
               </button>
             </th>
           </tr>

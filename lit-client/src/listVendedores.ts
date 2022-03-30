@@ -1,4 +1,4 @@
-import './icons';
+import '@lacorazon/lit-icons';
 import './popups';
 import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
@@ -7,6 +7,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { PageBase } from './pageBase';
 
 import { apiListVendedores, apiRemoveVendedor } from '@lacorazon/post-client';
+
 import { getClosest, getTarget, router } from './utils';
 import { ConfirmaEvent } from './popups';
 
@@ -23,7 +24,7 @@ const renderRow = (row: Vendedor) => html`
           data-action="edit"
           title="Modificar"
         >
-          <icon-pencil></icon-pencil>
+          <icon-edit></icon-edit>
         </button>
         <button
           class="btn btn-outline-danger"
@@ -104,7 +105,7 @@ export class ListVendedores extends PageBase<Vendedor[]> {
                 data-action="add"
                 title="Agregar"
               >
-                <icon-person></icon-person>
+                <icon-add-person></icon-add-person>
               </button>
             </th>
           </tr>

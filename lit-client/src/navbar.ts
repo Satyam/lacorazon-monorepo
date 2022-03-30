@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
-import './icons';
+import '@lacorazon/lit-icons';
 import { getTarget, router, getClosest } from './utils';
 import { classMap } from 'lit/directives/class-map.js';
 import { logout, LoginEvent, LOGIN_EVENT } from './login';

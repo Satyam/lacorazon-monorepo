@@ -1,4 +1,4 @@
-import './icons';
+import '@lacorazon/lit-icons';
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
