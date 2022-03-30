@@ -9,8 +9,6 @@ import { Accordion, AccordionPanel } from 'components/Accordion';
 import { useQuery } from 'react-query';
 import { apiGetVendedor } from '@lacorazon/post-client';
 
-import 'preactDeclarations';
-
 const ShowUser = ({ id }: { id: ID }) => {
   const {
     isLoading,

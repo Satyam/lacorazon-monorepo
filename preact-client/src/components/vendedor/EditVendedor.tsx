@@ -3,11 +3,7 @@ import { route } from 'preact-router';
 import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
-import {
-  ButtonIconAdd,
-  ButtonIconEdit,
-  ButtonIconDelete,
-} from 'components/Icons';
+import { DetailsButtonSet } from 'components/Buttons';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
 
@@ -19,7 +15,6 @@ import {
   apiRemoveVendedor,
 } from '@lacorazon/post-client';
 
-import 'preactDeclarations';
 import { FormSubmit } from '@lacorazon/lit-form';
 
 const VENDEDORES_KEY = 'vendedores';
@@ -95,11 +90,9 @@ export const EditVendedor = ({ id }: { id: ID }) => {
   if (isError) return <Alert variant="warning">{error.message}</Alert>;
   if (isLoading) return <Loading>Cargando vendedor</Loading>;
 
-  const onDeleteClick: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
-    ev.stopPropagation();
-    const { nombre, id } = ev.currentTarget.dataset;
-    confirmDelete(`al usuario ${nombre}`, () =>
-      deleteVendedor.mutate(id as string)
+  const onDeleteClick = () => {
+    confirmDelete(`al usuario ${vendedor?.nombre}`, () =>
+      deleteVendedor.mutate(id)
     );
   };
 
@@ -133,22 +126,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
             value={vendedor?.email || '-'}
             placeholder="Email"
           />
-          {id ? (
-            <ButtonIconEdit type="submit" className="me-1" disabled>
-              Modificar
-            </ButtonIconEdit>
-          ) : (
-            <ButtonIconAdd type="submit" className="me-1" disabled>
-              Agregar
-            </ButtonIconAdd>
-          )}
-          <ButtonIconDelete
-            data-id={id}
-            data-nombre={vendedor && vendedor.nombre}
-            onClick={onDeleteClick}
-          >
-            Borrar
-          </ButtonIconDelete>
+          <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
         </form-wrapper>
       )}
     </Page>

@@ -3,7 +3,7 @@ import { Link } from 'preact-router/match';
 import { useState } from 'preact/hooks';
 import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
 
-import { FaUser } from 'react-icons/fa';
+import '@lacorazon/lit-icons';
 
 import { useIntl } from 'providers/Intl';
 
@@ -79,7 +79,7 @@ export const Navigation = () => {
               ) : (
                 <> */}
               <Dropdown.Toggle as={Nav.Link} className={styles.user}>
-                <FaUser />
+                <icon-logged-in></icon-logged-in>
                 guest
               </Dropdown.Toggle>
               <Dropdown.Menu align="end">

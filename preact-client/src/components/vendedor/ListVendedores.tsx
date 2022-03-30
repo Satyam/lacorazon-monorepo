@@ -1,17 +1,12 @@
 import { h } from 'preact';
 import { route } from 'preact-router';
-import { Table, ButtonGroup, Alert } from 'react-bootstrap';
+import { Table, Alert, Button } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { apiListVendedores, apiRemoveVendedor } from '@lacorazon/post-client';
-import {
-  ButtonIconAdd,
-  ButtonIconEdit,
-  ButtonIconDelete,
-} from 'components/Icons';
+import { TableRowButtons, TableRowActionHandler } from 'components/Buttons';
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
-import { getRowDataset } from 'utils';
 
 const VENDEDORES_KEY = 'vendedores';
 const ListVendedores = () => {
@@ -39,45 +34,33 @@ const ListVendedores = () => {
     ev.stopPropagation();
     route(`/vendedor/new`);
   };
-  const onShow = (ev: MouseEvent) => {
-    ev.stopPropagation();
-    route(`/vendedor/${getRowDataset<{ id: ID }>(ev).id}`);
-  };
-  const onDelete = (ev: MouseEvent) => {
-    ev.stopPropagation();
-    const { nombre, id } = getRowDataset<{ id: ID; nombre: string }>(ev);
-    if (id) {
-      confirmDelete(`al usuario ${nombre}`, () => deleteVendedor.mutate(id));
+
+  const rowActionsHandler: TableRowActionHandler = (action, id, nombre) => {
+    switch (action) {
+      case 'show':
+        route(`/vendedor/${id}`);
+        break;
+      case 'edit':
+        route(`/vendedor/edit/${id}`);
+        break;
+      case 'delete':
+        confirmDelete(`al usuario ${nombre}`, () => deleteVendedor.mutate(id));
+        break;
     }
-  };
-  const onEdit = (ev: MouseEvent) => {
-    ev.stopPropagation();
-    route(`/vendedor/edit/${getRowDataset<{ id: ID }>(ev)?.id}`);
   };
 
   const rowVendedor = (vendedor: Vendedor) => {
     const id = vendedor.id;
     return (
-      <tr key={id} data-id={id} data-nombre={vendedor.nombre}>
-        <td
-          onClick={onShow}
-          className="link"
-          title={`Ver detalles\n${vendedor.nombre}`}
-        >
-          {vendedor.nombre}
-        </td>
+      <tr key={id}>
+        <td>{vendedor.nombre}</td>
         <td>{vendedor.email}</td>
         <td class="text-center">
-          <ButtonGroup size="sm">
-            <ButtonIconEdit
-              // @ts-ignore
-              onClick={onEdit}
-            />
-            <ButtonIconDelete
-              // @ts-ignore
-              onClick={onDelete}
-            />
-          </ButtonGroup>
+          <TableRowButtons
+            onClick={rowActionsHandler}
+            id={id}
+            nombre={vendedor.nombre}
+          />
         </td>
       </tr>
     );
@@ -90,13 +73,15 @@ const ListVendedores = () => {
           <tr>
             <th>Nombre</th>
             <th>E-mail</th>
-            <th>
-              <ButtonIconAdd
+            <th class="text-center">
+              <Button
                 // @ts-ignore
                 onClick={onAdd}
+                variant="primary"
+                title="Agregar"
               >
-                Agregar
-              </ButtonIconAdd>
+                <icon-add-person>Agregar</icon-add-person>
+              </Button>
             </th>
           </tr>
         </thead>
