@@ -8,7 +8,6 @@ import {
 } from 'preact';
 import { useState } from 'preact/hooks';
 import { Button } from 'react-bootstrap';
-import { FaCaretUp, FaCaretDown } from 'react-icons/fa';
 import classNames from 'classnames';
 
 type AccordionPanelProps = {
@@ -16,7 +15,16 @@ type AccordionPanelProps = {
   name: string;
   open?: boolean;
 };
-
+// protected override render() {
+//   return html`<details
+//     class="card"
+//     ?open=${this.open}
+//     @toggle=${this.toggleHandler}
+//   >
+//     <summary class="card-header">${this.heading}</summary>
+//     ${this.open ? this.content : nothing}
+//   </details>`;
+// }
 export const AccordionPanel = ({
   label,
   name,
@@ -28,9 +36,9 @@ export const AccordionPanel = ({
       <Button color="secondary" size="sm" data-name={name}>
         {label}
         {open ? (
-          <FaCaretUp className="float-right" />
+          <span className="float-right"> ^</span>
         ) : (
-          <FaCaretDown className="float-right" />
+          <span className="float-right"> v</span>
         )}
       </Button>
     </div>
