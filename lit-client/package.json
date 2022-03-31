@@ -22,7 +22,7 @@
   "dependencies": {
     "@lacorazon/lit-form": "^1.0.0",
     "@lacorazon/post-client": "^1.0.0",
-    "bootstrap-icons": "^1.7.2",
+    "@lacorazon/lit-icons": "^1.0.0",
     "lit": "^2.2.1"
   },
   "devDependencies": {
