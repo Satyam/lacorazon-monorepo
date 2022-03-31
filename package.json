@@ -16,5 +16,18 @@
     "build:preact": "npm run build -w preact-client",
     "build:icons": "npm run build -w lit-icons",
     "start": "npm start -w post-server"
+  },
+  "dependencies": {
+    "bootstrap": "^5.1.3"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "rollup": "^2.66.1",
+    "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.5.2"
   }
 }
