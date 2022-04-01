@@ -1,5 +1,5 @@
 import { LitElement, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
 import { FieldBase, InputChanged } from './fieldBase';
 import { getTarget } from './utils';
@@ -37,11 +37,10 @@ export class FormWrapper extends LitElement {
   @property({ type: Boolean })
   novalidate = false;
 
-  @state()
-  wasValidated = false;
-
-  _values: FieldData = {};
-  _dirtyFields: DirtyFields = {};
+  private _fields: FieldBase<VALUE>[] = [];
+  private _values: FieldData = {};
+  private _dirtyFields: DirtyFields = {};
+  private _submitButtons: HTMLButtonElement[] = [];
 
   public get values() {
     return this._values;
@@ -52,26 +51,44 @@ export class FormWrapper extends LitElement {
   }
 
   public get isDirty() {
-    return this.fields()?.some((f) => f.isDirty);
+    return this._fields.some((f) => f.isDirty);
   }
 
-  private submitButtons: HTMLButtonElement[] = [];
+  private slotChange(ev: { target: HTMLSlotElement }) {
+    const findEls = (els: Element[]): void =>
+      els.forEach((el) => {
+        if (el instanceof FieldBase) {
+          this._fields.push(el);
+          this._values[el.name] = el.value;
+          this._dirtyFields[el.name] = false;
+        }
 
-  private elements(): HTMLElement[] | FieldBase<VALUE>[] {
-    const slot = this.shadowRoot?.querySelector('slot');
-    return slot?.assignedElements({ flatten: true }) as
-      | HTMLElement[]
-      | FieldBase<VALUE>[];
-  }
+        if (el.nodeName === 'BUTTON') {
+          const btn = el as HTMLButtonElement;
+          switch (btn.type) {
+            case 'submit':
+              this._submitButtons.push(btn);
+              btn.disabled = true;
+              btn.addEventListener('click', this.submitHandler);
+              break;
+            case 'reset':
+              btn.disabled = true;
+              btn.addEventListener('click', this.resetHandler);
+              break;
+          }
+        }
+        if (el.children.length) findEls(Array.from(el.children));
+      });
+    this._fields = [];
+    this._values = {};
+    this._dirtyFields = {};
+    this._submitButtons = [];
 
-  private fields(): FieldBase<VALUE>[] {
-    return this.elements().filter(
-      (el) => el instanceof FieldBase && el.name.length
-    ) as FieldBase<VALUE>[];
+    findEls(Array.from(ev.target.assignedElements()) as Element[]);
   }
 
   public reset(): void {
-    this.fields()?.forEach((el) => el.reset());
+    this._fields.forEach((el) => el.reset());
   }
 
   private resetHandler = () => {
@@ -85,9 +102,8 @@ export class FormWrapper extends LitElement {
     if (submitButton.name) {
       fieldValues[submitButton.name] = true;
     }
-    this.wasValidated = true;
     if (
-      this.fields()?.every((f) => {
+      this._fields.every((f) => {
         if (f.checkValidity()) {
           fieldValues[f.name] = f.value;
           return true;
@@ -99,11 +115,10 @@ export class FormWrapper extends LitElement {
       this.dispatchEvent(new FormSubmit(fieldValues));
     }
   };
-
   private inputChanged = (ev: InputChanged<VALUE>) => {
     ev.stopPropagation();
     const { isDirty, name, value } = ev;
-    this.submitButtons.forEach((btn) => {
+    this._submitButtons.forEach((btn) => {
       btn.disabled = !isDirty;
     });
     this._dirtyFields[name] = isDirty;
@@ -111,33 +126,13 @@ export class FormWrapper extends LitElement {
     this.dispatchEvent(new FormChanged(this, name, value, this.isDirty));
   };
 
-  protected override firstUpdated(): void {
-    this.fields()?.forEach((el) => {
-      this._values[el.name] = el.value;
-      this._dirtyFields[el.name] = false;
-    });
-    this.elements()
-      .filter((el) => ['BUTTON', 'INPUT'].includes(el.nodeName))
-      ?.forEach((btn) => {
-        switch ((btn as HTMLButtonElement).type) {
-          case 'submit':
-            this.submitButtons.push(btn as HTMLButtonElement);
-            btn.addEventListener('click', this.submitHandler);
-            break;
-          case 'reset':
-            btn.addEventListener('click', this.resetHandler);
-            break;
-        }
-      });
-  }
-
   override render() {
     return html`<form
       ?novalidate=${this.novalidate}
       @submit=${this.submitHandler}
       @inputChanged=${this.inputChanged}
     >
-      <slot></slot>
+      <slot @slotchange=${this.slotChange}></slot>
     </form>`;
   }
 }
