@@ -51,17 +51,15 @@ export const DetailsButtonSet = ({
     ev.preventDefault();
     onDelete();
   };
-  return (
+  return isNew ? (
+    <Button variant="primary" type="submit">
+      <icon-add>Agregar</icon-add>
+    </Button>
+  ) : (
     <>
-      {isNew ? (
-        <Button variant="primary">
-          <icon-add>Agregar</icon-add>
-        </Button>
-      ) : (
-        <Button variant="primary" type="submit">
-          <icon-edit>Modificar</icon-edit>
-        </Button>
-      )}
+      <Button variant="primary" type="submit">
+        <icon-edit>Modificar</icon-edit>
+      </Button>
       <Button variant="danger" className="ms-2" onClick={act}>
         <icon-trash>Borrar</icon-trash>
       </Button>
