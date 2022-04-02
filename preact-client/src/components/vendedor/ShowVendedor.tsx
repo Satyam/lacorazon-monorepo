@@ -9,7 +9,7 @@ import { Accordion, AccordionPanel } from 'components/Accordion';
 import { useQuery } from 'react-query';
 import { apiGetVendedor } from '@lacorazon/post-client';
 
-const ShowUser = ({ id }: { id: ID }) => {
+const ShowVendedor = ({ id }: { id: ID }) => {
   const {
     isLoading,
     isError,
@@ -54,4 +54,4 @@ const ShowUser = ({ id }: { id: ID }) => {
   );
 };
 
-export default ShowUser;
+export default ShowVendedor;
