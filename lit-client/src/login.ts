@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { BootBase } from './bootstrapBase';
 import {
-  apiGetCurrentUser,
+  apiLogin,
   apiLogout,
   apiIsLoggedIn,
   CurrentUser,
@@ -66,7 +66,7 @@ export class LoginForm extends LitElement {
   submit(ev: FormSubmit) {
     const data = ev.values;
     if (data) {
-      apiGetCurrentUser(data).then((user) => {
+      apiLogin(data).then((user) => {
         window.dispatchEvent(new LoginEvent(user));
         setTimeout(checkLoggedIn, 1_800_000);
         router.replace('/');

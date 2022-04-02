@@ -6,7 +6,7 @@ export type LoginInfo = Pick<User, 'email' | 'password'>;
 
 const service = 'auth';
 
-export const apiGetCurrentUser = (data: LoginInfo, options?: OptionsType) =>
+export const apiLogin = (data: LoginInfo, options?: OptionsType) =>
   apiFetch<LoginInfo, SafeUserData>({
     service,
     op: 'login',
