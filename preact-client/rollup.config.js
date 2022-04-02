@@ -1,7 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
-import { terser } from 'rollup-plugin-terser';
 import clear from 'rollup-plugin-clear';
 import copy from 'rollup-plugin-copy';
 import postcss from 'rollup-plugin-postcss';
@@ -48,7 +47,6 @@ export default {
     postcss({
       modules: true,
     }),
-    terser(),
     copy({
       targets: [
         {
