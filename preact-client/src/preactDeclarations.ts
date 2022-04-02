@@ -2,25 +2,30 @@
 // import { ComponentChildren, createElement } from 'preact';
 import { FormSubmit, FormChanged } from '@lacorazon/lit-form';
 import 'preact';
+
+type FieldBaseAttrs = {
+  label: string;
+  name: string;
+  readonly?: boolean;
+  placeholder?: string;
+  errorFeedback?: string;
+  hint?: string;
+  required?: boolean;
+  disabled?: boolean;
+};
+
 declare module 'preact/src/jsx' {
   namespace JSXInternal {
     interface IntrinsicElements {
       'form-wrapper': React.HTMLAttributes<HTMLFormElement> & {
         onformSubmit?: (ev: FormSubmit) => void;
         onformChanged?: (ev: FormChanged) => void;
+        novalidate?: boolean;
       };
-      'text-field': React.HTMLAttributes<HTMLInputElement> & {
-        label: string;
-        name: string;
-        value?: string;
-        readonly?: boolean;
-      };
-      'email-field': React.HTMLAttributes<HTMLInputElement> & {
-        label: string;
-        name: string;
-        value?: string;
-        readonly?: boolean;
-      };
+      'text-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & { value?: string; password?: boolean };
+      'email-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & { value?: string };
       'icon-add': React.HTMLAttributes<HTMLElement>;
       'icon-show': React.HTMLAttributes<HTMLElement>;
       'icon-edit': React.HTMLAttributes<HTMLElement>;
