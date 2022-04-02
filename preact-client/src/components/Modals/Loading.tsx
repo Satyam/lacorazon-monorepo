@@ -19,7 +19,11 @@ const Loading = ({
     <ModalBody className={styles.loadingContainer}>
       {children}
       {!noIcon && (
-        <img className={styles.loadingImg} src="loading.gif" alt="loading..." />
+        <img
+          className={styles.loadingImg}
+          src="/loading.gif"
+          alt="loading..."
+        />
       )}
     </ModalBody>
   </Modal>
