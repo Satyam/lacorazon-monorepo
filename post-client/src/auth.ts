@@ -7,7 +7,7 @@ export type LoginInfo = Pick<User, 'email' | 'password'>;
 const service = 'auth';
 
 export const apiLogin = (data: LoginInfo, options?: OptionsType) =>
-  apiFetch<LoginInfo, SafeUserData>({
+  apiFetch<LoginInfo, CurrentUser>({
     service,
     op: 'login',
     data,
@@ -22,7 +22,7 @@ export const apiLogout = (options?: OptionsType) =>
   });
 
 export const apiIsLoggedIn = (options?: OptionsType) =>
-  apiFetch<undefined, SafeUserData>({
+  apiFetch<undefined, CurrentUser>({
     service,
     op: 'isLoggedIn',
     options,
