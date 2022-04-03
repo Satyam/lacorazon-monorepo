@@ -14,6 +14,7 @@ import { Alert } from 'react-bootstrap';
 import ListVendedores from 'components/vendedor/ListVendedores';
 import ShowVendedor from 'components/vendedor/ShowVendedor';
 import EditVendedor from 'components/vendedor/EditVendedor';
+import Login from 'components/Login';
 // import Profile from 'routes/Profile';
 
 const NotFoundPage = ({ path }: { path?: string }) => (
@@ -22,6 +23,8 @@ const NotFoundPage = ({ path }: { path?: string }) => (
     <p>{path}</p>
   </Alert>
 );
+
+const Home = () => <h1>Bienvenido</h1>;
 
 const Routes = () => (
   <Router>
@@ -38,10 +41,12 @@ const Routes = () => (
     <Route path="/venta/edit/:id" component={EditVenta} />
     <Route path="/venta/:id" component={ShowVenta} /> */}
     {/* <Route path="/profile" component={Profile} /> */}
+    <Route component={Login} path="/login" />
     <Route component={ListVendedores} path="/vendedores" />
     <Route component={ShowVendedor} path="/vendedor/:id" />
     <Route component={EditVendedor} path="/vendedor/new" />
     <Route component={EditVendedor} path="/vendedor/edit/:id" />
+    <Route component={Home} path="/" />
     <Route default component={NotFoundPage} />
   </Router>
 );

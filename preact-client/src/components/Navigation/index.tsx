@@ -1,18 +1,23 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { Link } from 'preact-router/match';
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
 
 import '@lacorazon/lit-icons';
 
 import { useIntl } from 'providers/Intl';
+import { useAuth } from 'providers/Auth';
 
 import styles from './styles.module.css';
 
 export const Navigation = () => {
   const [isOpen, setOpen] = useState(false);
-  // const { isAuthenticated, loginWithPopup, logout, user } = useAuth0();
   const { locale, setLocale, locales } = useIntl();
+  const { currentUser, logout, isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    isLoggedIn();
+  }, []);
   function toggle() {
     setOpen(!isOpen);
   }
@@ -60,11 +65,11 @@ export const Navigation = () => {
               ))}
             </NavDropdown>
             <Dropdown as={Nav.Item}>
-              {/* {isAuthenticated && user ? (
+              {currentUser ? (
                 <>
                   <Dropdown.Toggle as={Nav.Link} className={styles.user}>
-                    <img src={user.picture} alt="User" />
-                    {user.name}
+                    <icon-logged-in></icon-logged-in>
+                    {currentUser.nombre}
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">
                     <Dropdown.Item onClick={() => logout()}>
@@ -77,18 +82,18 @@ export const Navigation = () => {
                   </Dropdown.Menu>
                 </>
               ) : (
-                <> */}
-              <Dropdown.Toggle as={Nav.Link} className={styles.user}>
-                <icon-logged-in></icon-logged-in>
-                guest
-              </Dropdown.Toggle>
-              <Dropdown.Menu align="end">
-                <Dropdown.Item onClick={() => undefined /*loginWithPopup()*/}>
-                  Login
-                </Dropdown.Item>
-              </Dropdown.Menu>
-              {/* </>
-              )} */}
+                <>
+                  <Dropdown.Toggle as={Nav.Link} className={styles.user}>
+                    <icon-logged-out></icon-logged-out>
+                    guest
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu align="end">
+                    <Dropdown.Item as={Link} href="/login">
+                      Login
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </>
+              )}
             </Dropdown>
           </Nav>
         </Navbar.Collapse>
