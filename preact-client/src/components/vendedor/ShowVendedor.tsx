@@ -17,7 +17,7 @@ const ShowVendedor = ({ id }: { id: ID }) => {
     data: vendedor,
   } = useQuery<Vendedor, Error>(['vendedor', id], () => apiGetVendedor(id));
 
-  if (isError) return <Alert variant="warning">{error.message}</Alert>;
+  if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando vendedor</Loading>;
 
   return (

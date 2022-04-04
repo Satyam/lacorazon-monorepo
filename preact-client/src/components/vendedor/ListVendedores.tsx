@@ -27,7 +27,7 @@ const ListVendedores = () => {
 
   const { confirmDelete } = useModals();
 
-  if (isError) return <Alert variant="warning">{error.message}</Alert>;
+  if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
   const onAdd = (ev: MouseEvent) => {
