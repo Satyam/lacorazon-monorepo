@@ -8,9 +8,9 @@ import { Alert } from 'react-bootstrap';
 // import Distribuidores from 'routes/distribuidor/ListDistribuidores';
 // import EditDistribuidor from 'routes/distribuidor/EditDistribuidor';
 // import ShowDistribuidor from 'routes/distribuidor/ShowDistribuidor';
-// import ListVentas from 'routes/ventas/ListVentas';
-// import EditVenta from 'routes/ventas/EditVenta';
-// import ShowVenta from 'routes/ventas/ShowVenta';
+import ListVentas from 'components/ventas/ListVentas';
+import EditVenta from 'components/ventas/EditVenta';
+import ShowVenta from 'components/ventas/ShowVenta';
 import ListVendedores from 'components/vendedor/ListVendedores';
 import ShowVendedor from 'components/vendedor/ShowVendedor';
 import EditVendedor from 'components/vendedor/EditVendedor';
@@ -35,11 +35,11 @@ const Routes = () => (
     <Route path="/distribuidores" component={Distribuidores} />
     <Route path="/distribuidor/new" component={EditDistribuidor} />
     <Route path="/distribuidor/edit/:id" component={EditDistribuidor} />
-    <Route path="/distribuidor/:id" component={ShowDistribuidor} />
+  <Route path="/distribuidor/:id" component={ShowDistribuidor} /> */}
     <Route path="/ventas" component={ListVentas} />
     <Route path="/venta/new" component={EditVenta} />
     <Route path="/venta/edit/:id" component={EditVenta} />
-    <Route path="/venta/:id" component={ShowVenta} /> */}
+    <Route path="/venta/:id" component={ShowVenta} />
     {/* <Route path="/profile" component={Profile} /> */}
     <Route component={Login} path="/login" />
     <Route component={ListVendedores} path="/vendedores" />

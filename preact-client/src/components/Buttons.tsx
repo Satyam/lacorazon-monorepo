@@ -5,21 +5,21 @@ type RowActions = 'show' | 'edit' | 'delete';
 export type TableRowActionHandler = (
   action: RowActions,
   id: ID,
-  nombre: string
+  descr: string
 ) => void;
 
 export const TableRowButtons = ({
   onClick,
   id,
-  nombre,
+  descr,
 }: {
   onClick: TableRowActionHandler;
   id: ID;
-  nombre: string;
+  descr: string;
 }) => {
   const act = (action: RowActions) => (ev: { preventDefault: () => void }) => {
     ev.preventDefault();
-    onClick(action, id, nombre);
+    onClick(action, id, descr);
   };
   return (
     <ButtonGroup size="sm">

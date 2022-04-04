@@ -35,7 +35,7 @@ const ListVendedores = () => {
     route(`/vendedor/new`);
   };
 
-  const rowActionsHandler: TableRowActionHandler = (action, id, nombre) => {
+  const rowActionsHandler: TableRowActionHandler = (action, id, descr) => {
     switch (action) {
       case 'show':
         route(`/vendedor/${id}`);
@@ -44,7 +44,7 @@ const ListVendedores = () => {
         route(`/vendedor/edit/${id}`);
         break;
       case 'delete':
-        confirmDelete(`al usuario ${nombre}`, () => deleteVendedor.mutate(id));
+        confirmDelete(`al usuario ${descr}`, () => deleteVendedor.mutate(id));
         break;
     }
   };
@@ -59,7 +59,7 @@ const ListVendedores = () => {
           <TableRowButtons
             onClick={rowActionsHandler}
             id={id}
-            nombre={vendedor.nombre}
+            descr={vendedor.nombre}
           />
         </td>
       </tr>

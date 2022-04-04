@@ -4,7 +4,7 @@ import { FormSubmit, FormChanged } from '@lacorazon/lit-form';
 import 'preact';
 
 type FieldBaseAttrs = {
-  label: string;
+  label?: string;
   name: string;
   readonly?: boolean;
   placeholder?: string;
@@ -26,6 +26,23 @@ declare module 'preact/src/jsx' {
         FieldBaseAttrs & { value?: string; password?: boolean };
       'email-field': React.HTMLAttributes<HTMLInputElement> &
         FieldBaseAttrs & { value?: string };
+      'date-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & { value?: Date };
+      'number-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & { value?: number };
+      'currency-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & { value?: number };
+      'boolean-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & { value?: boolean; checkLabel?: string };
+      'select-field': React.HTMLAttributes<HTMLInputElement> &
+        FieldBaseAttrs & {
+          value?: string;
+          multiple?: boolean;
+          size?: number;
+          labelFieldName?: string;
+          valueFieldName?: string;
+          options: Record<string, VALUE>;
+        };
       'icon-add': React.HTMLAttributes<HTMLElement>;
       'icon-show': React.HTMLAttributes<HTMLElement>;
       'icon-edit': React.HTMLAttributes<HTMLElement>;
@@ -39,7 +56,7 @@ declare module 'preact/src/jsx' {
       'icon-question': React.HTMLAttributes<HTMLElement>;
       'icon-check-false': React.HTMLAttributes<HTMLElement>;
       'icon-check-true': React.HTMLAttributes<HTMLElement>;
-      'icon-check': React.HTMLAttributes<HTMLElement>;
+      'icon-check': React.HTMLAttributes<HTMLElement> & { value: boolean };
     }
   }
 }
