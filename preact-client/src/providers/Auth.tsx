@@ -1,6 +1,7 @@
 import { h, createContext, ComponentChildren } from 'preact';
 
 import { useState, useContext } from 'preact/hooks';
+import { useQueryClient } from 'react-query';
 
 import {
   apiLogin,
@@ -10,26 +11,12 @@ import {
   CurrentUser,
 } from '@lacorazon/post-client';
 
-export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
+const SESSION_TIMEOUT = 1_800_000 as const;
 
-export class LoginEvent extends Event {
-  currentUser: CurrentUser;
-  constructor(currentUser: CurrentUser) {
-    super(LOGIN_EVENT);
-    this.currentUser = currentUser;
-  }
-}
-
-declare global {
-  interface WindowEventMap {
-    [LOGIN_EVENT]: LoginEvent;
-  }
-}
 type AuthType = {
   currentUser: CurrentUser;
   login: (data: LoginInfo) => Promise<CurrentUser>;
   logout: () => Promise<void>;
-  isLoggedIn: () => Promise<CurrentUser>;
 };
 
 const notImplemented = () => {
@@ -40,48 +27,46 @@ const initialValues: AuthType = {
   currentUser: null,
   login: notImplemented,
   logout: notImplemented,
-  isLoggedIn: notImplemented,
 };
 
 export const AuthContext = createContext<AuthType>(initialValues);
 
 export const AuthProvider = ({ children }: { children: ComponentChildren }) => {
   const [currentUser, setCurrentUser] = useState<CurrentUser>(null);
+  const [timer, setTimer] = useState<NodeJS.Timer | null>(null);
+  const queryClient = useQueryClient();
 
   const login = (data: LoginInfo) =>
     apiLogin(data).then((user) => {
       setCurrentUser(user);
-      window.dispatchEvent(new LoginEvent(user));
-      setTimeout(isLoggedIn, 1_800_000);
       return user;
     });
-  const logout = () =>
-    apiLogout().then(() => {
-      setCurrentUser(null);
-      location.replace('/');
-    });
+
+  const stopAll = () => {
+    setCurrentUser(null);
+    clearInterval(timer!);
+    setTimer(null);
+    queryClient.clear();
+    location.replace('/');
+  };
+
+  const logout = () => apiLogout().then(stopAll);
+
   const isLoggedIn = () =>
     apiIsLoggedIn().then((user) => {
       if (user) {
-        if (user !== currentUser) {
-          setCurrentUser(user);
-          window.dispatchEvent(new LoginEvent(currentUser));
-          setTimeout(isLoggedIn, 1_800_000);
-        }
+        if (user.id !== currentUser?.id) setCurrentUser(user);
       } else {
-        if (currentUser) {
-          setCurrentUser(null);
-          window.dispatchEvent(new LoginEvent(null));
-          setTimeout(logout, 0);
-        }
+        if (currentUser) stopAll();
       }
-      return user;
     });
+
+  isLoggedIn();
+  if (!timer && currentUser) setTimer(setInterval(isLoggedIn, SESSION_TIMEOUT));
   const ctx = {
     currentUser,
     login,
     logout,
-    isLoggedIn,
   };
 
   return <AuthContext.Provider value={ctx}>{children}</AuthContext.Provider>;

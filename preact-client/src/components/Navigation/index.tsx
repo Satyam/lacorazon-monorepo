@@ -1,6 +1,6 @@
 import { h, Fragment } from 'preact';
 import { Link } from 'preact-router/match';
-import { useState, useEffect } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
 
 import '@lacorazon/lit-icons';
@@ -13,11 +13,8 @@ import styles from './styles.module.css';
 export const Navigation = () => {
   const [isOpen, setOpen] = useState(false);
   const { locale, setLocale, locales } = useIntl();
-  const { currentUser, logout, isLoggedIn } = useAuth();
+  const { currentUser, logout } = useAuth();
 
-  useEffect(() => {
-    isLoggedIn();
-  }, []);
   function toggle() {
     setOpen(!isOpen);
   }
