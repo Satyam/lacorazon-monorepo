@@ -1,5 +1,6 @@
 import { h } from 'preact';
 import { route } from 'preact-router';
+import { useState } from 'preact/hooks';
 import { Table, Alert, Button } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { apiListVentas, apiRemoveVenta } from '@lacorazon/post-client';
@@ -8,26 +9,35 @@ import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
 import { formatCurrency, formatDate } from 'utils';
+
 const VENTAS_KEY = 'ventas';
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   const {
     isLoading,
     isError,
-    error,
+    error: listaError,
     data: ventas,
   } = useQuery<VentaYVendedor[], Error>(VENTAS_KEY, () => apiListVentas());
+
+  const [error, setError] = useState<Error | null>(null);
+
+  if (isError) setError(listaError);
+
+  const { openLoading, closeLoading, confirmDelete } = useModals();
+
   const queryClient = useQueryClient();
 
   const deleteVenta = useMutation<null, Error, ID>(apiRemoveVenta, {
+    onMutate: () => openLoading('Borrando venta'),
     onSuccess: () => {
       // Invalidate and refetch
       queryClient.invalidateQueries(VENTAS_KEY);
     },
+    onError: (error) => setError(error),
+    onSettled: () => closeLoading(),
   });
 
-  const { confirmDelete } = useModals();
-
-  if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
+  if (error) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
   const onAdd = (ev: MouseEvent) => {
@@ -55,14 +65,16 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
       <tr key={id}>
         <td>{formatDate(venta.fecha)}</td>
         <td>{venta.concepto}</td>
-        {venta.idVendedor && (
+        {venta.idVendedor ? (
           <td
             title="Ver detalle del vendedor"
             data-action="showVendedor"
             data-idVendedor={venta.idVendedor || 0}
           >
-            <a href="/vendedor/${venta.idVendedor}">{venta.vendedor}</a>
+            <a href={`/vendedor/${venta.idVendedor}`}>{venta.vendedor}</a>
           </td>
+        ) : (
+          <td>--</td>
         )}
         <td class="text-end">{venta.cantidad}</td>
         <td class="text-end">{formatCurrency(venta.precioUnitario)}</td>
@@ -89,8 +101,8 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
         <thead>
           <tr>
             <th>Fecha</th>
-            <th>Concepto</th>$
-            {idVendedor && <th class="idVendedor">Vendedor</th>}
+            <th>Concepto</th>
+            {!idVendedor && <th class="idVendedor">Vendedor</th>}
             <th>Cantidad</th>
             <th>Precio Unitario</th>
             <th>IVA</th>

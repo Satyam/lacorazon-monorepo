@@ -41,6 +41,8 @@ export const EditVenta = ({ id }: { id: ID }) => {
 
   const queryClient = useQueryClient();
 
+  const { openLoading, closeLoading, confirmDelete } = useModals();
+
   const deleteVenta = useMutation<null, Error, ID>(apiRemoveVenta, {
     onMutate: () => openLoading('Borrando venta'),
     onSuccess: () => {
@@ -70,7 +72,6 @@ export const EditVenta = ({ id }: { id: ID }) => {
     onError: (error) => setError(error),
     onSettled: () => closeLoading(),
   });
-  const { openLoading, closeLoading, confirmDelete } = useModals();
 
   // All hooks executed, now I can branch
   if (ventaError) setError(ventaError);
@@ -88,7 +89,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
   };
 
   const onSubmit = (ev: FormSubmit) => {
-    const values = ev.values;
+    const { precioTotal, ...values } = ev.values;
     if (id) {
       updateVenta.mutate({ ...values, id });
     } else {
@@ -117,9 +118,10 @@ export const EditVenta = ({ id }: { id: ID }) => {
           ></text-field>
           <select-field
             label="Vendedor"
-            name="vendedor"
+            name="idVendedor"
             labelFieldName="nombre"
             valueFieldName="id"
+            nullLabel="--"
             options={vendedores as unknown as Record<string, VALUE>}
             value={String(venta.idVendedor)}
           ></select-field>
