@@ -22,6 +22,10 @@ export class SelectField extends FieldBase<string> {
 
   @property({ attribute: false })
   options: AnyRow[] = [];
+
+  @property({ type: String })
+  nullLabel = '';
+
   // Not sure why I had to do this.
   override reset() {
     super.reset();
@@ -29,6 +33,15 @@ export class SelectField extends FieldBase<string> {
   }
 
   override inputControl() {
+    const l = this.labelFieldName;
+    const v = this.valueFieldName;
+    const opts = this.options;
+    if (this.nullLabel) {
+      opts.unshift({
+        [l]: this.nullLabel,
+        [v]: null,
+      } as AnyRow);
+    }
     return html`
       <select
         name=${this.name}
@@ -40,13 +53,13 @@ export class SelectField extends FieldBase<string> {
         @input=${this.inputHandler}
         ${ref(this.fieldRef)}
       >
-        ${this.options.map(
+        ${opts.map(
           (opt) =>
             html`<option
-              value=${String(opt[this.valueFieldName])}
-              ?selected=${String(opt[this.valueFieldName]) === this.value}
+              value=${String(opt[v])}
+              ?selected=${String(opt[v]) === this.value}
             >
-              ${opt[this.labelFieldName]}
+              ${opt[l]}
             </option>`
         )}
       </select>

@@ -41,6 +41,7 @@ declare module 'preact/src/jsx' {
           size?: number;
           labelFieldName?: string;
           valueFieldName?: string;
+          nullLabel?: string;
           options: Record<string, VALUE>;
         };
       'icon-add': React.HTMLAttributes<HTMLElement>;
