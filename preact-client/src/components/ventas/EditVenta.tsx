@@ -12,21 +12,20 @@ import { formatDate } from 'utils';
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
+  VENTAS_SERVICE,
   apiGetVenta,
   apiCreateVenta,
   apiUpdateVenta,
   apiRemoveVenta,
+  VENDEDORES_SERVICE,
   apiListVendedores,
 } from '@lacorazon/post-client';
 
 import { FormSubmit } from '@lacorazon/lit-form';
 
-const VENTAS_KEY = 'ventas';
-const VENDEDORES_KEY = 'vendedores';
-
 export const EditVenta = ({ id }: { id: ID }) => {
   const { error: ventaError, data: venta } = useQuery<Venta, Error>(
-    [VENTAS_KEY, id],
+    [VENTAS_SERVICE, id],
     () => apiGetVenta(id),
     {
       enabled: !!id,
@@ -35,7 +34,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
   const { error: vendedoresError, data: vendedores } = useQuery<
     Vendedor[],
     Error
-  >(VENDEDORES_KEY, () => apiListVendedores());
+  >(VENDEDORES_SERVICE, () => apiListVendedores());
 
   const [error, setError] = useState<Error | null>(null);
 
@@ -47,7 +46,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
     onMutate: () => openLoading('Borrando venta'),
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(VENTAS_KEY);
+      queryClient.invalidateQueries(VENTAS_SERVICE);
       route('/ventas', true);
     },
     onError: (error) => setError(error),
@@ -58,7 +57,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
     onMutate: () => openLoading('Creando venta'),
     onSuccess: ({ id }) => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(VENTAS_KEY);
+      queryClient.invalidateQueries(VENTAS_SERVICE);
       route(`/venta/edit/${id}`, true);
     },
     onError: (error) => setError(error),
@@ -67,7 +66,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
   const updateVenta = useMutation<Venta, Error, Venta>(apiUpdateVenta, {
     onMutate: () => openLoading('Actualizando usuario'),
     onSuccess: () => {
-      queryClient.invalidateQueries([VENTAS_KEY, id]);
+      queryClient.invalidateQueries([VENTAS_SERVICE, id]);
     },
     onError: (error) => setError(error),
     onSettled: () => closeLoading(),

@@ -7,7 +7,7 @@ import { Accordion, AccordionPanel } from 'components/Accordion';
 import ListVentas from 'components/ventas/ListVentas';
 
 import { useQuery } from 'react-query';
-import { apiGetVendedor } from '@lacorazon/post-client';
+import { apiGetVendedor, VENDEDORES_SERVICE } from '@lacorazon/post-client';
 
 const ShowVendedor = ({ id }: { id: ID }) => {
   const {
@@ -15,7 +15,9 @@ const ShowVendedor = ({ id }: { id: ID }) => {
     isError,
     error,
     data: vendedor,
-  } = useQuery<Vendedor, Error>(['vendedor', id], () => apiGetVendedor(id));
+  } = useQuery<Vendedor, Error>([VENDEDORES_SERVICE, id], () =>
+    apiGetVendedor(id)
+  );
 
   if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando vendedor</Loading>;

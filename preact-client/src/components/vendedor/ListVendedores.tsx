@@ -8,20 +8,22 @@ import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
 
-const VENDEDORES_KEY = 'vendedores';
+const VENDEDORES_SERVICE = 'vendedores';
 const ListVendedores = () => {
   const {
     isLoading,
     isError,
     error,
     data: vendedores,
-  } = useQuery<Vendedor[], Error>(VENDEDORES_KEY, () => apiListVendedores());
+  } = useQuery<Vendedor[], Error>(VENDEDORES_SERVICE, () =>
+    apiListVendedores()
+  );
   const queryClient = useQueryClient();
 
   const deleteVendedor = useMutation<null, Error, ID>(apiRemoveVendedor, {
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(VENDEDORES_KEY);
+      queryClient.invalidateQueries(VENDEDORES_SERVICE);
     },
   });
 

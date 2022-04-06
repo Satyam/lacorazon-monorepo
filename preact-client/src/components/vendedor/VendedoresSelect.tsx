@@ -1,16 +1,17 @@
 import { h } from 'preact';
 import { Alert } from 'react-bootstrap';
 import { useQuery } from 'react-query';
-import { apiListVendedores } from '@lacorazon/post-client';
+import { apiListVendedores, VENDEDORES_SERVICE } from '@lacorazon/post-client';
 import { Loading } from 'components/Modals';
 
-const VENDEDORES_KEY = 'vendedores';
 const VendedoresSelect = ({ id }: { id: ID }) => {
   const {
     isError,
     error,
     data: vendedores,
-  } = useQuery<Vendedor[], Error>(VENDEDORES_KEY, () => apiListVendedores());
+  } = useQuery<Vendedor[], Error>(VENDEDORES_SERVICE, () =>
+    apiListVendedores()
+  );
 
   if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (!vendedores) return <Loading>Cargando vendedores</Loading>;

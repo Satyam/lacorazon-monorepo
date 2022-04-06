@@ -3,21 +3,24 @@ import { route } from 'preact-router';
 import { useState } from 'preact/hooks';
 import { Table, Alert, Button } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { apiListVentas, apiRemoveVenta } from '@lacorazon/post-client';
+import {
+  apiListVentas,
+  apiRemoveVenta,
+  VENTAS_SERVICE,
+} from '@lacorazon/post-client';
 import { TableRowButtons, TableRowActionHandler } from 'components/Buttons';
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { useModals } from 'providers/Modals';
 import { formatCurrency, formatDate } from 'utils';
 
-const VENTAS_KEY = 'ventas';
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   const {
     isLoading,
     isError,
     error: listaError,
     data: ventas,
-  } = useQuery<VentaYVendedor[], Error>(VENTAS_KEY, () => apiListVentas());
+  } = useQuery<VentaYVendedor[], Error>(VENTAS_SERVICE, () => apiListVentas());
 
   const [error, setError] = useState<Error | null>(null);
 
@@ -31,7 +34,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
     onMutate: () => openLoading('Borrando venta'),
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(VENTAS_KEY);
+      queryClient.invalidateQueries(VENTAS_SERVICE);
     },
     onError: (error) => setError(error),
     onSettled: () => closeLoading(),

@@ -10,6 +10,7 @@ import { useModals } from 'providers/Modals';
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
+  VENDEDORES_SERVICE,
   apiGetVendedor,
   apiCreateVendedor,
   apiUpdateVendedor,
@@ -18,8 +19,6 @@ import {
 
 import { FormSubmit } from '@lacorazon/lit-form';
 
-const VENDEDORES_KEY = 'vendedores';
-
 export const EditVendedor = ({ id }: { id: ID }) => {
   const {
     isLoading,
@@ -27,7 +26,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
     error: fetchError,
     data: vendedor,
   } = useQuery<Vendedor, Error>(
-    [VENDEDORES_KEY, id],
+    [VENDEDORES_SERVICE, id],
     () => apiGetVendedor(id),
     { enabled: !!id }
   );
@@ -40,7 +39,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
     onMutate: () => openLoading('Borrando vendedor'),
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(VENDEDORES_KEY);
+      queryClient.invalidateQueries(VENDEDORES_SERVICE);
       route('/vendedores', true);
     },
     onError: (error) => setError(error),
@@ -53,7 +52,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       onMutate: () => openLoading('Creando vendedor'),
       onSuccess: ({ id }) => {
         // Invalidate and refetch
-        queryClient.invalidateQueries(VENDEDORES_KEY);
+        queryClient.invalidateQueries(VENDEDORES_SERVICE);
         route(`/vendedor/edit/${id}`, true);
       },
       onError: (error) => setError(error),
@@ -65,7 +64,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
     {
       onMutate: () => openLoading('Actualizando usuario'),
       onSuccess: () => {
-        queryClient.invalidateQueries([VENDEDORES_KEY, id]);
+        queryClient.invalidateQueries([VENDEDORES_SERVICE, id]);
       },
       onError: (error) => setError(error),
       onSettled: () => closeLoading(),

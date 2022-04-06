@@ -5,7 +5,7 @@ import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 
 import { useQuery } from 'react-query';
-import { apiGetVenta } from '@lacorazon/post-client';
+import { apiGetVenta, VENTAS_SERVICE } from '@lacorazon/post-client';
 
 import { formatDate } from 'utils';
 
@@ -15,7 +15,9 @@ const ShowVenta = ({ id }: { id: ID }) => {
     isError,
     error,
     data: venta,
-  } = useQuery<VentaYVendedor, Error>(['venta', id], () => apiGetVenta(id));
+  } = useQuery<VentaYVendedor, Error>([VENTAS_SERVICE, id], () =>
+    apiGetVenta(id)
+  );
 
   if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando venta</Loading>;
