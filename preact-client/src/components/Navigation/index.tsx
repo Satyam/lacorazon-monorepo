@@ -27,28 +27,30 @@ export const Navigation = () => {
         </Navbar.Brand>
         <Navbar.Toggle onClick={toggle} />
         <Navbar.Collapse>
-          <Nav className="me-auto">
-            <Nav.Item>
-              <Nav.Link as={Link} href="/users">
-                Usuarios
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link as={Link} href="/distribuidores">
-                Distribuidores
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link as={Link} href="/ventas">
-                Ventas
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link as={Link} href="/vendedores">
-                Vendedores
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
+          {currentUser && (
+            <Nav className="me-auto">
+              <Nav.Item>
+                <Nav.Link as={Link} href="/users">
+                  Usuarios
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link as={Link} href="/distribuidores">
+                  Distribuidores
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link as={Link} href="/ventas">
+                  Ventas
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link as={Link} href="/vendedores">
+                  Vendedores
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+          )}
           <Nav className="ms-auto">
             <NavDropdown title={locale}>
               {locales.map((l) => (
