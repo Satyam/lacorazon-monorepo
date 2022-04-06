@@ -1,6 +1,6 @@
 import apiFetch from './apiFetch';
 
-const service = 'ventas';
+export const VENTAS_SERVICE = 'ventas';
 const ventasRequestConversion: RequestTransformer<Venta> = {
   fecha: (date) => date.toISOString(),
 };
@@ -12,7 +12,7 @@ const ventasReplyConversion: ReplyTransformer<VentaYVendedor> = {
 export const apiListVentas = (options?: OptionsType) =>
   apiFetch<undefined, VentaYVendedor[]>(
     {
-      service,
+      service: VENTAS_SERVICE,
       op: 'list',
       options,
     },
@@ -23,7 +23,7 @@ export const apiListVentas = (options?: OptionsType) =>
 export const apiGetVenta = (id: ID, options?: OptionsType) =>
   apiFetch<undefined, VentaYVendedor>(
     {
-      service,
+      service: VENTAS_SERVICE,
       op: 'get',
       id,
       options,
@@ -34,7 +34,7 @@ export const apiGetVenta = (id: ID, options?: OptionsType) =>
 
 export const apiRemoveVenta = (id: ID, options?: OptionsType) =>
   apiFetch<undefined, null>({
-    service,
+    service: VENTAS_SERVICE,
     op: 'remove',
     id,
     options,
@@ -43,7 +43,7 @@ export const apiRemoveVenta = (id: ID, options?: OptionsType) =>
 export const apiCreateVenta = (venta: Venta, options?: OptionsType) =>
   apiFetch<Venta, Venta>(
     {
-      service,
+      service: VENTAS_SERVICE,
       op: 'create',
       id: 0,
       data: venta,
@@ -56,7 +56,7 @@ export const apiCreateVenta = (venta: Venta, options?: OptionsType) =>
 export const apiUpdateVenta = (venta: Venta, options?: OptionsType) =>
   apiFetch<Venta, Venta>(
     {
-      service,
+      service: VENTAS_SERVICE,
       op: 'update',
       id: venta.id,
       data: venta,

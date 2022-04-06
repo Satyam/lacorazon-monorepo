@@ -1,17 +1,17 @@
 import apiFetch from './apiFetch';
 
-const service = 'vendedores';
+export const VENDEDORES_SERVICE = 'vendedores';
 
 export const apiListVendedores = (options?: OptionsType) =>
   apiFetch<undefined, Vendedor[]>({
-    service,
+    service: VENDEDORES_SERVICE,
     op: 'list',
     options,
   });
 
 export const apiGetVendedor = (id: ID, options?: OptionsType) =>
   apiFetch<undefined, Vendedor>({
-    service,
+    service: VENDEDORES_SERVICE,
     op: 'get',
     id,
     options,
@@ -19,7 +19,7 @@ export const apiGetVendedor = (id: ID, options?: OptionsType) =>
 
 export const apiCreateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
   apiFetch<Vendedor, Vendedor>({
-    service,
+    service: VENDEDORES_SERVICE,
     op: 'create',
     id: 0,
     data: vendedor,
@@ -28,7 +28,7 @@ export const apiCreateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
 
 export const apiUpdateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
   apiFetch<Vendedor, Vendedor>({
-    service,
+    service: VENDEDORES_SERVICE,
     op: 'update',
     id: vendedor.id,
     data: vendedor,
@@ -37,7 +37,7 @@ export const apiUpdateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
 
 export const apiRemoveVendedor = (id: ID, options?: OptionsType) =>
   apiFetch<undefined, null>({
-    service,
+    service: VENDEDORES_SERVICE,
     op: 'remove',
     id,
     options,

@@ -4,11 +4,11 @@ export type SafeUserData = Omit<User, 'password'>;
 export type CurrentUser = SafeUserData | null;
 export type LoginInfo = Pick<User, 'email' | 'password'>;
 
-const service = 'auth';
+export const AUTH_SERVICE = 'auth';
 
 export const apiLogin = (data: LoginInfo, options?: OptionsType) =>
   apiFetch<LoginInfo, CurrentUser>({
-    service,
+    service: AUTH_SERVICE,
     op: 'login',
     data,
     options,
@@ -16,14 +16,14 @@ export const apiLogin = (data: LoginInfo, options?: OptionsType) =>
 
 export const apiLogout = (options?: OptionsType) =>
   apiFetch({
-    service,
+    service: AUTH_SERVICE,
     op: 'logout',
     options,
   });
 
 export const apiIsLoggedIn = (options?: OptionsType) =>
   apiFetch<undefined, CurrentUser>({
-    service,
+    service: AUTH_SERVICE,
     op: 'isLoggedIn',
     options,
   });
