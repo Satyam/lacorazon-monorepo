@@ -4,7 +4,7 @@ import { Alert } from 'react-bootstrap';
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { Accordion, AccordionPanel } from 'components/Accordion';
-// import ListVentas from 'Components/ventas/ListVentas';
+import ListVentas from 'components/ventas/ListVentas';
 
 import { useQuery } from 'react-query';
 import { apiGetVendedor } from '@lacorazon/post-client';
@@ -43,7 +43,7 @@ const ShowVendedor = ({ id }: { id: ID }) => {
       </form-wrapper>
       <Accordion>
         <AccordionPanel label="Ventas" name="ventas">
-          {/* <ListVentas idVendedor={id} nombreVendedor={vendedor.nombre} wide /> */}
+          <ListVentas idVendedor={id} />
         </AccordionPanel>
         <AccordionPanel label="Consigna" name="consigna">
           Aquí irían los libros que este vendedor tiene en consigna en las

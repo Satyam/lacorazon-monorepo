@@ -65,7 +65,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
       <tr key={id}>
         <td>{formatDate(venta.fecha)}</td>
         <td>{venta.concepto}</td>
-        {venta.idVendedor ? (
+        {!idVendedor && (
           <td
             title="Ver detalle del vendedor"
             data-action="showVendedor"
@@ -73,8 +73,6 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
           >
             <a href={`/vendedor/${venta.idVendedor}`}>{venta.vendedor}</a>
           </td>
-        ) : (
-          <td>--</td>
         )}
         <td class="text-end">{venta.cantidad}</td>
         <td class="text-end">{formatCurrency(venta.precioUnitario)}</td>
@@ -96,7 +94,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   };
 
   return (
-    <Page title="Ventas" heading="Ventas">
+    <Page title="Ventas" heading="Ventas" wide={!!idVendedor}>
       <Table striped hover size="sm" responsive bordered>
         <thead>
           <tr>
@@ -119,7 +117,11 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
             </th>
           </tr>
         </thead>
-        <tbody>{(ventas || []).map(rowVenta)}</tbody>
+        <tbody>
+          {(ventas || [])
+            .filter((venta) => !idVendedor || venta.idVendedor === idVendedor)
+            .map(rowVenta)}
+        </tbody>
       </Table>
     </Page>
   );
