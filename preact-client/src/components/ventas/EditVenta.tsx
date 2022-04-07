@@ -1,6 +1,5 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { route } from 'preact-router';
-import { useState } from 'preact/hooks';
 import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
@@ -24,19 +23,22 @@ import {
 import { FormSubmit } from '@lacorazon/lit-form';
 
 export const EditVenta = ({ id }: { id: ID }) => {
-  const { error: ventaError, data: venta } = useQuery<Venta, Error>(
+  const errors: (Error | string)[] = [];
+  const { data: venta } = useQuery<Venta, Error>(
     [VENTAS_SERVICE, id],
     () => apiGetVenta(id),
     {
       enabled: !!id,
+      onError: (error) => errors.push(error),
     }
   );
-  const { error: vendedoresError, data: vendedores } = useQuery<
-    Vendedor[],
-    Error
-  >(VENDEDORES_SERVICE, () => apiListVendedores());
-
-  const [error, setError] = useState<Error | null>(null);
+  const { data: vendedores } = useQuery<Vendedor[], Error>(
+    VENDEDORES_SERVICE,
+    () => apiListVendedores(),
+    {
+      onError: (error) => errors.push(error),
+    }
+  );
 
   const queryClient = useQueryClient();
 
@@ -49,7 +51,9 @@ export const EditVenta = ({ id }: { id: ID }) => {
       queryClient.invalidateQueries(VENTAS_SERVICE);
       route('/ventas', true);
     },
-    onError: (error) => setError(error),
+    onError: (error) => {
+      errors.push(error);
+    },
     onSettled: () => closeLoading(),
   });
 
@@ -60,7 +64,9 @@ export const EditVenta = ({ id }: { id: ID }) => {
       queryClient.invalidateQueries(VENTAS_SERVICE);
       route(`/venta/edit/${id}`, true);
     },
-    onError: (error) => setError(error),
+    onError: (error) => {
+      errors.push(error);
+    },
     onSettled: () => closeLoading(),
   });
   const updateVenta = useMutation<Venta, Error, Venta>(apiUpdateVenta, {
@@ -68,15 +74,22 @@ export const EditVenta = ({ id }: { id: ID }) => {
     onSuccess: () => {
       queryClient.invalidateQueries([VENTAS_SERVICE, id]);
     },
-    onError: (error) => setError(error),
+    onError: (error) => {
+      errors.push(error);
+    },
     onSettled: () => closeLoading(),
   });
 
   // All hooks executed, now I can branch
-  if (ventaError) setError(ventaError);
-  if (vendedoresError) setError(vendedoresError);
 
-  if (error) return <Alert variant="warning">{error.toString()}</Alert>;
+  if (errors.length)
+    return (
+      <>
+        {errors.map((error) => (
+          <Alert variant="warning">{error.toString()}</Alert>
+        ))}
+      </>
+    );
   if (!venta) return <Loading>Cargando venta</Loading>;
   if (!vendedores) return <Loading>Cargando vendedores</Loading>;
 

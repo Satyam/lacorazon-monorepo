@@ -1,6 +1,5 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { route } from 'preact-router';
-import { useState } from 'preact/hooks';
 import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
@@ -20,6 +19,8 @@ import {
 import { FormSubmit } from '@lacorazon/lit-form';
 
 export const EditVendedor = ({ id }: { id: ID }) => {
+  const errors: (Error | string)[] = [];
+
   const {
     isLoading,
     isError,
@@ -28,10 +29,13 @@ export const EditVendedor = ({ id }: { id: ID }) => {
   } = useQuery<Vendedor, Error>(
     [VENDEDORES_SERVICE, id],
     () => apiGetVendedor(id),
-    { enabled: !!id }
+    {
+      enabled: !!id,
+      onError: (error) => {
+        errors.push(error);
+      },
+    }
   );
-
-  const [error, setError] = useState<Error | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -42,7 +46,9 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       queryClient.invalidateQueries(VENDEDORES_SERVICE);
       route('/vendedores', true);
     },
-    onError: (error) => setError(error),
+    onError: (error) => {
+      errors.push(error);
+    },
     onSettled: () => closeLoading(),
   });
 
@@ -55,7 +61,9 @@ export const EditVendedor = ({ id }: { id: ID }) => {
         queryClient.invalidateQueries(VENDEDORES_SERVICE);
         route(`/vendedor/edit/${id}`, true);
       },
-      onError: (error) => setError(error),
+      onError: (error) => {
+        errors.push(error);
+      },
       onSettled: () => closeLoading(),
     }
   );
@@ -66,16 +74,25 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       onSuccess: () => {
         queryClient.invalidateQueries([VENDEDORES_SERVICE, id]);
       },
-      onError: (error) => setError(error),
+      onError: (error) => {
+        errors.push(error);
+      },
       onSettled: () => closeLoading(),
     }
   );
   const { openLoading, closeLoading, confirmDelete } = useModals();
 
   // All hooks executed, now I can branch
-  if (isError) setError(fetchError);
+  if (isError) errors.push(fetchError);
 
-  if (error) return <Alert variant="warning">{error.toString()}</Alert>;
+  if (errors.length)
+    return (
+      <>
+        {errors.map((error) => (
+          <Alert variant="warning">{error.toString()}</Alert>
+        ))}
+      </>
+    );
   if (isLoading) return <Loading>Cargando vendedor</Loading>;
 
   const onDeleteClick = () => {

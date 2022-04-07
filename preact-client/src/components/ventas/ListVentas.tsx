@@ -1,6 +1,5 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { route } from 'preact-router';
-import { useState } from 'preact/hooks';
 import { Table, Alert, Button } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
@@ -15,16 +14,16 @@ import { useModals } from 'providers/Modals';
 import { formatCurrency, formatDate } from 'utils';
 
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
-  const {
-    isLoading,
-    isError,
-    error: listaError,
-    data: ventas,
-  } = useQuery<VentaYVendedor[], Error>(VENTAS_SERVICE, () => apiListVentas());
-
-  const [error, setError] = useState<Error | null>(null);
-
-  if (isError) setError(listaError);
+  const errors: (Error | string)[] = [];
+  const { isLoading, data: ventas } = useQuery<VentaYVendedor[], Error>(
+    VENTAS_SERVICE,
+    () => apiListVentas(),
+    {
+      onError: (error) => {
+        errors.push(error);
+      },
+    }
+  );
 
   const { openLoading, closeLoading, confirmDelete } = useModals();
 
@@ -36,11 +35,20 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
       // Invalidate and refetch
       queryClient.invalidateQueries(VENTAS_SERVICE);
     },
-    onError: (error) => setError(error),
+    onError: (error) => {
+      errors.push(error);
+    },
     onSettled: () => closeLoading(),
   });
 
-  if (error) return <Alert variant="warning">{error.toString()}</Alert>;
+  if (errors)
+    return (
+      <>
+        {errors.map((error) => (
+          <Alert variant="warning">{error.toString()}</Alert>
+        ))}
+      </>
+    );
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
   const onAdd = (ev: MouseEvent) => {
