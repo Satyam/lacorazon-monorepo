@@ -32,7 +32,7 @@ const ListVendedores = () => {
   if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
-  const onAdd = (ev: MouseEvent) => {
+  const onAdd: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.stopPropagation();
     route(`/vendedor/new`);
   };
@@ -76,12 +76,7 @@ const ListVendedores = () => {
             <th>Nombre</th>
             <th>E-mail</th>
             <th class="text-center">
-              <Button
-                // @ts-ignore
-                onClick={onAdd}
-                variant="primary"
-                title="Agregar"
-              >
+              <Button onClick={onAdd} variant="primary" title="Agregar">
                 <icon-add-person>Agregar</icon-add-person>
               </Button>
             </th>

@@ -51,7 +51,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
     );
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
-  const onAdd = (ev: MouseEvent) => {
+  const onAdd: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.stopPropagation();
     route(`/venta/new`);
   };
@@ -117,12 +117,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
             <th>IVA</th>
             <th>Precio Total</th>
             <th class="text-center">
-              <Button
-                // @ts-ignore
-                onClick={onAdd}
-                variant="primary"
-                title="Agregar"
-              >
+              <Button onClick={onAdd} variant="primary" title="Agregar">
                 <icon-add-person>Agregar</icon-add-person>
               </Button>
             </th>
