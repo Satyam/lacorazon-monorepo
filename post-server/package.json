@@ -6,6 +6,7 @@
   "main": "index.mjs",
   "scripts": {
     "start": "nodemon .",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,5 +28,11 @@
     "nodemon": "^2.0.15",
     "sqlite": "^4.0.23",
     "sqlite3": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^17.0.23"
   }
 }
