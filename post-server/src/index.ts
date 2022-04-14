@@ -5,12 +5,11 @@ import vendedores from './vendedores.js';
 import ventas from './ventas.js';
 import users from './user.js';
 import dotEnv from 'dotenv';
-import relPath from './relPath.js';
 
 const app = express();
 const port = 3000;
 
-dotEnv.config({ path: relPath('../.env') });
+dotEnv.config();
 
 app.use(cookieParser());
 
@@ -54,10 +53,10 @@ app.post(
   postHandler<User>(users)
 );
 
-app.use(express.static(relPath('../../public')));
+app.use(express.static('../public'));
 
 app.get('*', (_, res) => {
-  res.sendFile(relPath('../../public/index.html'));
+  res.sendFile('index.html', { root: '../public' });
 });
 
 app.listen(port, () => {

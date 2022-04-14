@@ -1,7 +1,6 @@
 import cuid from 'cuid';
 import { open, Database, ISqlite } from 'sqlite';
 import sqlite3 from 'sqlite3';
-import relPath from './relPath.js';
 
 export const TABLE_VENTAS = 'Ventas';
 export const TABLE_VENDEDORES = 'Vendedores';
@@ -27,7 +26,7 @@ export function getDb() {
   return _db
     ? Promise.resolve(_db)
     : open({
-        filename: relPath('../data/db.sqlite'),
+        filename: 'data/db.sqlite',
         driver: sqlite3.Database,
       }).then((db) => {
         _db = db;
