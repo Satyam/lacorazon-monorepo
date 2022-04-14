@@ -15,4 +15,4 @@ export default {
     createWithCuid(TABLE_VENDEDORES, data),
   update: ({ id, data }: { id: ID; data: Vendedor }) =>
     updateById(TABLE_VENDEDORES, id, data),
-};
+} as Resolvers<Vendedor>;

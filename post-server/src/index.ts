@@ -1,48 +1,63 @@
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
-import { join } from 'path';
 import auth, { authMiddleware } from './auth.js';
 import vendedores from './vendedores.js';
 import ventas from './ventas.js';
 import users from './user.js';
 import dotEnv from 'dotenv';
-// import buildHtml from './src/html/buildHtml.js';
+import relPath from './relPath.js';
 
-// buildHtml();
 const app = express();
 const port = 3000;
 
-dotEnv.config();
+dotEnv.config({ path: relPath('../.env') });
 
 app.use(cookieParser());
 
 const INVALID_OP = 400;
 
-const postHandler = (fns) => (req: Request, res: Response) => {
-  const { op, ...rest } = req.body;
-  const fn = fns[op];
-  if (fn) fn(rest, req, res).then((resp) => res.json(resp));
-  else
-    res.status(INVALID_OP).json({
-      error: INVALID_OP,
-      data: `In "${req.path}", invalid op "${op}"`,
-    });
-};
+const postHandler =
+  <T>(fns: Resolvers<T>) =>
+  (req: Request, res: Response) => {
+    const apiReq = req.body as ApiRequest<ID | undefined, T | undefined>;
+    const fn = fns[apiReq.op];
+    if (fn) fn(apiReq, req, res).then((resp) => res.json(resp));
+    else
+      res.status(INVALID_OP).json({
+        error: INVALID_OP,
+        data: `In "${req.path}", invalid op "${apiReq.op}" for service "${apiReq.service}"`,
+      });
+  };
 
-app.post('/api/auth', express.json(), postHandler(auth));
+app.post(
+  '/api/auth',
+  express.json(),
+  postHandler<User>(auth as unknown as Resolvers<User>)
+);
 app.post(
   '/api/vendedores',
   express.json(),
   authMiddleware,
-  postHandler(vendedores)
+  postHandler<Vendedor>(vendedores)
 );
-app.post('/api/ventas', express.json(), authMiddleware, postHandler(ventas));
-app.post('/api/users', express.json(), authMiddleware, postHandler(users));
+app.post(
+  '/api/ventas',
+  express.json(),
+  authMiddleware,
+  // @ts-ignore
+  postHandler<Venta>(ventas)
+);
+app.post(
+  '/api/users',
+  express.json(),
+  authMiddleware,
+  postHandler<User>(users)
+);
 
-app.use(express.static('../public'));
+app.use(express.static(relPath('../../public')));
 
 app.get('*', (_, res) => {
-  res.sendFile(join(process.cwd(), '../public/index.html'));
+  res.sendFile(relPath('../../public/index.html'));
 });
 
 app.listen(port, () => {

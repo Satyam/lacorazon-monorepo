@@ -1,29 +1,20 @@
-import jwt, { VerifyErrors, JwtPayload } from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { Request, Response, RequestHandler } from 'express';
 import { checkValidUser } from './user.js';
 
 const UNAUTHORIZED = 401;
 
-declare module 'express' {
-  interface Request {
-    user: User;
-  }
-}
-
 const checkSession = (req: Request): Promise<User> =>
   new Promise((resolve, reject) => {
-    const token = req.cookies[process.env.SESSION_COOKIE];
+    const token: string = req.cookies[process.env.SESSION_COOKIE];
     if (token) {
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET,
-        (err: VerifyErrors, { iat, exp, ...user }: JwtPayload) => {
-          if (err) reject(UNAUTHORIZED);
-          else {
-            resolve(user as User);
-          }
-        }
-      );
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) reject(UNAUTHORIZED);
+        else if (typeof decoded === 'object') {
+          const { iat, exp, ...user } = decoded;
+          resolve(user as User);
+        } else reject(UNAUTHORIZED);
+      });
     } else reject(UNAUTHORIZED);
   });
 
@@ -41,14 +32,10 @@ const setSessionCookie = (res: Response, user: User) =>
     }
   );
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authMiddleware: RequestHandler = (req, res, next) => {
   checkSession(req)
     .then((user) => {
-      req.user = user;
+      res.locals.user = user;
       next();
     })
     .catch((error) => {

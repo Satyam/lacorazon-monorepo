@@ -1,8 +1,7 @@
 import cuid from 'cuid';
-import { open, Database } from 'sqlite';
-import sqlite3, { RunResult } from 'sqlite3';
-
-import { join } from 'path';
+import { open, Database, ISqlite } from 'sqlite';
+import sqlite3 from 'sqlite3';
+import relPath from './relPath.js';
 
 export const TABLE_VENTAS = 'Ventas';
 export const TABLE_VENDEDORES = 'Vendedores';
@@ -12,12 +11,12 @@ export const TABLE_USERS = 'Users';
 export const TABLE_CONSIGNA = 'Consigna';
 
 const NOT_FOUND = 404;
-
+const SQLITE_ERROR = 10000;
 let _db: Database;
 
-export function formatReply<T>(q: Promise<T>): Promise<ApiReply<T>> {
+export function formatReply<T>(q: Promise<T | undefined>): ApiReply<T> {
   return q
-    .then((data) => ({ data }))
+    .then((data) => (data ? { data } : Promise.reject('not found')))
     .catch((err) => ({
       error: err.code,
       data: err.message,
@@ -28,7 +27,7 @@ export function getDb() {
   return _db
     ? Promise.resolve(_db)
     : open({
-        filename: join(process.cwd(), 'data', 'db.sqlite'),
+        filename: relPath('../data/db.sqlite'),
         driver: sqlite3.Database,
       }).then((db) => {
         _db = db;
@@ -82,7 +81,7 @@ export function getById<T>(
 function replyOneChange<T>(
   nombreTabla: string,
   id: ID | null,
-  query: (db: Database) => Promise<RunResult>,
+  query: (db: Database) => Promise<ISqlite.RunResult>,
   camposSalida?: string[]
 ) {
   return formatReply<T>(
@@ -90,7 +89,7 @@ function replyOneChange<T>(
       .then(query)
       .then((response) =>
         response.changes === 1
-          ? rawGetById<T>(nombreTabla, id ?? response.lastID, camposSalida)
+          ? rawGetById<T>(nombreTabla, id ?? response.lastID ?? 0, camposSalida)
           : Promise.reject({
               code: SQLITE_ERROR,
               message: 'No changes made',

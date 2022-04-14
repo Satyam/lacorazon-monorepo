@@ -45,4 +45,4 @@ export default {
     createWithCuid(TABLE_USERS, hashPassword(data), safeFields),
   update: ({ id, data }: { id: ID; data: User }) =>
     updateById(TABLE_USERS, id, hashPassword(data), safeFields),
-};
+} as Resolvers<User>;

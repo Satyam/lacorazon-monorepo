@@ -38,7 +38,6 @@ export default {
         )
       )
     ),
-  create: ({ data }: { data: Venta }) => createWithAutoId(TABLE_VENTAS, data),
-  update: ({ id, data }: { id: ID; data: Venta }) =>
-    updateById(TABLE_VENTAS, id, data),
-};
+  create: ({ data }) => createWithAutoId(TABLE_VENTAS, data),
+  update: ({ id, data }) => updateById(TABLE_VENTAS, id, data),
+} as Resolvers<Venta, { idVendedor: ID }>;
