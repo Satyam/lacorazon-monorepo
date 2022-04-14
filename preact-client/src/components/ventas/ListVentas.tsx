@@ -41,7 +41,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
     onSettled: () => closeLoading(),
   });
 
-  if (errors)
+  if (errors.length)
     return (
       <>
         {errors.map((error) => (
