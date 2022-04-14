@@ -46,21 +46,23 @@ export const authMiddleware: RequestHandler = (req, res, next) => {
     });
 };
 
-export default {
-  login: (
-    { data }: { data: Required<Pick<User, 'email' | 'password'>> },
-    _req: Request,
-    res: Response
-  ) =>
-    checkValidUser(data.email, data.password).then((user) => {
-      setSessionCookie(res, user);
-      return { data: user };
+const resolvers: AuthResolvers = {
+  login: ({ data }, _req, res) =>
+    checkValidUser(data.email ?? '', data.password ?? '').then((user) => {
+      if (user) {
+        setSessionCookie(res, user);
+        return { data: user };
+      }
+      return {
+        error: UNAUTHORIZED,
+        data: 'null',
+      };
     }),
-  logout: (_1: void, _req: Request, res: Response) => {
+  logout: (_1, _req, res) => {
     res.clearCookie(process.env.SESSION_COOKIE);
-    return Promise.resolve({ data: {} });
+    return Promise.resolve({ data: null });
   },
-  isLoggedIn: (_1: void, req: Request, res: Response) =>
+  isLoggedIn: (_1, req, res) =>
     checkSession(req)
       .then((user) => {
         setSessionCookie(res, user);
@@ -68,7 +70,10 @@ export default {
       })
       .catch((_error) => {
         return {
-          data: null,
+          error: UNAUTHORIZED,
+          data: 'null',
         };
       }),
 };
+
+export default resolvers;

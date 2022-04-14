@@ -7,12 +7,12 @@ import {
   deleteById,
 } from './utils.js';
 
-export default {
+const resolvers: Resolvers<Vendedor> = {
   list: () => listAll(TABLE_VENDEDORES),
-  remove: ({ id }: { id: ID }) => deleteById(TABLE_VENDEDORES, id),
-  get: ({ id }: { id: ID }) => getById(TABLE_VENDEDORES, id),
-  create: ({ data }: { data: Vendedor }) =>
-    createWithCuid(TABLE_VENDEDORES, data),
-  update: ({ id, data }: { id: ID; data: Vendedor }) =>
-    updateById(TABLE_VENDEDORES, id, data),
-} as Resolvers<Vendedor>;
+  remove: ({ id }) => deleteById(TABLE_VENDEDORES, id),
+  get: ({ id }) => getById(TABLE_VENDEDORES, id),
+  create: ({ data }) => createWithCuid(TABLE_VENDEDORES, data),
+  update: ({ id, data }) => updateById(TABLE_VENDEDORES, id, data),
+};
+
+export default resolvers;

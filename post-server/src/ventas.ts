@@ -8,8 +8,8 @@ import {
   formatReply,
 } from './utils.js';
 
-export default {
-  list: ({ options }: { options?: { idVendedor: ID } }) =>
+const resolvers: Resolvers<Venta, { idVendedor?: ID }> = {
+  list: ({ options }) =>
     formatReply(
       getDb().then((db) =>
         options?.idVendedor
@@ -26,8 +26,8 @@ export default {
             )
       )
     ),
-  remove: ({ id }: { id: ID }) => deleteById(TABLE_VENTAS, id),
-  get: ({ id }: { id: ID }) =>
+  remove: ({ id }) => deleteById(TABLE_VENTAS, id),
+  get: ({ id }) =>
     formatReply(
       getDb().then((db) =>
         db.get(
@@ -40,4 +40,6 @@ export default {
     ),
   create: ({ data }) => createWithAutoId(TABLE_VENTAS, data),
   update: ({ id, data }) => updateById(TABLE_VENTAS, id, data),
-} as Resolvers<Venta, { idVendedor: ID }>;
+};
+
+export default resolvers;

@@ -15,11 +15,16 @@ app.use(cookieParser());
 
 const INVALID_OP = 400;
 
+type AllResolvers<T, O> = Resolvers<T, O> | AuthResolvers;
+type ValidOps<T, O> = keyof Resolvers<T, O> | keyof AuthResolvers;
 const postHandler =
-  <T>(fns: Resolvers<T>) =>
+  <T, O = undefined>(fns: AllResolvers<T, O>) =>
   (req: Request, res: Response) => {
-    const apiReq = req.body as ApiRequest<ID | undefined, T | undefined>;
-    const fn = fns[apiReq.op];
+    const apiReq = req.body as ApiRequest<ID | undefined, T | undefined, O>;
+    const op: ValidOps<T, O> = apiReq.op as ValidOps<T, O>;
+    // @ts-expect-error
+    const fn = fns[op];
+    // @ts-expect-error
     if (fn) fn(apiReq, req, res).then((resp) => res.json(resp));
     else
       res.status(INVALID_OP).json({
@@ -28,11 +33,7 @@ const postHandler =
       });
   };
 
-app.post(
-  '/api/auth',
-  express.json(),
-  postHandler<User>(auth as unknown as Resolvers<User>)
-);
+app.post('/api/auth', express.json(), postHandler<User>(auth as AuthResolvers));
 app.post(
   '/api/vendedores',
   express.json(),
@@ -43,8 +44,7 @@ app.post(
   '/api/ventas',
   express.json(),
   authMiddleware,
-  // @ts-ignore
-  postHandler<Venta>(ventas)
+  postHandler<Venta, { idVendedor?: ID }>(ventas)
 );
 app.post(
   '/api/users',

@@ -38,7 +38,10 @@ export function getDb() {
       });
 }
 
-export function listAll<T>(nombreTabla: string, camposSalida?: string[]) {
+export function listAll<T>(
+  nombreTabla: string,
+  camposSalida?: string[]
+): ApiReply<T> {
   return formatReply<T>(
     getDb().then((db) =>
       db.all<T>(
@@ -65,7 +68,7 @@ export function getById<T>(
   nombreTabla: string,
   id: ID,
   camposSalida?: string[]
-) {
+): ApiReply<T> {
   return rawGetById<T>(nombreTabla, id, camposSalida)
     .then((data) => {
       if (data) return { data };
@@ -82,7 +85,7 @@ function replyOneChange<T>(
   id: ID | null,
   query: (db: Database) => Promise<ISqlite.RunResult>,
   camposSalida?: string[]
-) {
+): ApiReply<T> {
   return formatReply<T>(
     getDb()
       .then(query)
@@ -101,7 +104,7 @@ export function createWithAutoId<T>(
   nombreTabla: string,
   fila: Partial<T & { id: ID }>,
   camposSalida?: string[]
-) {
+): ApiReply<T> {
   const { id: _, ...rest } = fila;
   const fields = Object.keys(rest);
   const values = Object.values(rest);
@@ -123,7 +126,7 @@ export function createWithCuid<T>(
   nombreTabla: string,
   fila: Partial<T & { id: ID }>,
   camposSalida?: string[]
-) {
+): ApiReply<T> {
   const id = cuid();
   const { id: _, ...rest } = fila;
   const fields = Object.keys(rest);
@@ -150,7 +153,7 @@ export function updateById<T>(
   fila: T,
 
   camposSalida?: string[]
-) {
+): ApiReply<T> {
   const fields = Object.keys(fila);
   const values = Object.values(fila);
   return replyOneChange(
@@ -169,13 +172,13 @@ export function updateById<T>(
   );
 }
 
-export function deleteById(nombreTabla: string, id: ID) {
+export function deleteById(nombreTabla: string, id: ID): ApiReply<null> {
   return getDb().then((db) =>
     db
       .run(`delete from ${nombreTabla} where id = ?`, [id])
       .then((response) =>
         response.changes === 1
-          ? {}
+          ? { data: null }
           : {
               error: NOT_FOUND,
               data: 'not found',

@@ -54,14 +54,25 @@ declare global {
       req: Request,
       res: Response
     ) => ApiReply<Data>;
-  } & Record<
-    string,
-    (
-      apiReq: ApiRequest<ID | undefined, Data | undefined, Opts | undefined>,
+  };
+
+  type AuthResolvers = {
+    login: (
+      apiReq: ApiRequest<undefined, User>,
       req: Request,
       res: Response
-    ) => ApiReply<Data | Data[] | undefined>
-  >;
+    ) => ApiReply<User>;
+    logout: (
+      apiReq: ApiRequest<undefined, undefined>,
+      req: Request,
+      res: Response
+    ) => ApiReply<null>;
+    isLoggedIn: (
+      apiReq: ApiRequest<undefined, undefined>,
+      req: Request,
+      res: Response
+    ) => ApiReply<User>;
+  };
 
   type ArrayElementType<T> = T extends (infer U)[]
     ? U

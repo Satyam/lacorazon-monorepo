@@ -37,12 +37,14 @@ export const checkValidUser = (email: string, password: string) =>
     )
   );
 
-export default {
+const resolvers: Resolvers<User> = {
   list: () => listAll(TABLE_USERS, safeFields),
-  remove: ({ id }: { id: ID }) => deleteById(TABLE_USERS, id),
-  get: ({ id }: { id: ID }) => getById(TABLE_USERS, id, safeFields),
-  create: ({ data }: { data: User }) =>
+  remove: ({ id }) => deleteById(TABLE_USERS, id),
+  get: ({ id }) => getById(TABLE_USERS, id, safeFields),
+  create: ({ data }) =>
     createWithCuid(TABLE_USERS, hashPassword(data), safeFields),
-  update: ({ id, data }: { id: ID; data: User }) =>
+  update: ({ id, data }) =>
     updateById(TABLE_USERS, id, hashPassword(data), safeFields),
-} as Resolvers<User>;
+};
+
+export default resolvers;
