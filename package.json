@@ -15,6 +15,7 @@
     "build:post": "npm run build -w post-client",
     "build:preact": "npm run build -w preact-client",
     "build:icons": "npm run build -w lit-icons",
+    "build:server": "npm run build -w post-server",
     "start": "npm start -w post-server"
   },
   "dependencies": {
