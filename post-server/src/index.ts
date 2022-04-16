@@ -1,3 +1,4 @@
+/// <reference path="../../types/global.d.ts" />
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import auth, { authMiddleware } from './auth.js';

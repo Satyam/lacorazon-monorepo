@@ -1,3 +1,5 @@
+/// <reference path="../../types/global.d.ts" />
+
 import { getById, getFirstByTag } from './gets';
 
 import { checkLoggedIn, login } from './login';
