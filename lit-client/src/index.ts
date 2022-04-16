@@ -1,4 +1,5 @@
 /// <reference path="../../types/global.d.ts" />
+/// <reference path="../../types/api.d.ts" />
 import { LitElement, html, TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import './listVendedores';
