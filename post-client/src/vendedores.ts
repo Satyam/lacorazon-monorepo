@@ -3,14 +3,14 @@ import apiFetch from './apiFetch';
 export const VENDEDORES_SERVICE = 'vendedores';
 
 export const apiListVendedores = (options?: OptionsType) =>
-  apiFetch<undefined, Vendedor[]>({
+  apiFetch<undefined, undefined, Vendedor[]>({
     service: VENDEDORES_SERVICE,
     op: 'list',
     options,
   });
 
 export const apiGetVendedor = (id: ID, options?: OptionsType) =>
-  apiFetch<undefined, Vendedor>({
+  apiFetch<ID, undefined, Vendedor>({
     service: VENDEDORES_SERVICE,
     op: 'get',
     id,
@@ -18,16 +18,15 @@ export const apiGetVendedor = (id: ID, options?: OptionsType) =>
   });
 
 export const apiCreateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
-  apiFetch<Vendedor, Vendedor>({
+  apiFetch<undefined, Vendedor, Vendedor>({
     service: VENDEDORES_SERVICE,
     op: 'create',
-    id: 0,
     data: vendedor,
     options,
   });
 
 export const apiUpdateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
-  apiFetch<Vendedor, Vendedor>({
+  apiFetch<ID, Vendedor, Vendedor>({
     service: VENDEDORES_SERVICE,
     op: 'update',
     id: vendedor.id,
@@ -36,7 +35,7 @@ export const apiUpdateVendedor = (vendedor: Vendedor, options?: OptionsType) =>
   });
 
 export const apiRemoveVendedor = (id: ID, options?: OptionsType) =>
-  apiFetch<undefined, null>({
+  apiFetch<ID, undefined, null>({
     service: VENDEDORES_SERVICE,
     op: 'remove',
     id,

@@ -2,13 +2,14 @@ import './global';
 declare global {
   type OptionsType = Record<string, number | string | boolean>;
 
-  type OPERATION<IN> = {
+  type ApiReply<T> = Promise<{ data: T } | { error: number; data: string }>;
+
+  type ApiRequest<Id, Data, Opts = OptionsType> = {
     service: string;
     op: string;
-    id?: ID;
-    data?: IN;
-    options?: OptionsType;
-  };
+    options?: Opts;
+  } & (Id extends undefined ? {} : { id: ID }) &
+    (Data extends undefined ? {} : { data: Data });
 
   type RequestTransformer<IN> = {
     [key in keyof Partial<IN>]: (

@@ -1,56 +1,67 @@
-const requestTransform = <IN>(
-  op: OPERATION<IN | IN[]>,
-  rqt: RequestTransformer<IN>
+const requestTransform = <Id, IN>(
+  req: ApiRequest<Id, IN>,
+  reqTransf: RequestTransformer<IN>
 ) => {
-  const data = op.data;
   const t = (row: IN) => {
     if (typeof row === 'undefined') return undefined;
-    const req: AnyRow = Object.assign({}, row);
-    for (const key in rqt) {
-      req[key] = rqt[key](row[key], key, row);
+    const reqOut: AnyRow = Object.assign({}, row);
+    for (const key in reqTransf) {
+      reqOut[key] = reqTransf[key](row[key], key, row);
     }
-    return req;
+    return reqOut;
   };
+  if (reqTransf) {
+    const data = (req as unknown as { data: IN }).data!;
 
-  if (data && rqt) {
     return {
-      ...op,
+      ...req,
       data: Array.isArray(data) ? data.map((row) => t(row)) : t(data),
     };
   }
-  return op;
+  return req;
 };
 
 function replyTransform<OUT>(
   data: AnyRow | AnyRow[],
-  rpt: ReplyTransformer<OUT>
+  resTransf: ReplyTransformer<OUT>
 ): unknown {
   const t = (row: AnyRow) => {
-    const rep = Object.assign({}, row) as ArrayElementType<OUT>;
-    for (const key in rpt) {
-      rep[key] = rpt[key](row[key], key, row);
+    const resOut = Object.assign({}, row) as ArrayElementType<OUT>;
+    for (const key in resTransf) {
+      resOut[key] = resTransf[key](row[key], key, row);
     }
-    return rep;
+    return resOut;
   };
   if (Array.isArray(data)) return data.map((row) => t(row));
   return t(data);
 }
 
-export function apiFetch<IN extends AnyRow | undefined, OUT>(
-  operation: OPERATION<IN>,
+export function apiFetch<Id, IN extends undefined, OUT>(
+  req: ApiRequest<undefined, IN>,
+  transformRequest: undefined,
+  transformReply?: ReplyTransformer<OUT>
+): Promise<OUT>;
+export function apiFetch<Id, IN, OUT>(
+  req: ApiRequest<Id, IN>,
   transformRequest?: RequestTransformer<IN>,
   transformReply?: ReplyTransformer<OUT>
+): Promise<OUT>;
+export function apiFetch<Id, IN extends AnyRow | undefined, OUT>(
+  req: ApiRequest<Id, IN>,
+  transformRequest: RequestTransformer<IN> | undefined,
+  transformReply?: ReplyTransformer<OUT>
 ): Promise<OUT> {
-  return fetch(`${window.origin}/api/${operation.service}`, {
+  const body =
+    transformRequest && 'data' in req
+      ? requestTransform<Id, IN>(req, transformRequest)
+      : req;
+
+  return fetch(`${window.origin}/api/${req.service}`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json; charset=utf-8',
     },
-    body: JSON.stringify(
-      transformRequest
-        ? requestTransform<IN>(operation, transformRequest)
-        : operation
-    ),
+    body: JSON.stringify(body),
   })
     .then((resp) => {
       if (resp && resp.ok) return resp.json();
