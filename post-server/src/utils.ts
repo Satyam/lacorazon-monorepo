@@ -11,7 +11,17 @@ export const TABLE_CONSIGNA = 'Consigna';
 
 const NOT_FOUND = 404;
 const SQLITE_ERROR = 10000;
-let _db: Database;
+
+let _db: Promise<Database>;
+export function getDb() {
+  return (
+    _db ??
+    (_db = open({
+      filename: 'data/db.sqlite',
+      driver: sqlite3.Database,
+    }))
+  );
+}
 
 export function formatReply<T>(q: Promise<T | undefined>): ApiReply<T> {
   return q
@@ -20,22 +30,6 @@ export function formatReply<T>(q: Promise<T | undefined>): ApiReply<T> {
       error: err.code,
       data: err.message,
     }));
-}
-
-export function getDb() {
-  return _db
-    ? Promise.resolve(_db)
-    : open({
-        filename: 'data/db.sqlite',
-        driver: sqlite3.Database,
-      }).then((db) => {
-        _db = db;
-        // un-comment the following to show statements
-        // db.on('trace', (data) => {
-        //   console.log(JSON.stringify(data, null, 2));
-        // });
-        return db;
-      });
 }
 
 export function listAll<T>(
