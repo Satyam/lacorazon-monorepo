@@ -15,6 +15,12 @@
     "build:post": "npm run build -w post-client",
     "build:preact": "npm run build -w preact-client",
     "build:icons": "npm run build -w lit-icons",
+    "buildAll": "npm run build --workspaces --if-present",
+    "w:vainilla": "npm run build -w vainilla-client",
+    "w:lit": "npm run build -w lit-client",
+    "w:post": "npm run build -w post-client",
+    "w:preact": "npm run build -w preact-client",
+    "w:icons": "npm run build -w lit-icons",
     "build:server": "npm run build -w post-server",
     "start": "npm start -w post-server"
   },

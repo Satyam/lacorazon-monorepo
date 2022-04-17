@@ -7,7 +7,8 @@
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "rollup -c -w"
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
   },
   "repository": {
     "type": "git",

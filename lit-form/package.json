@@ -8,6 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
+    "watch": "rollup -c -w",
     "build1": "rm -rf dist/* && tsc -p tsconfig.json"
   },
   "repository": {

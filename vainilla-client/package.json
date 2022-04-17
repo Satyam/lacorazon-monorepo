@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -c -w",
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
     "buildcss": "purgecss -css ../node_modules/bootstrap/dist/css/bootstrap.min.css ../node_modules/bootstrap-icons/font/bootstrap-icons.css -con public/index.html public/index.js -o public"
   },
   "repository": {
