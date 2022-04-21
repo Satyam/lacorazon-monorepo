@@ -1,4 +1,4 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { route } from 'preact-router';
 import { Alert } from 'react-bootstrap';
 
@@ -21,12 +21,7 @@ import { FormSubmit } from '@lacorazon/lit-form';
 export const EditVendedor = ({ id }: { id: ID }) => {
   const errors: (Error | string)[] = [];
 
-  const {
-    isLoading,
-    isError,
-    error: fetchError,
-    data: vendedor,
-  } = useQuery<Vendedor, Error>(
+  const { isLoading, data: vendedor } = useQuery<Vendedor, Error>(
     [VENDEDORES_SERVICE, id],
     () => apiGetVendedor(id),
     {
@@ -83,16 +78,6 @@ export const EditVendedor = ({ id }: { id: ID }) => {
   const { openLoading, closeLoading, confirmDelete } = useModals();
 
   // All hooks executed, now I can branch
-  if (isError) errors.push(fetchError);
-
-  if (errors.length)
-    return (
-      <>
-        {errors.map((error) => (
-          <Alert variant="warning">{error.toString()}</Alert>
-        ))}
-      </>
-    );
   if (isLoading) return <Loading>Cargando vendedor</Loading>;
 
   const onDeleteClick = () => {
@@ -114,6 +99,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
     <Page
       title={`Vendedor - ${vendedor ? vendedor.nombre : 'nuevo'}`}
       heading={`${id ? 'Edit' : 'Add'} Vendedor`}
+      errors={errors}
     >
       {id && !vendedor ? (
         <Alert color="danger">El usuario no existe o fue borrado</Alert>

@@ -1,6 +1,6 @@
 import { h } from 'preact';
 import { route } from 'preact-router';
-import { Table, Alert, Button } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { apiListVendedores, apiRemoveVendedor } from '@lacorazon/post-client';
 import { TableRowButtons, TableRowActionHandler } from 'components/Buttons';
@@ -12,7 +12,6 @@ const VENDEDORES_SERVICE = 'vendedores';
 const ListVendedores = () => {
   const {
     isLoading,
-    isError,
     error,
     data: vendedores,
   } = useQuery<Vendedor[], Error>(VENDEDORES_SERVICE, () =>
@@ -29,7 +28,6 @@ const ListVendedores = () => {
 
   const { confirmDelete } = useModals();
 
-  if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
   const onAdd: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
@@ -69,7 +67,7 @@ const ListVendedores = () => {
   };
 
   return (
-    <Page title="Vendedores" heading="Vendedores">
+    <Page title="Vendedores" heading="Vendedores" error={error}>
       <Table striped hover size="sm" responsive bordered>
         <thead>
           <tr>

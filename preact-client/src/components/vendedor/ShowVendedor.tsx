@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
@@ -12,20 +11,19 @@ import { apiGetVendedor, VENDEDORES_SERVICE } from '@lacorazon/post-client';
 const ShowVendedor = ({ id }: { id: ID }) => {
   const {
     isLoading,
-    isError,
     error,
     data: vendedor,
   } = useQuery<Vendedor, Error>([VENDEDORES_SERVICE, id], () =>
     apiGetVendedor(id)
   );
 
-  if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando vendedor</Loading>;
 
   return (
     <Page
       title={`Vendedor - ${vendedor ? vendedor.nombre : '??'}`}
       heading={`Vendedor`}
+      error={error}
     >
       <form-wrapper>
         <text-field

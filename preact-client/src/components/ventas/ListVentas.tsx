@@ -1,6 +1,6 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { route } from 'preact-router';
-import { Table, Alert, Button } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
   apiListVentas,
@@ -41,15 +41,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
     onSettled: () => closeLoading(),
   });
 
-  if (errors.length)
-    return (
-      <>
-        {errors.map((error) => (
-          <Alert variant="warning">{error.toString()}</Alert>
-        ))}
-      </>
-    );
-  if (isLoading) return <Loading>Cargando usuarios</Loading>;
+  if (isLoading) return <Loading>Cargando ventas</Loading>;
 
   const onAdd: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.stopPropagation();
@@ -105,7 +97,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   };
 
   return (
-    <Page title="Ventas" heading="Ventas" wide={!!idVendedor}>
+    <Page title="Ventas" heading="Ventas" wide={!!idVendedor} errors={errors}>
       <Table striped hover size="sm" responsive bordered>
         <thead>
           <tr>

@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
@@ -12,20 +11,19 @@ import { formatDate } from 'utils';
 const ShowVenta = ({ id }: { id: ID }) => {
   const {
     isLoading,
-    isError,
     error,
     data: venta,
   } = useQuery<VentaYVendedor, Error>([VENTAS_SERVICE, id], () =>
     apiGetVenta(id)
   );
 
-  if (isError) return <Alert variant="warning">{error.toString()}</Alert>;
   if (isLoading) return <Loading>Cargando venta</Loading>;
 
   return (
     <Page
       title={`Venta - ${venta ? formatDate(venta.fecha) : '??'}`}
       heading={`Venta`}
+      error={error}
     >
       <form-wrapper>
         <date-field

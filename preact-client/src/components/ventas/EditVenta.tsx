@@ -1,4 +1,4 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { route } from 'preact-router';
 import { Alert } from 'react-bootstrap';
 
@@ -24,21 +24,21 @@ import { FormSubmit } from '@lacorazon/lit-form';
 
 export const EditVenta = ({ id }: { id: ID }) => {
   const errors: (Error | string)[] = [];
-  const { data: venta } = useQuery<Venta, Error>(
+  const { data: venta, isLoading: isLoadingVenta } = useQuery<Venta, Error>(
     [VENTAS_SERVICE, id],
     () => apiGetVenta(id),
     {
       enabled: !!id,
       onError: (error) => errors.push(error),
+      initialData: {} as Venta,
     }
   );
-  const { data: vendedores } = useQuery<Vendedor[], Error>(
-    VENDEDORES_SERVICE,
-    () => apiListVendedores(),
-    {
-      onError: (error) => errors.push(error),
-    }
-  );
+  const { data: vendedores, isLoading: isLoadingVendedores } = useQuery<
+    Vendedor[],
+    Error
+  >(VENDEDORES_SERVICE, () => apiListVendedores(), {
+    onError: (error) => errors.push(error),
+  });
 
   const queryClient = useQueryClient();
 
@@ -82,16 +82,8 @@ export const EditVenta = ({ id }: { id: ID }) => {
 
   // All hooks executed, now I can branch
 
-  if (errors.length)
-    return (
-      <>
-        {errors.map((error) => (
-          <Alert variant="warning">{error.toString()}</Alert>
-        ))}
-      </>
-    );
-  if (!venta) return <Loading>Cargando venta</Loading>;
-  if (!vendedores) return <Loading>Cargando vendedores</Loading>;
+  if (isLoadingVenta) return <Loading>Cargando venta</Loading>;
+  if (isLoadingVendedores) return <Loading>Cargando vendedores</Loading>;
 
   const onDeleteClick = () => {
     if (!venta) return;
@@ -113,10 +105,9 @@ export const EditVenta = ({ id }: { id: ID }) => {
     <Page
       title={`Venta - ${venta ? formatDate(venta.fecha) : 'nuevo'}`}
       heading={`${id ? 'Edit' : 'Add'} Venta`}
+      errors={errors}
     >
-      {id && !venta ? (
-        <Alert color="danger">El usuario no existe o fue borrado</Alert>
-      ) : (
+      {venta ? (
         <form-wrapper onformSubmit={onSubmit}>
           <date-field
             label="Fecha"
@@ -159,7 +150,9 @@ export const EditVenta = ({ id }: { id: ID }) => {
           ></currency-field>
           <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
         </form-wrapper>
-      )}
+      ) : id ? (
+        <Alert color="danger">El usuario no existe o fue borrado</Alert>
+      ) : null}
     </Page>
   );
 };
