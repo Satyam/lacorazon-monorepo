@@ -53,13 +53,17 @@ export const AuthProvider = ({ children }: { children: ComponentChildren }) => {
   const logout = () => apiLogout().then(stopAll);
 
   const isLoggedIn = () =>
-    apiIsLoggedIn().then((user) => {
-      if (user) {
-        if (user.id !== currentUser?.id) setCurrentUser(user);
-      } else {
+    apiIsLoggedIn()
+      .then((user) => {
+        if (user) {
+          if (user.id !== currentUser?.id) setCurrentUser(user);
+        } else {
+          if (currentUser) stopAll();
+        }
+      })
+      .catch(() => {
         if (currentUser) stopAll();
-      }
-    });
+      });
 
   isLoggedIn();
   if (!timer && currentUser) setTimer(setInterval(isLoggedIn, SESSION_TIMEOUT));
