@@ -14,13 +14,12 @@ import { useModals } from 'providers/Modals';
 import { formatCurrency, formatDate } from 'utils';
 
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
-  const errors: (Error | string)[] = [];
   const { isLoading, data: ventas } = useQuery<VentaYVendedor[], Error>(
     VENTAS_SERVICE,
     () => apiListVentas(),
     {
-      onError: (error) => {
-        errors.push(error);
+      meta: {
+        message: `Listando ventas ${idVendedor ? ` de ${idVendedor}` : ''}`,
       },
     }
   );
@@ -35,9 +34,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
       // Invalidate and refetch
       queryClient.invalidateQueries(VENTAS_SERVICE);
     },
-    onError: (error) => {
-      errors.push(error);
-    },
+    meta: { message: 'Borando venta' },
     onSettled: () => closeLoading(),
   });
 
@@ -97,30 +94,32 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   };
 
   return (
-    <Page title="Ventas" heading="Ventas" wide={!!idVendedor} errors={errors}>
-      <Table striped hover size="sm" responsive bordered>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Concepto</th>
-            {!idVendedor && <th class="idVendedor">Vendedor</th>}
-            <th>Cantidad</th>
-            <th>Precio Unitario</th>
-            <th>IVA</th>
-            <th>Precio Total</th>
-            <th class="text-center">
-              <Button onClick={onAdd} variant="primary" title="Agregar">
-                <icon-add-person>Agregar</icon-add-person>
-              </Button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {(ventas || [])
-            .filter((venta) => !idVendedor || venta.idVendedor === idVendedor)
-            .map(rowVenta)}
-        </tbody>
-      </Table>
+    <Page title="Ventas" heading="Ventas" wide={!!idVendedor}>
+      {ventas && (
+        <Table striped hover size="sm" responsive bordered>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Concepto</th>
+              {!idVendedor && <th class="idVendedor">Vendedor</th>}
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>IVA</th>
+              <th>Precio Total</th>
+              <th class="text-center">
+                <Button onClick={onAdd} variant="primary" title="Agregar">
+                  <icon-add-person>Agregar</icon-add-person>
+                </Button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {(ventas || [])
+              .filter((venta) => !idVendedor || venta.idVendedor === idVendedor)
+              .map(rowVenta)}
+          </tbody>
+        </Table>
+      )}
     </Page>
   );
 };

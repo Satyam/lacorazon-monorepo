@@ -9,8 +9,10 @@ const VendedoresSelect = ({ id }: { id: ID }) => {
     isError,
     error,
     data: vendedores,
-  } = useQuery<Vendedor[], Error>(VENDEDORES_SERVICE, () =>
-    apiListVendedores()
+  } = useQuery<Vendedor[], Error>(
+    VENDEDORES_SERVICE,
+    () => apiListVendedores(),
+    { meta: { message: 'Leyendo vendedores para seleccionar' } }
   );
 
   if (isError) return <Alert variant="warning">{error.toString()}</Alert>;

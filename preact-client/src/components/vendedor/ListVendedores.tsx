@@ -10,12 +10,10 @@ import { useModals } from 'providers/Modals';
 
 const VENDEDORES_SERVICE = 'vendedores';
 const ListVendedores = () => {
-  const {
-    isLoading,
-    error,
-    data: vendedores,
-  } = useQuery<Vendedor[], Error>(VENDEDORES_SERVICE, () =>
-    apiListVendedores()
+  const { isLoading, data: vendedores } = useQuery<Vendedor[], Error>(
+    VENDEDORES_SERVICE,
+    () => apiListVendedores(),
+    { meta: { message: 'Leyendo Vendedores' } }
   );
   const queryClient = useQueryClient();
 
@@ -24,6 +22,7 @@ const ListVendedores = () => {
       // Invalidate and refetch
       queryClient.invalidateQueries(VENDEDORES_SERVICE);
     },
+    meta: { message: 'Borrando vendedor' },
   });
 
   const { confirmDelete } = useModals();
@@ -67,21 +66,23 @@ const ListVendedores = () => {
   };
 
   return (
-    <Page title="Vendedores" heading="Vendedores" error={error}>
-      <Table striped hover size="sm" responsive bordered>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>E-mail</th>
-            <th class="text-center">
-              <Button onClick={onAdd} variant="primary" title="Agregar">
-                <icon-add-person>Agregar</icon-add-person>
-              </Button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>{(vendedores || []).map(rowVendedor)}</tbody>
-      </Table>
+    <Page title="Vendedores" heading="Vendedores">
+      {vendedores && (
+        <Table striped hover size="sm" responsive bordered>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>E-mail</th>
+              <th class="text-center">
+                <Button onClick={onAdd} variant="primary" title="Agregar">
+                  <icon-add-person>Agregar</icon-add-person>
+                </Button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>{(vendedores || []).map(rowVendedor)}</tbody>
+        </Table>
+      )}
     </Page>
   );
 };

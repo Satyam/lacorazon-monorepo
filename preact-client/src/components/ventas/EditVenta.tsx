@@ -23,13 +23,12 @@ import {
 import { FormSubmit } from '@lacorazon/lit-form';
 
 export const EditVenta = ({ id }: { id: ID }) => {
-  const errors: (Error | string)[] = [];
   const { data: venta, isLoading: isLoadingVenta } = useQuery<Venta, Error>(
     [VENTAS_SERVICE, id],
     () => apiGetVenta(id),
     {
       enabled: !!id,
-      onError: (error) => errors.push(error),
+      meta: { message: id ? `Modificar Venta ${id}` : 'Agregar Venta' },
       initialData: {} as Venta,
     }
   );
@@ -37,7 +36,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
     Vendedor[],
     Error
   >(VENDEDORES_SERVICE, () => apiListVendedores(), {
-    onError: (error) => errors.push(error),
+    meta: { message: 'Leyendo vendedores para seleccionar en venta' },
   });
 
   const queryClient = useQueryClient();
@@ -51,9 +50,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
       queryClient.invalidateQueries(VENTAS_SERVICE);
       route('/ventas', true);
     },
-    onError: (error) => {
-      errors.push(error);
-    },
+    meta: { message: `Borrando venta ${id}` },
     onSettled: () => closeLoading(),
   });
 
@@ -64,9 +61,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
       queryClient.invalidateQueries(VENTAS_SERVICE);
       route(`/venta/edit/${id}`, true);
     },
-    onError: (error) => {
-      errors.push(error);
-    },
+    meta: { message: 'Agregando venta nueva' },
     onSettled: () => closeLoading(),
   });
   const updateVenta = useMutation<Venta, Error, Venta>(apiUpdateVenta, {
@@ -74,9 +69,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
     onSuccess: () => {
       queryClient.invalidateQueries([VENTAS_SERVICE, id]);
     },
-    onError: (error) => {
-      errors.push(error);
-    },
+    meta: { message: `Actualizando venta ${id}` },
     onSettled: () => closeLoading(),
   });
 
@@ -105,7 +98,6 @@ export const EditVenta = ({ id }: { id: ID }) => {
     <Page
       title={`Venta - ${venta ? formatDate(venta.fecha) : 'nuevo'}`}
       heading={`${id ? 'Edit' : 'Add'} Venta`}
-      errors={errors}
     >
       {venta ? (
         <form-wrapper onformSubmit={onSubmit}>

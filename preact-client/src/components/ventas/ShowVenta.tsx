@@ -9,12 +9,10 @@ import { apiGetVenta, VENTAS_SERVICE } from '@lacorazon/post-client';
 import { formatDate } from 'utils';
 
 const ShowVenta = ({ id }: { id: ID }) => {
-  const {
-    isLoading,
-    error,
-    data: venta,
-  } = useQuery<VentaYVendedor, Error>([VENTAS_SERVICE, id], () =>
-    apiGetVenta(id)
+  const { isLoading, data: venta } = useQuery<VentaYVendedor, Error>(
+    [VENTAS_SERVICE, id],
+    () => apiGetVenta(id),
+    { meta: { message: `Mostrando venta ${id}` } }
   );
 
   if (isLoading) return <Loading>Cargando venta</Loading>;
@@ -23,7 +21,6 @@ const ShowVenta = ({ id }: { id: ID }) => {
     <Page
       title={`Venta - ${venta ? formatDate(venta.fecha) : '??'}`}
       heading={`Venta`}
-      error={error}
     >
       <form-wrapper>
         <date-field

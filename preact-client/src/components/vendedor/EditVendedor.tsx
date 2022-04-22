@@ -19,16 +19,12 @@ import {
 import { FormSubmit } from '@lacorazon/lit-form';
 
 export const EditVendedor = ({ id }: { id: ID }) => {
-  const errors: (Error | string)[] = [];
-
   const { isLoading, data: vendedor } = useQuery<Vendedor, Error>(
     [VENDEDORES_SERVICE, id],
     () => apiGetVendedor(id),
     {
       enabled: !!id,
-      onError: (error) => {
-        errors.push(error);
-      },
+      meta: { message: id ? `Modificar Vendedor ${id}` : 'Agregar Vendedor' },
     }
   );
 
@@ -41,9 +37,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       queryClient.invalidateQueries(VENDEDORES_SERVICE);
       route('/vendedores', true);
     },
-    onError: (error) => {
-      errors.push(error);
-    },
+    meta: { message: `Borrar Vendedor ${id}` },
     onSettled: () => closeLoading(),
   });
 
@@ -56,9 +50,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
         queryClient.invalidateQueries(VENDEDORES_SERVICE);
         route(`/vendedor/edit/${id}`, true);
       },
-      onError: (error) => {
-        errors.push(error);
-      },
+      meta: { message: 'Crear Vendedor' },
       onSettled: () => closeLoading(),
     }
   );
@@ -69,9 +61,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       onSuccess: () => {
         queryClient.invalidateQueries([VENDEDORES_SERVICE, id]);
       },
-      onError: (error) => {
-        errors.push(error);
-      },
+      meta: { message: `Actualizando Vendedor ${id}` },
       onSettled: () => closeLoading(),
     }
   );
@@ -99,7 +89,6 @@ export const EditVendedor = ({ id }: { id: ID }) => {
     <Page
       title={`Vendedor - ${vendedor ? vendedor.nombre : 'nuevo'}`}
       heading={`${id ? 'Edit' : 'Add'} Vendedor`}
-      errors={errors}
     >
       {id && !vendedor ? (
         <Alert color="danger">El usuario no existe o fue borrado</Alert>
