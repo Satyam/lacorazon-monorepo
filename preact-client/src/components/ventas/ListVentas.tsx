@@ -16,7 +16,7 @@ import { formatCurrency, formatDate } from 'utils';
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   const { isLoading, data: ventas } = useQuery<VentaYVendedor[], Error>(
     VENTAS_SERVICE,
-    () => apiListVentas(),
+    () => apiListVentas(idVendedor ? { idVendedor } : undefined),
     {
       meta: {
         message: `Listando ventas ${idVendedor ? ` de ${idVendedor}` : ''}`,
@@ -113,11 +113,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
               </th>
             </tr>
           </thead>
-          <tbody>
-            {(ventas || [])
-              .filter((venta) => !idVendedor || venta.idVendedor === idVendedor)
-              .map(rowVenta)}
-          </tbody>
+          <tbody>{ventas.map(rowVenta)}</tbody>
         </Table>
       )}
     </Page>
