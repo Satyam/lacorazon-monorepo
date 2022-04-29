@@ -29,7 +29,7 @@ const ListVendedores = () => {
 
   if (isLoading) return <Loading>Cargando usuarios</Loading>;
 
-  const onAdd: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
+  const onAdd = (ev: MouseEvent) => {
     ev.stopPropagation();
     route(`/vendedor/new`);
   };

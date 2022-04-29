@@ -40,7 +40,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
 
   if (isLoading) return <Loading>Cargando ventas</Loading>;
 
-  const onAdd: React.MouseEventHandler<HTMLButtonElement> = (ev) => {
+  const onAdd = (ev: MouseEvent) => {
     ev.stopPropagation();
     route(`/venta/new`);
   };

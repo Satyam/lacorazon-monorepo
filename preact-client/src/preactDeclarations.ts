@@ -17,24 +17,45 @@ type FieldBaseAttrs = {
 declare module 'preact/src/jsx' {
   namespace JSXInternal {
     interface IntrinsicElements {
-      'form-wrapper': React.HTMLAttributes<HTMLFormElement> & {
+      'form-wrapper': JSXInternal.HTMLAttributes<HTMLFormElement> & {
         onformSubmit?: (ev: FormSubmit) => void;
         onformChanged?: (ev: FormChanged) => void;
         novalidate?: boolean;
       };
-      'text-field': React.HTMLAttributes<HTMLInputElement> &
+      'text-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & { value?: string; password?: boolean };
-      'email-field': React.HTMLAttributes<HTMLInputElement> &
+      'email-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & { value?: string };
-      'date-field': React.HTMLAttributes<HTMLInputElement> &
+      'date-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & { value?: Date };
-      'number-field': React.HTMLAttributes<HTMLInputElement> &
+      'number-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & { value?: number };
-      'currency-field': React.HTMLAttributes<HTMLInputElement> &
+      'currency-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & { value?: number };
-      'boolean-field': React.HTMLAttributes<HTMLInputElement> &
+      'boolean-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & { value?: boolean; checkLabel?: string };
-      'select-field': React.HTMLAttributes<HTMLInputElement> &
+      'select-field': Omit<
+        JSXInternal.HTMLAttributes<HTMLInputElement>,
+        'value'
+      > &
         FieldBaseAttrs & {
           value?: string;
           multiple?: boolean;
@@ -44,20 +65,22 @@ declare module 'preact/src/jsx' {
           nullLabel?: string;
           options: Record<string, VALUE>;
         };
-      'icon-add': React.HTMLAttributes<HTMLElement>;
-      'icon-show': React.HTMLAttributes<HTMLElement>;
-      'icon-edit': React.HTMLAttributes<HTMLElement>;
-      'icon-danger': React.HTMLAttributes<HTMLElement>;
-      'icon-trash': React.HTMLAttributes<HTMLElement>;
-      'icon-add-person': React.HTMLAttributes<HTMLElement>;
-      'icon-addto-cart': React.HTMLAttributes<HTMLElement>;
-      'icon-wait': React.HTMLAttributes<HTMLElement>;
-      'icon-logged-out': React.HTMLAttributes<HTMLElement>;
-      'icon-logged-in': React.HTMLAttributes<HTMLElement>;
-      'icon-question': React.HTMLAttributes<HTMLElement>;
-      'icon-check-false': React.HTMLAttributes<HTMLElement>;
-      'icon-check-true': React.HTMLAttributes<HTMLElement>;
-      'icon-check': React.HTMLAttributes<HTMLElement> & { value: boolean };
+      'icon-add': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-show': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-edit': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-danger': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-trash': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-add-person': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-addto-cart': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-wait': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-logged-out': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-logged-in': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-question': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-check-false': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-check-true': JSXInternal.HTMLAttributes<HTMLElement>;
+      'icon-check': Omit<JSXInternal.HTMLAttributes<HTMLElement>, 'value'> & {
+        value: boolean;
+      };
     }
   }
 }
