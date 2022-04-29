@@ -2,12 +2,12 @@
   "name": "@lacorazon/monorepo",
   "workspaces": [
     "post-server",
+    "post-client",
+    "lit-icons",
+    "lit-form",
     "vainilla-client",
     "lit-client",
-    "post-client",
-    "lit-form",
-    "preact-client",
-    "lit-icons"
+    "preact-client"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
