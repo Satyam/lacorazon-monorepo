@@ -1,5 +1,15 @@
 {
   "name": "@lacorazon/monorepo",
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/lacorazon-monorepo/issues"
+  },
+  "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/lacorazon-monorepo.git"
+  },
   "workspaces": [
     "post-server",
     "post-client",
@@ -7,7 +17,8 @@
     "lit-form",
     "vainilla-client",
     "lit-client",
-    "preact-client"
+    "preact-client",
+    "react-client"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
@@ -15,11 +26,13 @@
     "build:post": "npm run build -w post-client",
     "build:preact": "npm run build -w preact-client",
     "build:icons": "npm run build -w lit-icons",
+    "build:react": "npm run build -w react-client",
     "buildAll": "npm run build --workspaces --if-present",
     "w:vainilla": "npm run watch -w vainilla-client",
     "w:lit": "npm run watch -w lit-client",
     "w:post": "npm run watch -w post-client",
     "w:preact": "npm run watch -w preact-client",
+    "w:react": "npm run watch -w react-client",
     "w:icons": "npm run watch -w lit-icons",
     "build:server": "npm run build -w post-server",
     "start": "npm start -w post-server"

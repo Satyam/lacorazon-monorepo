@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.build.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "declarationDir": "../public/types"
+  },
+  "include": [
+    "src"
+  ]
+}
