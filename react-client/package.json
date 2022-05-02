@@ -13,9 +13,9 @@
     "@lacorazon/lit-icons": "^1.0.0",
     "@lacorazon/post-client": "^1.0.0",
     "date-fns": "^2.28.0",
-    "react": "^18.1.0",
+    "react": "^0.0.0-experimental-bd4784c8f-20220425",
     "react-bootstrap": "^2.2.1",
-    "react-dom": "^18.1.0",
+    "react-dom": "^0.0.0-experimental-bd4784c8f-20220425",
     "react-query": "^3.34.16",
     "react-router-dom": "^6.3.0"
   },
