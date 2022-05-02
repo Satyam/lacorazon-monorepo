@@ -1,4 +1,3 @@
-import { useParams } from 'react-router-dom';
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 
@@ -7,8 +6,7 @@ import { apiGetVenta, VENTAS_SERVICE } from '@lacorazon/post-client';
 
 import { formatDate } from 'utils';
 
-const ShowVenta = () => {
-  const { id } = useParams<{ id: ID }>();
+const ShowVenta = ({ id }: { id: ID }) => {
   const { isLoading, data: venta } = useQuery<VentaYVendedor, Error>(
     [VENTAS_SERVICE, id],
     () => apiGetVenta(id),

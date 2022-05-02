@@ -1,6 +1,6 @@
-import { Link } from 'preact-router/match';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav, Dropdown, NavDropdown, Anchor } from 'react-bootstrap';
 
 import '@lacorazon/lit-icons';
 
@@ -29,22 +29,22 @@ export const Navigation = () => {
           {currentUser && (
             <Nav className="me-auto">
               <Nav.Item>
-                <Nav.Link as={Link} href="/users">
+                <Nav.Link as={Link} to="/users">
                   Usuarios
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link as={Link} href="/distribuidores">
+                <Nav.Link as={Link} to="/distribuidores">
                   Distribuidores
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link as={Link} href="/ventas">
+                <Nav.Link as={Link} to="/ventas">
                   Ventas
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link as={Link} href="/vendedores">
+                <Nav.Link as={Link} to="/vendedores">
                   Vendedores
                 </Nav.Link>
               </Nav.Item>
@@ -54,6 +54,7 @@ export const Navigation = () => {
             <NavDropdown title={locale}>
               {locales.map((l) => (
                 <NavDropdown.Item
+                  as={Anchor}
                   key={l}
                   active={l === locale}
                   onClick={() => setLocale(l)}
@@ -70,11 +71,11 @@ export const Navigation = () => {
                     {currentUser.nombre}
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">
-                    <Dropdown.Item onClick={() => logout()}>
+                    <Dropdown.Item onClick={() => logout()} as={Anchor}>
                       Logout
                     </Dropdown.Item>
-                    <Dropdown.Item divider />
-                    <Dropdown.Item as={Link} href="/profile">
+                    <Dropdown.Divider />
+                    <Dropdown.Item as={Link} to="/profile">
                       Profile
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -86,7 +87,7 @@ export const Navigation = () => {
                     guest
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">
-                    <Dropdown.Item as={Link} href="/login">
+                    <Dropdown.Item as={Link} to="/login">
                       Login
                     </Dropdown.Item>
                   </Dropdown.Menu>

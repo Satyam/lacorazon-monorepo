@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
 import Page from 'components/Page';
@@ -17,8 +17,7 @@ import {
 
 import { FormSubmit } from '@lacorazon/lit-form';
 
-export const EditVendedor = () => {
-  const { id } = useParams<{ id: ID }>();
+export const EditVendedor = ({ id }: { id: ID }) => {
   const navigate = useNavigate();
   const { isLoading, data: vendedor } = useQuery<Vendedor, Error>(
     [VENDEDORES_SERVICE, id],

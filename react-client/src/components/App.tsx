@@ -1,13 +1,13 @@
 import Providers from './Providers';
 import ErrorBoundary from './ErrorBoundary';
 import { Navigation } from 'components/Navigation';
-import Routes from './Routes';
+import { Outlet } from 'react-router-dom';
 
 const App = () => (
   <Providers>
     <ErrorBoundary>
       <Navigation />
-      <Routes />
+      <Outlet />
     </ErrorBoundary>
   </Providers>
 );

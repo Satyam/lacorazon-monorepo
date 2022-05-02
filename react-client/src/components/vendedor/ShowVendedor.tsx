@@ -1,4 +1,3 @@
-import { useParams } from 'react-router-dom';
 import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { Accordion, AccordionPanel } from 'components/Accordion';
@@ -7,8 +6,7 @@ import ListVentas from 'components/ventas/ListVentas';
 import { useQuery } from 'react-query';
 import { apiGetVendedor, VENDEDORES_SERVICE } from '@lacorazon/post-client';
 
-const ShowVendedor = () => {
-  const { id } = useParams<{ id: ID }>();
+const ShowVendedor = ({ id }: { id: ID }) => {
   const { isLoading, data: vendedor } = useQuery<Vendedor, Error>(
     [VENDEDORES_SERVICE, id],
     () => apiGetVendedor(id),

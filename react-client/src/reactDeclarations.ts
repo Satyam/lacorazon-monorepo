@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-// import { ComponentChildren, createElement } from 'preact';
 import { DOMAttributes } from 'react';
 import { FormSubmit, FormChanged } from '@lacorazon/lit-form';
 
