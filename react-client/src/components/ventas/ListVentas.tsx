@@ -67,11 +67,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
         <td>{formatDate(venta.fecha)}</td>
         <td>{venta.concepto}</td>
         {!idVendedor && (
-          <td
-            title="Ver detalle del vendedor"
-            data-action="showVendedor"
-            data-idVendedor={venta.idVendedor || 0}
-          >
+          <td title="Ver detalle del vendedor">
             <a href={`/vendedor/${venta.idVendedor}`}>{venta.vendedor}</a>
           </td>
         )}
