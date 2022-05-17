@@ -18,7 +18,8 @@
     "vainilla-client",
     "lit-client",
     "preact-client",
-    "react-client"
+    "react-client",
+    "mongo-server"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
@@ -35,7 +36,9 @@
     "w:react": "npm run watch -w react-client",
     "w:icons": "npm run watch -w lit-icons",
     "build:server": "npm run build -w post-server",
-    "start": "npm start -w post-server"
+    "build:mongo": "npm run build -w mongo-server",
+    "start": "npm start -w post-server",
+    "start:mongo": "npm start -w mongo-server"
   },
   "dependencies": {
     "bootstrap": "^5.1.3"
