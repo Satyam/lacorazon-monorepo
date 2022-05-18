@@ -1,4 +1,5 @@
 import { MongoClient, Db, Document } from 'mongodb';
+import cuid from 'cuid';
 
 export const TABLE_VENTAS = 'Ventas';
 export const TABLE_VENDEDORES = 'Vendedores';
@@ -8,6 +9,7 @@ export const TABLE_USERS = 'Users';
 export const TABLE_CONSIGNA = 'Consigna';
 
 const monitorCommands = false;
+
 export const mongo = new MongoClient(
   process.env.MONGO_URL || 'mongodb://localhost:27017',
   { monitorCommands }
@@ -68,14 +70,16 @@ export function getById<T>(nombreTabla: string, id: ID): ApiReply<T> {
 
 export function createWithAutoId<T>(
   nombreTabla: string,
-  fila: Partial<T & { id: ID }>
+  fila: Partial<T & { id?: ID }>
 ): ApiReply<T> {
+  const { id, ...rest } = fila;
+  const _id: ID = id ?? cuid();
+
   return formatReply<T>(
-    getColl(nombreTabla)
-      .insertOne(fila)
-      .then((result) =>
-        rawGetById<T>(nombreTabla, result.insertedId as unknown as ID)
-      )
+    getColl<T & { _id: ID }>(nombreTabla)
+      // @ts-ignore
+      .insertOne({ _id, ...rest })
+      .then(() => rawGetById<T>(nombreTabla, _id))
   );
 }
 
@@ -86,7 +90,7 @@ export function updateById<T>(
 ): ApiReply<T> {
   return formatReply<T>(
     getColl(nombreTabla)
-      .updateOne({ _id: id }, fila)
+      .updateOne({ _id: id }, { $set: fila })
       .then(() => rawGetById(nombreTabla, id))
   );
 }
