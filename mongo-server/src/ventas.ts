@@ -17,18 +17,6 @@ const ventasYVendedor = [
       as: 'arrVendedor',
     },
   },
-  // {
-  //   $replaceRoot: {
-  //     newRoot: {
-  //       $mergeObjects: [
-  //         {
-  //           $arrayElemAt: ['$arrVendedor', 0],
-  //         },
-  //         '$$ROOT',
-  //       ],
-  //     },
-  //   },
-  // },
   {
     $addFields: {
       vendedor: {
