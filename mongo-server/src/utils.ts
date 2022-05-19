@@ -12,8 +12,9 @@ const monitorCommands = false;
 
 export const mongo = new MongoClient(
   process.env.MONGO_URL || 'mongodb://localhost:27017',
-  { monitorCommands }
+  { monitorCommands, pkFactory: { createPk: cuid } }
 );
+
 if (monitorCommands) {
   ['commandStarted', 'commandSucceeded', 'commandFailed'].forEach((eventName) =>
     mongo.on(eventName, (event) => {
@@ -70,16 +71,16 @@ export function getById<T>(nombreTabla: string, id: ID): ApiReply<T> {
 
 export function createWithAutoId<T>(
   nombreTabla: string,
-  fila: Partial<T & { id?: ID }>
+  fila: Partial<T & { id: ID }>
 ): ApiReply<T> {
   const { id, ...rest } = fila;
-  const _id: ID = id ?? cuid();
 
   return formatReply<T>(
-    getColl<T & { _id: ID }>(nombreTabla)
-      // @ts-ignore
-      .insertOne({ _id, ...rest })
-      .then(() => rawGetById<T>(nombreTabla, _id))
+    getColl(nombreTabla)
+      .insertOne(rest)
+      .then((result) =>
+        rawGetById<T>(nombreTabla, result.insertedId as unknown as ID)
+      )
   );
 }
 
