@@ -55,7 +55,7 @@ const resolvers: Resolvers<Venta, { idVendedor?: ID }> = {
     formatReply(
       getColl(TABLE_VENTAS)
         .aggregate<VentaYVendedor>([
-          { $match: { _id: id } },
+          { $match: { $or: [{ _id: id }, { _id: Number(id) }] } },
           { $limit: 1 },
           ...ventasYVendedor,
         ])
