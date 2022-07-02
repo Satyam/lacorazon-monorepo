@@ -1,4 +1,5 @@
 export * from './formWrapper';
+export * from './fieldBase';
 export * from './textField';
 export * from './emailField';
 export * from './dateField';

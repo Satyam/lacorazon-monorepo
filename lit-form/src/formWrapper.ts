@@ -1,11 +1,11 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
-import { FieldBase, InputChanged } from './fieldBase';
+import { FieldBase, InputChangedEvent } from './fieldBase';
 import { getTarget } from './utils';
 
 export const FORM_SUBMIT_EVENT: 'formSubmit' = 'formSubmit' as const;
-export class FormSubmit extends Event {
+export class FormSubmitEvent extends Event {
   values: FieldData;
   constructor(values: FieldData) {
     super('formSubmit', { composed: true, bubbles: true });
@@ -13,7 +13,7 @@ export class FormSubmit extends Event {
   }
 }
 export const FORM_CHANGED_EVENT: 'formChanged' = 'formChanged' as const;
-export class FormChanged extends Event {
+export class FormChangedEvent extends Event {
   form: FormWrapper;
   fieldName: string;
   value: VALUE;
@@ -112,10 +112,10 @@ export class FormWrapper extends LitElement {
       })
     ) {
       this._values = fieldValues;
-      this.dispatchEvent(new FormSubmit(fieldValues));
+      this.dispatchEvent(new FormSubmitEvent(fieldValues));
     }
   };
-  private inputChanged = (ev: InputChanged<VALUE>) => {
+  private inputChanged = (ev: InputChangedEvent<VALUE>) => {
     ev.stopPropagation();
     const { isDirty, name, value } = ev;
     this._submitButtons.forEach((btn) => {
@@ -123,7 +123,7 @@ export class FormWrapper extends LitElement {
     });
     this._dirtyFields[name] = isDirty;
     this._values[name] = value;
-    this.dispatchEvent(new FormChanged(this, name, value, this.isDirty));
+    this.dispatchEvent(new FormChangedEvent(this, name, value, this.isDirty));
   };
 
   override render() {

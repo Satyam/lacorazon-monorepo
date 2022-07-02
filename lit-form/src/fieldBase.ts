@@ -5,7 +5,7 @@ import { BootBase } from './bootstrapBase';
 
 export const INPUT_CHANGED_EVENT: 'inputChanged' = 'inputChanged' as const;
 
-export class InputChanged<T> extends Event {
+export class InputChangedEvent<T> extends Event {
   name: string;
   value: T;
   isDirty: boolean;
@@ -98,7 +98,7 @@ export abstract class FieldBase<T> extends LitElement {
   public reset() {
     if (this.defaultValue) {
       this.value = this.defaultValue;
-      this.dispatchEvent(new InputChanged(this.name, this.value, false));
+      this.dispatchEvent(new InputChangedEvent(this.name, this.value, false));
     }
   }
 
@@ -108,7 +108,11 @@ export abstract class FieldBase<T> extends LitElement {
     this.fieldEl().classList.remove('is-valid', 'is-invalid');
     this.value = this.fieldValue;
     return this.dispatchEvent(
-      new InputChanged(this.name, this.value, this.value !== this.defaultValue)
+      new InputChangedEvent(
+        this.name,
+        this.value,
+        this.value !== this.defaultValue
+      )
     );
   }
 
