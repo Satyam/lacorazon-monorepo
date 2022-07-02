@@ -19,7 +19,9 @@
     "lit-client",
     "preact-client",
     "react-client",
-    "mongo-server"
+    "mongo-server",
+    "react-client-swr",
+    "lit-form-react"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
@@ -28,12 +30,14 @@
     "build:preact": "npm run build -w preact-client",
     "build:icons": "npm run build -w lit-icons",
     "build:react": "npm run build -w react-client",
+    "build:swr": "npm run build -w react-client-swr",
     "buildAll": "npm run build --workspaces --if-present",
     "w:vainilla": "npm run watch -w vainilla-client",
     "w:lit": "npm run watch -w lit-client",
     "w:post": "npm run watch -w post-client",
     "w:preact": "npm run watch -w preact-client",
     "w:react": "npm run watch -w react-client",
+    "w:swr": "npm run watch -w react-client-swr",
     "w:icons": "npm run watch -w lit-icons",
     "build:server": "npm run build -w post-server",
     "build:mongo": "npm run build -w mongo-server",
@@ -41,7 +45,8 @@
     "start:mongo": "npm start -w mongo-server"
   },
   "dependencies": {
-    "bootstrap": "^5.1.3"
+    "bootstrap": "^5.1.3",
+    "tslib": "^2.4.0"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.1.9",
