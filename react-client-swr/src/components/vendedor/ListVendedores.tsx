@@ -30,7 +30,7 @@ const ListVendedores = () => {
         navigate(`/vendedor/edit/${id}`);
         break;
       case 'delete':
-        confirmDelete(`al usuario ${descr}`, () => deleteVendedor(id));
+        confirmDelete(`al usuario ${descr}`, () => deleteVendedor('xxxxid'));
         break;
     }
   };

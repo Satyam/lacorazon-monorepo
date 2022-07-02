@@ -1,10 +1,9 @@
 import { createContext, useState, useContext, useCallback } from 'react';
-import { QueryClientProvider, QueryClient, QueryCache } from 'react-query';
+import { SWRConfig, Key } from 'swr';
 
 export type QueryError = {
-  where: string;
   message: string;
-  queryKey: string | readonly unknown[];
+  queryKey: Key;
 };
 
 type QueryErrorsContextType = {
@@ -36,25 +35,20 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
         clearErrors,
       }}
     >
-      <QueryClientProvider
-        client={
-          new QueryClient({
-            queryCache: new QueryCache({
-              onError: (error, query) => {
-                setErrors(
-                  errors.concat({
-                    where: String(query.meta?.message),
-                    message: String(error),
-                    queryKey: query.queryKey,
-                  })
-                );
-              },
-            }),
-          })
-        }
+      <SWRConfig
+        value={{
+          onError: (error, key) => {
+            setErrors(
+              errors.concat({
+                message: String(error),
+                queryKey: key,
+              })
+            );
+          },
+        }}
       >
         {children}
-      </QueryClientProvider>
+      </SWRConfig>
     </QueryContext.Provider>
   );
 };
