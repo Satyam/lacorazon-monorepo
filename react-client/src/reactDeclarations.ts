@@ -1,5 +1,5 @@
 import { DOMAttributes } from 'react';
-import { FormSubmit, FormChanged } from '@lacorazon/lit-form';
+import { FormSubmitEvent, FormChangedEvent } from '@lacorazon/lit-form';
 
 type FieldBaseAttrs = {
   label?: string;
@@ -16,8 +16,8 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'form-wrapper': DOMAttributes<HTMLFormElement> & {
-        onformSubmit?: (ev: FormSubmit) => void;
-        onformChanged?: (ev: FormChanged) => void;
+        onformSubmit?: (ev: FormSubmitEvent) => void;
+        onformChanged?: (ev: FormChangedEvent) => void;
         novalidate?: boolean;
       };
       'text-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &

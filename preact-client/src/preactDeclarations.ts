@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 // import { ComponentChildren, createElement } from 'preact';
-import { FormSubmit, FormChanged } from '@lacorazon/lit-form';
+import { FormSubmitEvent, FormChangedEvent } from '@lacorazon/lit-form';
 import 'preact';
 
 type FieldBaseAttrs = {
@@ -18,8 +18,8 @@ declare module 'preact/src/jsx' {
   namespace JSXInternal {
     interface IntrinsicElements {
       'form-wrapper': JSXInternal.HTMLAttributes<HTMLFormElement> & {
-        onformSubmit?: (ev: FormSubmit) => void;
-        onformChanged?: (ev: FormChanged) => void;
+        onformSubmit?: (ev: FormSubmitEvent) => void;
+        onformChanged?: (ev: FormChangedEvent) => void;
         novalidate?: boolean;
       };
       'text-field': Omit<

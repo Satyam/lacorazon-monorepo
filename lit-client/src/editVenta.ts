@@ -9,7 +9,11 @@ import {
   apiUpdateVenta,
   apiListVendedores,
 } from '@lacorazon/post-client';
-import { FormSubmit, FormChanged, NumberField } from '@lacorazon/lit-form';
+import {
+  FormSubmitEvent,
+  FormChangedEvent,
+  NumberField,
+} from '@lacorazon/lit-form';
 import './popups';
 
 @customElement('edit-venta')
@@ -28,7 +32,7 @@ export class EditVenta extends PageBase<VentaYVendedor> {
       .then(() => apiGetVenta(this.idVenta!));
   }
 
-  submit(ev: FormSubmit) {
+  submit(ev: FormSubmitEvent) {
     const data = ev.values;
     this._loading = true;
     if (this.idVenta) {
@@ -45,7 +49,7 @@ export class EditVenta extends PageBase<VentaYVendedor> {
 
   protected fieldRef: Ref<NumberField> = createRef();
 
-  formChanged(ev: FormChanged) {
+  formChanged(ev: FormChangedEvent) {
     const precioTotalField = this.fieldRef.value;
     if (precioTotalField) {
       const values = ev.form.values as Venta;

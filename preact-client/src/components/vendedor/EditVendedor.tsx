@@ -16,7 +16,7 @@ import {
   apiRemoveVendedor,
 } from '@lacorazon/post-client';
 
-import { FormSubmit } from '@lacorazon/lit-form';
+import { FormSubmitEvent } from '@lacorazon/lit-form';
 
 export const EditVendedor = ({ id }: { id: ID }) => {
   const { isLoading, data: vendedor } = useQuery<Vendedor, Error>(
@@ -76,7 +76,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
     );
   };
 
-  const onSubmit = (ev: FormSubmit) => {
+  const onSubmit = (ev: FormSubmitEvent) => {
     const values = ev.values;
     if (id) {
       updateVendedor.mutate({ ...values, id });

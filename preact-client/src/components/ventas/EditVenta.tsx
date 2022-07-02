@@ -20,7 +20,7 @@ import {
   apiListVendedores,
 } from '@lacorazon/post-client';
 
-import { FormSubmit } from '@lacorazon/lit-form';
+import { FormSubmitEvent } from '@lacorazon/lit-form';
 
 export const EditVenta = ({ id }: { id: ID }) => {
   const { data: venta, isLoading: isLoadingVenta } = useQuery<Venta, Error>(
@@ -85,7 +85,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
     );
   };
 
-  const onSubmit = (ev: FormSubmit) => {
+  const onSubmit = (ev: FormSubmitEvent) => {
     const { precioTotal, ...values } = ev.values;
     if (id) {
       updateVenta.mutate({ ...values, id });

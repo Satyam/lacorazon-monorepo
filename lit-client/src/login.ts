@@ -8,7 +8,7 @@ import {
   CurrentUser,
 } from '@lacorazon/post-client';
 import '@lacorazon/lit-form';
-import { FormSubmit } from '@lacorazon/lit-form';
+import { FormSubmitEvent } from '@lacorazon/lit-form';
 import { router } from './utils';
 
 export const LOGIN_EVENT: 'loginEvent' = 'loginEvent' as const;
@@ -63,7 +63,7 @@ export class LoginForm extends LitElement {
     `,
   ];
 
-  submit(ev: FormSubmit) {
+  submit(ev: FormSubmitEvent) {
     const data = ev.values;
     if (data) {
       apiLogin(data).then((user) => {

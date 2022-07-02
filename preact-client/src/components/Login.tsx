@@ -3,12 +3,12 @@ import { route } from 'preact-router';
 import Page from 'components/Page';
 
 import '@lacorazon/lit-form';
-import { FormSubmit } from '@lacorazon/lit-form';
+import { FormSubmitEvent } from '@lacorazon/lit-form';
 import { useAuth } from 'providers/Auth';
 
 export const Login = () => {
   const { login } = useAuth();
-  const submit = (ev: FormSubmit) => {
+  const submit = (ev: FormSubmitEvent) => {
     const data = ev.values;
     if (data) {
       login(data).then(() => {
