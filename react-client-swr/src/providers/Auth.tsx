@@ -1,5 +1,4 @@
 import { createContext, useState, useContext } from 'react';
-import { useQueryClient } from 'react-query';
 
 import {
   apiLogin,
@@ -32,7 +31,6 @@ export const AuthContext = createContext<AuthType>(initialValues);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<CurrentUser>(null);
   const [timer, setTimer] = useState<NodeJS.Timer | null>(null);
-  const queryClient = useQueryClient();
 
   const login = (data: LoginInfo) =>
     apiLogin(data).then((user) => {
@@ -44,7 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentUser(null);
     clearInterval(timer!);
     setTimer(null);
-    queryClient.clear();
     location.replace('/');
   };
 
