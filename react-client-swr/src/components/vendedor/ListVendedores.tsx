@@ -1,6 +1,6 @@
 import { ReactEventHandler } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Alert } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import { useListVendedores } from 'dataHooks/useVendedores';
 import { TableRowButtons, TableRowActionHandler } from 'components/Buttons';
 import Page from 'components/Page';
@@ -9,11 +9,10 @@ import { useModals } from 'providers/Modals';
 
 const ListVendedores = () => {
   const navigate = useNavigate();
-  const { data: vendedores, error, deleteVendedor } = useListVendedores();
+  const { data: vendedores, deleteVendedor } = useListVendedores();
 
   const { confirmDelete } = useModals();
 
-  if (error) return <Alert color="danger">{error}</Alert>;
   if (!vendedores) return <Loading>Cargando vendedores</Loading>;
 
   const onAdd: ReactEventHandler<HTMLButtonElement> = (ev) => {

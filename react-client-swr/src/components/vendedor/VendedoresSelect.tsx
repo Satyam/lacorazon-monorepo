@@ -1,11 +1,9 @@
-import { Alert } from 'react-bootstrap';
 import { useListVendedores } from 'dataHooks/useVendedores';
 import { Loading } from 'components/Modals';
 
 const VendedoresSelect = ({ id }: { id: ID }) => {
-  const { data: vendedores, error } = useListVendedores();
+  const { data: vendedores } = useListVendedores();
 
-  if (error) return <Alert variant="warning">{error.toString()}</Alert>;
   if (!vendedores) return <Loading>Cargando vendedores</Loading>;
 
   return (

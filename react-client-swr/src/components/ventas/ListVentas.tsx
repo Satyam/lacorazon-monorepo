@@ -1,6 +1,6 @@
 import { ReactEventHandler } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Alert } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import { useListVentas } from 'dataHooks/useVentas';
 import { TableRowButtons, TableRowActionHandler } from 'components/Buttons';
 import Page from 'components/Page';
@@ -10,11 +10,10 @@ import { formatCurrency, formatDate } from 'utils';
 
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   const navigate = useNavigate();
-  const { data: ventas, error, deleteVenta } = useListVentas();
+  const { data: ventas, deleteVenta } = useListVentas();
 
   const { confirmDelete } = useModals();
 
-  if (error) return <Alert color="danger">{error}</Alert>;
   if (!ventas) return <Loading>Cargando ventas</Loading>;
 
   const onAdd: ReactEventHandler<HTMLButtonElement> = (ev) => {

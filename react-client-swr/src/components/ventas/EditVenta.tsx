@@ -26,19 +26,16 @@ export const EditVenta = ({ id }: { id: ID }) => {
   const navigate = useNavigate();
   const {
     data: venta,
-    error: errorVenta,
     createVenta,
     updateVenta,
     deleteVenta,
   } = useGetVenta(id);
 
-  const { data: vendedores, error: errorVendedores } = useListVendedores();
+  const { data: vendedores } = useListVendedores();
 
   const { confirmDelete } = useModals();
 
   // All hooks executed, now I can branch
-  if (errorVenta) return <Alert color="danger">{errorVenta}</Alert>;
-  if (errorVendedores) return <Alert color="danger">{errorVendedores}</Alert>;
   if (!venta) return <Loading>Cargando venta</Loading>;
   if (!vendedores) return <Loading>Cargando ventas</Loading>;
 

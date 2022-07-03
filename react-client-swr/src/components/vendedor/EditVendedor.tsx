@@ -19,7 +19,6 @@ export const EditVendedor = ({ id }: { id: ID }) => {
   const navigate = useNavigate();
   const {
     data: vendedor,
-    error,
     createVendedor,
     updateVendedor,
     deleteVendedor,
@@ -28,7 +27,6 @@ export const EditVendedor = ({ id }: { id: ID }) => {
   const { confirmDelete } = useModals();
 
   // All hooks executed, now I can branch
-  if (error) return <Alert color="danger">{error}</Alert>;
   if (id && !vendedor) return <Loading>Cargando vendedor</Loading>;
 
   const onDeleteClick = () => {
