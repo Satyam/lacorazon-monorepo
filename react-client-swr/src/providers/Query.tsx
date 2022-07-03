@@ -9,6 +9,7 @@ export type QueryError = {
 type QueryErrorsContextType = {
   errors: QueryError[];
   clearErrors: () => void;
+  pushError: (message: string, queryKey: Key) => void;
 };
 
 const notImplemented = () => {
@@ -18,6 +19,7 @@ const notImplemented = () => {
 const initialValues: QueryErrorsContextType = {
   errors: [],
   clearErrors: notImplemented,
+  pushError: notImplemented,
 };
 
 export const QueryContext =
@@ -28,23 +30,25 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearErrors = useCallback(() => setErrors([]), [errors]);
 
+  const pushError = (error: string | Error, queryKey: Key = '') =>
+    setErrors(
+      errors.concat({
+        message: String(error),
+        queryKey,
+      })
+    );
+
   return (
     <QueryContext.Provider
       value={{
         errors,
         clearErrors,
+        pushError,
       }}
     >
       <SWRConfig
         value={{
-          onError: (error, key) => {
-            setErrors(
-              errors.concat({
-                message: String(error),
-                queryKey: key,
-              })
-            );
-          },
+          onError: pushError,
         }}
       >
         {children}
