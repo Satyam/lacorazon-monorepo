@@ -37,8 +37,8 @@ const Page = ({
                   <CloseButton className="float-end" onClick={onCloseError} />
                 </Card.Header>
                 <ListGroup>
-                  {errors.map(({ queryKey, message }) => (
-                    <ListGroup.Item>
+                  {errors.map(({ queryKey, message }, index) => (
+                    <ListGroup.Item key={index}>
                       {`"${JSON.stringify(queryKey)}" reports an error:`}
                       <br />
                       {`${message}`}
