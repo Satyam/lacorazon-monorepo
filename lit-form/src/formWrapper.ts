@@ -96,25 +96,18 @@ export class FormWrapper extends LitElement {
   };
 
   private submitHandler = (ev: Event) => {
-    const fieldValues: FieldData = {};
-
     const submitButton = getTarget<HTMLButtonElement>(ev);
-    if (submitButton.name) {
-      fieldValues[submitButton.name] = true;
-    }
-    if (
-      this._fields.every((f) => {
-        if (f.checkValidity()) {
-          fieldValues[f.name] = f.value;
-          return true;
-        }
-        return false;
-      })
-    ) {
-      this._values = fieldValues;
-      this.dispatchEvent(new FormSubmitEvent(fieldValues));
+    if (this._fields.every((f) => f.checkValidity())) {
+      if (submitButton.name) {
+        this.dispatchEvent(
+          new FormSubmitEvent({ ...this._values, [submitButton.name]: true })
+        );
+      } else {
+        this.dispatchEvent(new FormSubmitEvent(this._values));
+      }
     }
   };
+
   private inputChanged = (ev: InputChangedEvent<VALUE>) => {
     ev.stopPropagation();
     const { isDirty, name, value } = ev;
