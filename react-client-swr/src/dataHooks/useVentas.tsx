@@ -14,8 +14,6 @@ const makeKey = (op: string, id: ID = '*', options?: OptionsType) =>
   `/${VENTAS_SERVICE}/${op}/${id}/${options ? JSON.stringify(options) : ''}`;
 
 export const useListVentas = (options?: OptionsType) => {
-  console.log('useListVentas');
-
   const { pushError } = useQueryError();
 
   const swrRet = useSWR<VentaYVendedor[]>(
@@ -33,13 +31,20 @@ export const useListVentas = (options?: OptionsType) => {
 };
 
 export const useGetVenta = (id: ID, options?: OptionsType) => {
-  console.log('useGetVenta');
-
   const { pushError } = useQueryError();
 
   const swrRet = useSWR<VentaYVendedor>(
     id ? [VENTAS_SERVICE, id, options] : null,
-    (_, id, options) => apiGetVenta(id, options)
+    (_, id, options) => apiGetVenta(id, options),
+    {
+      fallbackData: {
+        fecha: new Date(),
+        concepto: '',
+        cantidad: 1,
+        precioUnitario: 10,
+        iva: false,
+      } as VentaYVendedor,
+    }
   );
 
   const updateVenta = (data: Venta) =>
