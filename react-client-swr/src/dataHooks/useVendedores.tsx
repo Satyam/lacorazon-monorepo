@@ -16,8 +16,6 @@ const makeKey = (op: string, id: ID = '*', options?: OptionsType) =>
   }`;
 
 export const useListVendedores = (options?: OptionsType) => {
-  console.log('useListVendedores');
-
   const { pushError } = useQueryError();
 
   const swrRet = useSWR<Vendedor[]>(
@@ -37,8 +35,6 @@ export const useListVendedores = (options?: OptionsType) => {
 };
 
 export const useGetVendedor = (id: ID, options?: OptionsType) => {
-  console.log('useGetVendedor');
-
   const { pushError } = useQueryError();
 
   const swrRet = useSWR<Vendedor>(
