@@ -3,7 +3,12 @@ import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 
-const datePart = (d: Date) => d.toISOString().split('T')[0];
+const datePart = (d: Date = new Date()) =>
+  [
+    d.getFullYear().toString().padStart(4, '0'),
+    (d.getMonth() + 1).toString().padStart(2, '0'),
+    d.getDate().toString().padStart(2, '0'),
+  ].join('-');
 
 @customElement('date-field')
 export class DateField extends FieldBase<Date> {
