@@ -56,7 +56,6 @@ export const EditVenta = ({ id }: { id: ID }) => {
       );
     }
   };
-
   return (
     <Page
       title={`Venta - ${venta ? formatDate(venta.fecha) : 'nuevo'}`}
@@ -65,11 +64,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
       {venta ? (
         <FormWrapper onFormSubmit={onSubmit}>
           <DateField label="Fecha" name="fecha" value={venta.fecha}></DateField>
-          <TextField
-            label="Concepto"
-            name="concepto"
-            value={venta.concepto || ''}
-          />
+          <TextField label="Concepto" name="concepto" value={venta.concepto} />
           <SelectField
             label="Vendedor"
             name="idVendedor"
@@ -82,12 +77,12 @@ export const EditVenta = ({ id }: { id: ID }) => {
           <NumberField
             label="Cantidad"
             name="cantidad"
-            value={venta.cantidad || 0}
+            value={venta.cantidad}
           />
           <CurrencyField
             label="Precio Unitario"
             name="precioUnitario"
-            value={venta.precioUnitario || 0}
+            value={venta.precioUnitario}
           />
           <BooleanField checkLabel="IVA" name="iva" value={!!venta.iva} />
           <CurrencyField
