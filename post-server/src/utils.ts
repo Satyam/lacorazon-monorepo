@@ -9,8 +9,10 @@ export const TABLE_SALIDAS = 'Salidas';
 export const TABLE_USERS = 'Users';
 export const TABLE_CONSIGNA = 'Consigna';
 
-const NOT_FOUND = 404;
-const SQLITE_ERROR = 10000;
+const NOT_FOUND = {
+  error: 404,
+  data: 'not found',
+};
 
 let _db: Promise<Database>;
 export function getDb() {
@@ -25,7 +27,7 @@ export function getDb() {
 
 export function formatReply<T>(q: Promise<T | undefined>): ApiReply<T> {
   return q
-    .then((data) => (data ? { data } : Promise.reject('not found')))
+    .then((data) => (data ? { data } : NOT_FOUND))
     .catch((err) => ({
       error: err.code,
       data: err.message,
@@ -65,8 +67,7 @@ export function getById<T>(
 ): ApiReply<T> {
   return rawGetById<T>(nombreTabla, id, camposSalida)
     .then((data) => {
-      if (data) return { data };
-      return Promise.reject({ code: 404, message: 'Not found' });
+      return data ? { data } : NOT_FOUND;
     })
     .catch((err) => ({
       error: err.code,
@@ -87,8 +88,8 @@ function replyOneChange<T>(
         response.changes === 1
           ? rawGetById<T>(nombreTabla, id ?? response.lastID ?? 0, camposSalida)
           : Promise.reject({
-              code: SQLITE_ERROR,
-              message: 'No changes made',
+              code: 304,
+              message: 'no changes made',
             })
       )
   );
@@ -170,14 +171,7 @@ export function deleteById(nombreTabla: string, id: ID): ApiReply<null> {
   return getDb().then((db) =>
     db
       .run(`delete from ${nombreTabla} where id = ?`, [id])
-      .then((response) =>
-        response.changes === 1
-          ? { data: null }
-          : {
-              error: NOT_FOUND,
-              data: 'not found',
-            }
-      )
+      .then((response) => (response.changes === 1 ? { data: null } : NOT_FOUND))
       .catch((err) => ({
         error: err.code,
         data: err.message,
