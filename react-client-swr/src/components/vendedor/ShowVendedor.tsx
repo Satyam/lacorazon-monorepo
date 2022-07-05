@@ -7,7 +7,7 @@ import { FormWrapper, TextField, EmailField } from '@lacorazon/lit-form-react';
 import { useGetVendedor } from 'dataHooks/useVendedores';
 
 const ShowVendedor = ({ id }: { id: ID }) => {
-  const { data: vendedor } = useGetVendedor(id);
+  const { vendedor } = useGetVendedor(id);
 
   if (!vendedor) return <Loading>Cargando vendedor</Loading>;
 

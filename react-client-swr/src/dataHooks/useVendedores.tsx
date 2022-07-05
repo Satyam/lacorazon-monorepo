@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import useSWR from 'swr';
 import {
   apiListVendedores,
@@ -18,54 +19,59 @@ const makeKey = (op: string, id: ID = '*', options?: OptionsType) =>
 export const useListVendedores = (options?: OptionsType) => {
   const { pushError } = useQueryError();
 
-  const swrRet = useSWR<Vendedor[]>(
+  const { data, mutate } = useSWR<Vendedor[]>(
     [VENDEDORES_SERVICE, options],
     (_, options) => apiListVendedores(options)
   );
 
-  const deleteVendedor = (id: ID) =>
-    apiRemoveVendedor(id)
-      .catch((err) => pushError(err, makeKey('delete', id, options)))
-      .finally(() => swrRet.mutate());
-
-  return {
-    ...swrRet,
-    deleteVendedor,
-  };
+  return useMemo(
+    () => ({
+      vendedores: data,
+      deleteVendedor: (id: ID) =>
+        apiRemoveVendedor(id)
+          .catch((err) => pushError(err, makeKey('delete', id, options)))
+          .finally(() => mutate()),
+    }),
+    [data, mutate]
+  );
 };
 
+const initialData: Omit<Vendedor, 'id'> = {
+  nombre: '',
+  email: '',
+};
 export const useGetVendedor = (id: ID, options?: OptionsType) => {
   const { pushError } = useQueryError();
 
-  const swrRet = useSWR<Vendedor>(
+  const { data, mutate } = useSWR<Vendedor>(
     id ? [VENDEDORES_SERVICE, id, options] : null,
-    (_, id, options) => apiGetVendedor(id, options)
+    (_, id, options) => apiGetVendedor(id, options),
+    {
+      fallbackData: initialData as Vendedor,
+    }
   );
 
-  const updateVendedor = (data: Vendedor) =>
-    swrRet.mutate(
-      apiUpdateVendedor({ ...data, id }).catch((err) => {
-        pushError(err, makeKey('delete', id, options));
-        throw err;
-      })
-    );
-
-  const deleteVendedor = () =>
-    apiRemoveVendedor(id).catch((err) => {
-      pushError(err, makeKey('delete', id, options));
-      throw err;
-    });
-
-  const createVendedor = (data: Vendedor) =>
-    apiCreateVendedor(data).catch((err) => {
-      pushError(err, makeKey('create', id, options));
-      throw err;
-    });
-
-  return {
-    ...swrRet,
-    updateVendedor,
-    createVendedor,
-    deleteVendedor,
-  };
+  return useMemo(
+    () => ({
+      vendedor: data,
+      updateVendedor: (data: Vendedor) =>
+        mutate(
+          apiUpdateVendedor({ ...data, id }).catch((err) => {
+            pushError(err, makeKey('delete', id, options));
+            throw err;
+          })
+        ),
+      createVendedor: (data: Vendedor) =>
+        apiCreateVendedor({ ...initialData, ...data }).catch((err) => {
+          pushError(err, makeKey('create', id, options));
+          throw err;
+        }),
+      deleteVendedor: () =>
+        apiRemoveVendedor(id).catch((err) => {
+          pushError(err, makeKey('delete', id, options));
+          throw err;
+        }),
+    }),
+    [data, mutate]
+  );
 };

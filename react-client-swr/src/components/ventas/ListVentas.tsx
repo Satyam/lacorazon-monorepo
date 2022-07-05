@@ -10,7 +10,7 @@ import { formatCurrency, formatDate } from 'utils';
 
 const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
   const navigate = useNavigate();
-  const { data: ventas, deleteVenta } = useListVentas();
+  const { ventas, deleteVenta } = useListVentas();
 
   const { confirmDelete } = useModals();
 

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import useSWR from 'swr';
 import {
   apiListVentas,
@@ -16,18 +17,21 @@ const makeKey = (op: string, id: ID = '*', options?: OptionsType) =>
 export const useListVentas = (options?: OptionsType) => {
   const { pushError } = useQueryError();
 
-  const swrRet = useSWR<VentaYVendedor[]>(
+  const { data, mutate } = useSWR<VentaYVendedor[]>(
     [VENTAS_SERVICE, options],
     (_, options) => apiListVentas(options)
   );
-  const deleteVenta = (id: ID) =>
-    apiRemoveVenta(id)
-      .catch((err) => pushError(err, makeKey('delete', id, options)))
-      .finally(() => swrRet.mutate());
-  return {
-    ...swrRet,
-    deleteVenta,
-  };
+
+  return useMemo(
+    () => ({
+      ventas: data,
+      deleteVenta: (id: ID) =>
+        apiRemoveVenta(id)
+          .catch((err) => pushError(err, makeKey('delete', id, options)))
+          .finally(() => mutate()),
+    }),
+    [data, mutate]
+  );
 };
 
 const initialData: Omit<VentaYVendedor, 'id'> = {
@@ -37,10 +41,11 @@ const initialData: Omit<VentaYVendedor, 'id'> = {
   precioUnitario: 10,
   iva: false,
 };
+
 export const useGetVenta = (id: ID, options?: OptionsType) => {
   const { pushError } = useQueryError();
 
-  const swrRet = useSWR<VentaYVendedor>(
+  const { data, mutate } = useSWR<VentaYVendedor>(
     id ? [VENTAS_SERVICE, id, options] : null,
     (_, id, options) => apiGetVenta(id, options),
     {
@@ -48,30 +53,27 @@ export const useGetVenta = (id: ID, options?: OptionsType) => {
     }
   );
 
-  const updateVenta = (data: Venta) =>
-    swrRet.mutate(
-      apiUpdateVenta({ ...data, id }).catch((err) => {
-        pushError(err, makeKey('delete', id, options));
-        throw err;
-      })
-    );
-
-  const deleteVenta = () =>
-    apiRemoveVenta(id).catch((err) => {
-      pushError(err, makeKey('delete', id, options));
-      throw err;
-    });
-
-  const createVenta = (data: Venta) =>
-    apiCreateVenta({ ...initialData, ...data }).catch((err) => {
-      pushError(err, makeKey('create', id, options));
-      throw err;
-    });
-
-  return {
-    ...swrRet,
-    updateVenta,
-    createVenta,
-    deleteVenta,
-  };
+  return useMemo(
+    () => ({
+      venta: data,
+      updateVenta: (data: Venta) =>
+        mutate(
+          apiUpdateVenta({ ...data, id }).catch((err) => {
+            pushError(err, makeKey('delete', id, options));
+            throw err;
+          })
+        ),
+      createVenta: (data: Venta) =>
+        apiCreateVenta({ ...initialData, ...data }).catch((err) => {
+          pushError(err, makeKey('create', id, options));
+          throw err;
+        }),
+      deleteVenta: () =>
+        apiRemoveVenta(id).catch((err) => {
+          pushError(err, makeKey('delete', id, options));
+          throw err;
+        }),
+    }),
+    [data, mutate]
+  );
 };

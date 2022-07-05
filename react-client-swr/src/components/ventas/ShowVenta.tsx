@@ -14,7 +14,7 @@ import {
 import { formatDate } from 'utils';
 
 const ShowVenta = ({ id }: { id: ID }) => {
-  const { data: venta } = useGetVenta(id);
+  const { venta } = useGetVenta(id);
 
   if (!venta) return <Loading>Cargando venta</Loading>;
 

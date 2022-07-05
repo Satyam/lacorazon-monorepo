@@ -2,7 +2,7 @@ import { useListVendedores } from 'dataHooks/useVendedores';
 import { Loading } from 'components/Modals';
 
 const VendedoresSelect = ({ id }: { id: ID }) => {
-  const { data: vendedores } = useListVendedores();
+  const { vendedores } = useListVendedores();
 
   if (!vendedores) return <Loading>Cargando vendedores</Loading>;
 

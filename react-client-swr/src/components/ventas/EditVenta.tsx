@@ -24,14 +24,9 @@ import {
 
 export const EditVenta = ({ id }: { id: ID }) => {
   const navigate = useNavigate();
-  const {
-    data: venta,
-    createVenta,
-    updateVenta,
-    deleteVenta,
-  } = useGetVenta(id);
+  const { venta, createVenta, updateVenta, deleteVenta } = useGetVenta(id);
 
-  const { data: vendedores } = useListVendedores();
+  const { vendedores } = useListVendedores();
 
   const { confirmDelete } = useModals();
 

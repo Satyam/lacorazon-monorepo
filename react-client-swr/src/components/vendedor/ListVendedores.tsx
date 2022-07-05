@@ -9,7 +9,7 @@ import { useModals } from 'providers/Modals';
 
 const ListVendedores = () => {
   const navigate = useNavigate();
-  const { data: vendedores, deleteVendedor } = useListVendedores();
+  const { vendedores, deleteVendedor } = useListVendedores();
 
   const { confirmDelete } = useModals();
 
