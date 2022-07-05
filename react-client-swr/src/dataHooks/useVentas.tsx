@@ -30,6 +30,13 @@ export const useListVentas = (options?: OptionsType) => {
   };
 };
 
+const initialData: Omit<VentaYVendedor, 'id'> = {
+  fecha: new Date(),
+  concepto: '',
+  cantidad: 1,
+  precioUnitario: 10,
+  iva: false,
+};
 export const useGetVenta = (id: ID, options?: OptionsType) => {
   const { pushError } = useQueryError();
 
@@ -37,13 +44,7 @@ export const useGetVenta = (id: ID, options?: OptionsType) => {
     id ? [VENTAS_SERVICE, id, options] : null,
     (_, id, options) => apiGetVenta(id, options),
     {
-      fallbackData: {
-        fecha: new Date(),
-        concepto: '',
-        cantidad: 1,
-        precioUnitario: 10,
-        iva: false,
-      } as VentaYVendedor,
+      fallbackData: initialData as VentaYVendedor,
     }
   );
 
@@ -62,7 +63,7 @@ export const useGetVenta = (id: ID, options?: OptionsType) => {
     });
 
   const createVenta = (data: Venta) =>
-    apiCreateVenta(data).catch((err) => {
+    apiCreateVenta({ ...initialData, ...data }).catch((err) => {
       pushError(err, makeKey('create', id, options));
       throw err;
     });
