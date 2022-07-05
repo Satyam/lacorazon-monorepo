@@ -13,16 +13,19 @@ const Page = ({
   title,
   heading,
   children,
+  onClose,
 }: {
   wide?: boolean;
   title?: string;
   heading: string;
   children: React.ReactNode;
+  onClose?: () => void;
 }) => {
   const { clearErrors, errors } = useErrorsContext();
   if (title) document.title = `La Corazón - ${title}`;
   const onCloseError = () => {
     clearErrors();
+    if (onClose) onClose();
   };
   return (
     <Container fluid>

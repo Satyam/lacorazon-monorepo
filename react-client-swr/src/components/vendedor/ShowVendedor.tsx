@@ -3,11 +3,13 @@ import { Loading } from 'components/Modals';
 import { Accordion, AccordionPanel } from 'components/Accordion';
 import ListVentas from 'components/ventas/ListVentas';
 import { FormWrapper, TextField, EmailField } from '@lacorazon/lit-form-react';
+import { useNavigate } from 'react-router-dom';
 
 import { useGetVendedor } from 'dataHooks/useVendedores';
 
 const ShowVendedor = ({ id }: { id: ID }) => {
   const { vendedor } = useGetVendedor(id);
+  const navigate = useNavigate();
 
   if (!vendedor) return <Loading>Cargando vendedor</Loading>;
 
@@ -15,6 +17,9 @@ const ShowVendedor = ({ id }: { id: ID }) => {
     <Page
       title={`Vendedor - ${vendedor ? vendedor.nombre : '??'}`}
       heading={`Vendedor`}
+      onClose={() => {
+        navigate('/vendedores', { replace: true });
+      }}
     >
       {vendedor && (
         <>

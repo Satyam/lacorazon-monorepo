@@ -12,9 +12,11 @@ import {
 } from '@lacorazon/lit-form-react';
 
 import { formatDate } from 'utils';
+import { useNavigate } from 'react-router-dom';
 
 const ShowVenta = ({ id }: { id: ID }) => {
   const { venta } = useGetVenta(id);
+  const navigate = useNavigate();
 
   if (!venta) return <Loading>Cargando venta</Loading>;
 
@@ -22,6 +24,9 @@ const ShowVenta = ({ id }: { id: ID }) => {
     <Page
       title={`Venta - ${venta ? formatDate(venta.fecha) : '??'}`}
       heading={`Venta`}
+      onClose={() => {
+        navigate('/ventas', { replace: true });
+      }}
     >
       <FormWrapper>
         <DateField label="Fecha" name="fecha" value={venta?.fecha} readonly />
