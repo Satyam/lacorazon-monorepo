@@ -6,7 +6,7 @@ import {
   ListGroup,
   CloseButton,
 } from 'react-bootstrap';
-import { useQueryError } from 'providers/Query';
+import { useErrorsContext } from 'providers/ErrorsContext';
 
 const Page = ({
   wide,
@@ -19,7 +19,7 @@ const Page = ({
   heading: string;
   children: React.ReactNode;
 }) => {
-  const { clearErrors, errors } = useQueryError();
+  const { clearErrors, errors } = useErrorsContext();
   if (title) document.title = `La Corazón - ${title}`;
   const onCloseError = () => {
     clearErrors();
@@ -37,11 +37,13 @@ const Page = ({
                   <CloseButton className="float-end" onClick={onCloseError} />
                 </Card.Header>
                 <ListGroup>
-                  {errors.map(({ queryKey, message }, index) => (
+                  {errors.map(({ error, context }, index) => (
                     <ListGroup.Item key={index}>
-                      {`"${JSON.stringify(queryKey)}" reports an error:`}
-                      <br />
-                      {`${message}`}
+                      <>
+                        {context}
+                        <br />
+                        {error}
+                      </>
                     </ListGroup.Item>
                   ))}
                 </ListGroup>

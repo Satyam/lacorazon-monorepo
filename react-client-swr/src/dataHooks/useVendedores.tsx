@@ -9,19 +9,15 @@ import {
   VENDEDORES_SERVICE,
 } from '@lacorazon/post-client';
 
-import { useQueryError } from 'providers/Query';
-
-const makeKey = (op: string, id: ID = '*', options?: OptionsType) =>
-  `/${VENDEDORES_SERVICE}/${op}/${id}/${
-    options ? JSON.stringify(options) : ''
-  }`;
+import { useErrorsContext } from 'providers/ErrorsContext';
 
 export const useListVendedores = (options?: OptionsType) => {
-  const { pushError } = useQueryError();
+  const { pushError } = useErrorsContext();
 
   const { data, mutate } = useSWR<Vendedor[]>(
     [VENDEDORES_SERVICE, options],
-    (_, options) => apiListVendedores(options)
+    (_, options) => apiListVendedores(options),
+    { onError: (err) => pushError(err, 'Error leyendo tabla de vendedores') }
   );
 
   return useMemo(
@@ -29,7 +25,14 @@ export const useListVendedores = (options?: OptionsType) => {
       vendedores: data,
       deleteVendedor: (id: ID) =>
         apiRemoveVendedor(id)
-          .catch((err) => pushError(err, makeKey('delete', id, options)))
+          .catch((err) =>
+            pushError(
+              err,
+              `Error borrando vendedor ${data?.find((vendedor) =>
+                vendedor.id === id ? vendedor.nombre : '???'
+              )}`
+            )
+          )
           .finally(() => mutate()),
     }),
     [data, mutate]
@@ -41,13 +44,14 @@ const initialData: Omit<Vendedor, 'id'> = {
   email: '',
 };
 export const useGetVendedor = (id: ID, options?: OptionsType) => {
-  const { pushError } = useQueryError();
+  const { pushError } = useErrorsContext();
 
   const { data, mutate } = useSWR<Vendedor>(
     id ? [VENDEDORES_SERVICE, id, options] : null,
     (_, id, options) => apiGetVendedor(id, options),
     {
       fallbackData: initialData as Vendedor,
+      onError: (err) => pushError(err, `Error leyendo vendedor ${id}`),
     }
   );
 
@@ -57,18 +61,18 @@ export const useGetVendedor = (id: ID, options?: OptionsType) => {
       updateVendedor: (data: Vendedor) =>
         mutate(
           apiUpdateVendedor({ ...data, id }).catch((err) => {
-            pushError(err, makeKey('delete', id, options));
+            pushError(err, `Error actualizando vendedor ${data.nombre}`);
             throw err;
           })
         ),
       createVendedor: (data: Vendedor) =>
         apiCreateVendedor({ ...initialData, ...data }).catch((err) => {
-          pushError(err, makeKey('create', id, options));
+          pushError(err, `Error creando vendedor ${data.nombre}`);
           throw err;
         }),
       deleteVendedor: () =>
         apiRemoveVendedor(id).catch((err) => {
-          pushError(err, makeKey('delete', id, options));
+          pushError(err, `Error borrando vendedor ${data?.nombre}`);
           throw err;
         }),
     }),

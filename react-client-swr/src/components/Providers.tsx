@@ -1,16 +1,16 @@
 import { IntlProvider } from 'providers/Intl';
 import { ModalsProvider } from 'providers/Modals';
 import { AuthProvider } from 'providers/Auth';
-import { QueryProvider } from 'providers/Query';
+import { ErrorsProvider } from 'providers/ErrorsContext';
 
 const Providers = ({ children }: { children: React.ReactNode }) => (
-  <QueryProvider>
+  <ErrorsProvider>
     <IntlProvider locale="es-ES">
       <ModalsProvider>
         <AuthProvider>{children}</AuthProvider>
       </ModalsProvider>
     </IntlProvider>
-  </QueryProvider>
+  </ErrorsProvider>
 );
 
 export default Providers;

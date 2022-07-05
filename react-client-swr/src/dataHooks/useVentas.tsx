@@ -9,17 +9,16 @@ import {
   VENTAS_SERVICE,
 } from '@lacorazon/post-client';
 
-import { useQueryError } from 'providers/Query';
-
-const makeKey = (op: string, id: ID = '*', options?: OptionsType) =>
-  `/${VENTAS_SERVICE}/${op}/${id}/${options ? JSON.stringify(options) : ''}`;
+import { useErrorsContext } from 'providers/ErrorsContext';
+import { formatDate } from 'utils';
 
 export const useListVentas = (options?: OptionsType) => {
-  const { pushError } = useQueryError();
+  const { pushError } = useErrorsContext();
 
   const { data, mutate } = useSWR<VentaYVendedor[]>(
     [VENTAS_SERVICE, options],
-    (_, options) => apiListVentas(options)
+    (_, options) => apiListVentas(options),
+    { onError: (err) => pushError(err, `Leyendo tabla de ventas`) }
   );
 
   return useMemo(
@@ -27,7 +26,14 @@ export const useListVentas = (options?: OptionsType) => {
       ventas: data,
       deleteVenta: (id: ID) =>
         apiRemoveVenta(id)
-          .catch((err) => pushError(err, makeKey('delete', id, options)))
+          .catch((err) =>
+            pushError(
+              err,
+              `Error borando venta de fecha ${data?.find((venta) =>
+                venta.id === id ? formatDate(venta.fecha) : '???'
+              )}`
+            )
+          )
           .finally(() => mutate()),
     }),
     [data, mutate]
@@ -43,13 +49,14 @@ const initialData: Omit<VentaYVendedor, 'id'> = {
 };
 
 export const useGetVenta = (id: ID, options?: OptionsType) => {
-  const { pushError } = useQueryError();
+  const { pushError } = useErrorsContext();
 
   const { data, mutate } = useSWR<VentaYVendedor>(
     id ? [VENTAS_SERVICE, id, options] : null,
     (_, id, options) => apiGetVenta(id, options),
     {
       fallbackData: initialData as VentaYVendedor,
+      onError: (err) => pushError(err, `Error leyendo venta con id ${id}`),
     }
   );
 
@@ -59,18 +66,26 @@ export const useGetVenta = (id: ID, options?: OptionsType) => {
       updateVenta: (data: Venta) =>
         mutate(
           apiUpdateVenta({ ...data, id }).catch((err) => {
-            pushError(err, makeKey('delete', id, options));
+            pushError(
+              err,
+              `Error actualizando venta de fecha ${formatDate(data.fecha)}`
+            );
             throw err;
           })
         ),
       createVenta: (data: Venta) =>
         apiCreateVenta({ ...initialData, ...data }).catch((err) => {
-          pushError(err, makeKey('create', id, options));
+          pushError(err, 'Error dando de alta nueva venta');
           throw err;
         }),
       deleteVenta: () =>
         apiRemoveVenta(id).catch((err) => {
-          pushError(err, makeKey('delete', id, options));
+          pushError(
+            err,
+            `Error borrando venta de fecha ${
+              data ? formatDate(data.fecha) : '???'
+            }`
+          );
           throw err;
         }),
     }),
