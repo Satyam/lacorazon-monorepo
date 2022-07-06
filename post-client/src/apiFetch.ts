@@ -69,7 +69,7 @@ export function apiFetch<Id, IN extends AnyRow | undefined, OUT>(
     })
     .then((resp) => {
       const { data, error } = resp;
-      if (error) return Promise.reject(resp.data);
+      if (error) return Promise.reject(resp);
       if (transformReply) {
         if (!data) return data as null;
 
