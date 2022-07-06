@@ -51,7 +51,15 @@ export const useGetVendedor = (id: ID, options?: OptionsType) => {
     (_, id, options) => apiGetVendedor(id, options),
     {
       fallbackData: initialData as Vendedor,
-      onError: (err) => pushError(err, `Error leyendo vendedor ${id}`),
+      onError: (err) => {
+        if (err.error === 404)
+          return pushError(
+            'El registro no existe o ha sido borrado',
+            `Error leyendo vendedor "${id}"`
+          );
+
+        return pushError(err, `Error leyendo vendedor "${id}"`);
+      },
     }
   );
 
