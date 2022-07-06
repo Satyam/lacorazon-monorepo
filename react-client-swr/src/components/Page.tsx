@@ -45,11 +45,18 @@ const Page = ({
                       <>
                         {context}
                         <br />
-                        {error}
+                        {typeof error === 'object' && 'data' in error
+                          ? error.data
+                          : error}
                       </>
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
+                <Card.Footer>
+                  El sistema seguirá reintentando. Cerrar este cartel para
+                  continuar ==&gt;
+                  <CloseButton className="float-end" onClick={onCloseError} />
+                </Card.Footer>
               </Card>
             ) : (
               children

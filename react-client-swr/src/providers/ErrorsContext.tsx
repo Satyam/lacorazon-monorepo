@@ -1,14 +1,15 @@
 import { createContext, useState, useContext, useCallback } from 'react';
 
+type ErrorTypes = Error | { data: string; error: number } | string;
 export type ErrorInstance = {
-  error: Error;
+  error: ErrorTypes;
   context: string;
 };
 
 type ErrorsContextType = {
   errors: ErrorInstance[];
   clearErrors: () => void;
-  pushError: (error: Error, context: string) => void;
+  pushError: (error: ErrorTypes, context: string) => void;
 };
 
 const notImplemented = () => {
@@ -28,7 +29,7 @@ export const ErrorsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearErrors = useCallback(() => setErrors([]), [errors]);
 
-  const pushError = (error: Error, context: string = 'Unexpected') =>
+  const pushError = (error: ErrorTypes, context: string = 'Unexpected') =>
     setErrors(
       errors.concat({
         error,
