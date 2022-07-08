@@ -37,6 +37,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
 
   const rowVenta = (venta: VentaYVendedor) => {
     const id = venta.id;
+
     return (
       <tr key={id}>
         <td>{formatDate(venta.fecha)}</td>
@@ -49,7 +50,11 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
         <td className="text-end">{venta.cantidad}</td>
         <td className="text-end">{formatCurrency(venta.precioUnitario)}</td>
         <td className="text-center">
-          <icon-check value={!!venta?.iva}></icon-check>
+          {venta.iva ? (
+            <icon-check-true></icon-check-true>
+          ) : (
+            <icon-check-false></icon-check-false>
+          )}
         </td>
         <td className="text-end">
           {formatCurrency((venta.cantidad || 0) * (venta.precioUnitario || 0))}

@@ -98,15 +98,19 @@ export class IconCheckTrue extends IconBase {
 }
 
 @customElement('icon-check')
-export class IconCheck extends LitElement {
-  @property({ type: Boolean })
+export class IconCheck extends IconBase {
+  @property({
+    type: Boolean,
+    // converter is required because default converter simply checks the presence of the attribute
+    // not the value so value={false} is still true
+    converter: (value, type) => {
+      console.log('converter', value, type);
+      return value;
+    },
+  })
   value = false;
 
-  override render() {
-    return this.value
-      ? html`<icon-check-true></icon-check-true>`
-      : html`<icon-check-false></icon-check-false>`;
-  }
+  svg = this.value ? svgCheckSquareFill : svgSquare;
 }
 
 declare global {
