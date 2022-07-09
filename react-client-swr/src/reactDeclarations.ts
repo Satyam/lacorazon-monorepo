@@ -1,47 +1,8 @@
 import { DOMAttributes } from 'react';
-// import { FormSubmitEvent, FormChangedEvent } from '@lacorazon/lit-form';
-
-// type FieldBaseAttrs = {
-//   label?: string;
-//   name: string;
-//   readonly?: boolean;
-//   placeholder?: string;
-//   errorFeedback?: string;
-//   hint?: string;
-//   required?: boolean;
-//   disabled?: boolean;
-// };
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      // 'form-wrapper': DOMAttributes<HTMLFormElement> & {
-      //   onformSubmit?: (ev: FormSubmitEvent) => void;
-      //   onformChanged?: (ev: FormChangedEvent) => void;
-      //   novalidate?: boolean;
-      // };
-      // 'text-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & { value?: string; password?: boolean };
-      // 'email-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & { value?: string };
-      // 'date-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & { value?: Date };
-      // 'number-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & { value?: number };
-      // 'currency-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & { value?: number };
-      // 'boolean-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & { value?: boolean; checkLabel?: string };
-      // 'select-field': Omit<DOMAttributes<HTMLInputElement>, 'value'> &
-      //   FieldBaseAttrs & {
-      //     value?: string;
-      //     multiple?: boolean;
-      //     size?: number;
-      //     labelFieldName?: string;
-      //     valueFieldName?: string;
-      //     nullLabel?: string;
-      //     options: Record<string, VALUE>;
-      //   };
       'icon-add': DOMAttributes<HTMLElement>;
       'icon-show': DOMAttributes<HTMLElement>;
       'icon-edit': DOMAttributes<HTMLElement>;
