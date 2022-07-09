@@ -3,7 +3,14 @@ import { Loading } from 'components/Modals';
 
 import { useQuery } from 'react-query';
 import { apiGetVenta, VENTAS_SERVICE } from '@lacorazon/post-client';
-
+import {
+  FormWrapper,
+  DateField,
+  TextField,
+  NumberField,
+  CurrencyField,
+  BooleanField,
+} from '@lacorazon/lit-form-react';
 import { formatDate } from 'utils';
 
 const ShowVenta = ({ id }: { id: ID }) => {
@@ -20,50 +27,50 @@ const ShowVenta = ({ id }: { id: ID }) => {
       title={`Venta - ${venta ? formatDate(venta.fecha) : '??'}`}
       heading={`Venta`}
     >
-      <form-wrapper>
-        <date-field
+      <FormWrapper>
+        <DateField
           label="Fecha"
           name="fecha"
           value={venta?.fecha}
           readonly
-        ></date-field>
-        <text-field
+        ></DateField>
+        <TextField
           label="Concepto"
           name="concepto"
           value={venta?.concepto || ''}
           readonly
-        ></text-field>
-        <text-field
+        ></TextField>
+        <TextField
           label="Vendedor"
           name="vendedor"
           value={venta?.vendedor || '-'}
           readonly
-        ></text-field>
-        <number-field
+        ></TextField>
+        <NumberField
           label="Cantidad"
           name="cantidad"
           value={venta?.cantidad || 0}
           readonly
-        ></number-field>
-        <currency-field
+        ></NumberField>
+        <CurrencyField
           label="Precio Unitario"
           name="precioUnitario"
           value={venta?.precioUnitario || 0}
           readonly
-        ></currency-field>
-        <boolean-field
+        ></CurrencyField>
+        <BooleanField
           checkLabel="IVA"
           name="iva"
           value={!!venta?.iva}
           readonly
-        ></boolean-field>
-        <currency-field
+        ></BooleanField>
+        <CurrencyField
           label="Precio Total"
           name="precioTotal"
           value={(venta?.cantidad || 0) * (venta?.precioUnitario || 0)}
           readonly
-        ></currency-field>
-      </form-wrapper>
+        ></CurrencyField>
+      </FormWrapper>
     </Page>
   );
 };

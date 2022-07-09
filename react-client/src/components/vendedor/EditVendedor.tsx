@@ -15,7 +15,12 @@ import {
   apiRemoveVendedor,
 } from '@lacorazon/post-client';
 
-import { FormSubmitEvent } from '@lacorazon/lit-form';
+import {
+  FormWrapper,
+  FormSubmitEvent,
+  TextField,
+  EmailField,
+} from '@lacorazon/lit-form-react';
 
 export const EditVendedor = ({ id }: { id: ID }) => {
   const navigate = useNavigate();
@@ -93,21 +98,21 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       {id && !vendedor ? (
         <Alert color="danger">El usuario no existe o fue borrado</Alert>
       ) : (
-        <form-wrapper onformSubmit={onSubmit}>
-          <text-field
+        <FormWrapper onFormSubmit={onSubmit}>
+          <TextField
             label="Nombre"
             name="nombre"
             value={vendedor?.nombre}
             placeholder="Nombre"
           />
-          <email-field
+          <EmailField
             label="Email"
             name="email"
             value={vendedor?.email || '-'}
             placeholder="Email"
           />
           <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
-        </form-wrapper>
+        </FormWrapper>
       )}
     </Page>
   );
