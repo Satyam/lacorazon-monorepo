@@ -1,6 +1,7 @@
 import { ReactEventHandler } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
+import { IconAddPerson } from '@lacorazon/lit-react-integration';
 import { useListVendedores } from 'dataHooks/useVendedores';
 import { TableRowButtons, TableRowActionHandler } from 'components/Buttons';
 import Page from 'components/Page';
@@ -61,7 +62,7 @@ const ListVendedores = () => {
               <th>E-mail</th>
               <th className="text-center">
                 <Button onClick={onAdd} variant="primary" title="Agregar">
-                  <icon-add-person>Agregar</icon-add-person>
+                  <IconAddPerson>Agregar</IconAddPerson>
                 </Button>
               </th>
             </tr>
