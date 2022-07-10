@@ -21,7 +21,7 @@
     "react-client",
     "mongo-server",
     "react-client-swr",
-    "lit-form-react"
+    "lit-react-integration"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",

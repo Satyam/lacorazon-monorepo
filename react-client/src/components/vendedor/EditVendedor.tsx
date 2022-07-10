@@ -20,7 +20,7 @@ import {
   FormSubmitEvent,
   TextField,
   EmailField,
-} from '@lacorazon/lit-form-react';
+} from '@lacorazon/lit-react-integration';
 
 export const EditVendedor = ({ id }: { id: ID }) => {
   const navigate = useNavigate();

@@ -28,7 +28,7 @@ import {
   NumberField,
   CurrencyField,
   BooleanField,
-} from '@lacorazon/lit-form-react';
+} from '@lacorazon/lit-react-integration';
 
 export const EditVenta = ({ id }: { id: ID }) => {
   const navigate = useNavigate();

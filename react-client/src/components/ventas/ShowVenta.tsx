@@ -10,7 +10,7 @@ import {
   NumberField,
   CurrencyField,
   BooleanField,
-} from '@lacorazon/lit-form-react';
+} from '@lacorazon/lit-react-integration';
 import { formatDate } from 'utils';
 
 const ShowVenta = ({ id }: { id: ID }) => {

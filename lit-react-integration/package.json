@@ -1,7 +1,7 @@
 {
-  "name": "@lacorazon/lit-form-react",
+  "name": "@lacorazon/lit-react-integration",
   "version": "1.0.0",
-  "description": "react-compatible version of lit-form",
+  "description": "react-compatible versions of lit-form and lit-icons",
   "type": "module",
   "module": "dist/index.js",
   "main": "dist/index.js",

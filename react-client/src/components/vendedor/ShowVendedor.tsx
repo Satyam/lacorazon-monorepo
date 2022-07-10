@@ -2,7 +2,11 @@ import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { Accordion, AccordionPanel } from 'components/Accordion';
 import ListVentas from 'components/ventas/ListVentas';
-import { FormWrapper, TextField, EmailField } from '@lacorazon/lit-form-react';
+import {
+  FormWrapper,
+  TextField,
+  EmailField,
+} from '@lacorazon/lit-react-integration';
 import { useQuery } from 'react-query';
 import { apiGetVendedor, VENDEDORES_SERVICE } from '@lacorazon/post-client';
 

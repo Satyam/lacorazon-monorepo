@@ -6,7 +6,7 @@ import {
   TextField,
   EmailField,
   FormSubmitEvent,
-} from '@lacorazon/lit-form-react';
+} from '@lacorazon/lit-react-integration';
 import { useAuth } from 'providers/Auth';
 
 export const Login = () => {

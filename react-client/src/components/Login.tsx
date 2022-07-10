@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import Page from 'components/Page';
 
-import '@lacorazon/lit-form-react';
+import '@lacorazon/lit-react-integration';
 import {
   FormWrapper,
   FormSubmitEvent,
   TextField,
   EmailField,
-} from '@lacorazon/lit-form-react';
+} from '@lacorazon/lit-react-integration';
 import { useAuth } from 'providers/Auth';
 
 export const Login = () => {

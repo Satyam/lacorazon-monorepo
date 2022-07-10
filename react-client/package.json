@@ -9,7 +9,7 @@
     "watch": "rollup -c -w"
   },
   "dependencies": {
-    "@lacorazon/lit-form": "^1.0.0",
+    "@lacorazon/lit-react-integration": "^1.0.0",
     "@lacorazon/lit-icons": "^1.0.0",
     "@lacorazon/post-client": "^1.0.0",
     "date-fns": "^2.28.0",
