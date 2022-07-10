@@ -102,7 +102,7 @@ export class IconCheck extends LitElement {
   @property({
     type: Boolean,
     // see: https://github.com/lit/lit/discussions/3123
-    converter: (value) => value === 'true',
+    converter: { fromAttribute: (value) => value === 'true' },
   })
   value = false;
 
