@@ -1,6 +1,7 @@
 import { ReactEventHandler } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button } from 'react-bootstrap';
+import { IconAddtoCart, IconCheck } from '@lacorazon/lit-react-integration';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
   apiListVentas,
@@ -74,7 +75,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
         <td className="text-end">{venta.cantidad}</td>
         <td className="text-end">{formatCurrency(venta.precioUnitario)}</td>
         <td className="text-center">
-          <icon-check value={!!venta?.iva}></icon-check>
+          <IconCheck value={!!venta?.iva}></IconCheck>
         </td>
         <td className="text-end">
           {formatCurrency((venta.cantidad || 0) * (venta.precioUnitario || 0))}
@@ -105,7 +106,7 @@ const ListVentas = ({ idVendedor }: { idVendedor?: ID }) => {
               <th>Precio Total</th>
               <th className="text-center">
                 <Button onClick={onAdd} variant="primary" title="Agregar">
-                  <icon-add-person>Agregar</icon-add-person>
+                  <IconAddtoCart>Agregar</IconAddtoCart>
                 </Button>
               </th>
             </tr>

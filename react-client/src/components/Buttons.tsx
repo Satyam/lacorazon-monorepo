@@ -1,5 +1,10 @@
 import { Button, ButtonGroup } from 'react-bootstrap';
-
+import {
+  IconAdd,
+  IconEdit,
+  IconShow,
+  IconTrash,
+} from '@lacorazon/lit-react-integration';
 type RowActions = 'show' | 'edit' | 'delete';
 export type TableRowActionHandler = (
   action: RowActions,
@@ -23,17 +28,17 @@ export const TableRowButtons = ({
   return (
     <ButtonGroup size="sm">
       <Button variant="outline-info" title="Ver detalle" onClick={act('show')}>
-        <icon-show></icon-show>
+        <IconShow />
       </Button>
       <Button
         variant="outline-secondary"
         title="Modificar"
         onClick={act('edit')}
       >
-        <icon-edit></icon-edit>
+        <IconEdit />
       </Button>
       <Button variant="outline-danger" title="Borrar" onClick={act('delete')}>
-        <icon-trash></icon-trash>
+        <IconTrash />
       </Button>
     </ButtonGroup>
   );
@@ -52,15 +57,15 @@ export const DetailsButtonSet = ({
   };
   return isNew ? (
     <Button variant="primary" type="submit">
-      <icon-add>Agregar</icon-add>
+      <IconAdd>Agregar</IconAdd>
     </Button>
   ) : (
     <>
       <Button variant="primary" type="submit">
-        <icon-edit>Modificar</icon-edit>
+        <IconEdit>Modificar</IconEdit>
       </Button>
       <Button variant="danger" className="ms-2" onClick={act}>
-        <icon-trash>Borrar</icon-trash>
+        <IconTrash>Borrar</IconTrash>
       </Button>
     </>
   );
