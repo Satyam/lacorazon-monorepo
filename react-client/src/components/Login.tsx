@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Page from 'components/Page';
 
-import '@lacorazon/lit-react-integration';
 import {
   FormWrapper,
   FormSubmitEvent,
