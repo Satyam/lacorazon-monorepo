@@ -3,7 +3,7 @@ import { Link } from 'preact-router/match';
 import { useState } from 'preact/hooks';
 import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
 
-import '@lacorazon/lit-icons';
+import { IconLoggedIn, IconLoggedOut } from '@lacorazon/lit-react-integration';
 
 import { useIntl } from 'providers/Intl';
 import { useAuth } from 'providers/Auth';
@@ -67,7 +67,7 @@ export const Navigation = () => {
               {currentUser ? (
                 <>
                   <Dropdown.Toggle as={Nav.Link} className={styles.user}>
-                    <icon-logged-in></icon-logged-in>
+                    <IconLoggedIn></IconLoggedIn>
                     {currentUser.nombre}
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">
@@ -83,7 +83,7 @@ export const Navigation = () => {
               ) : (
                 <>
                   <Dropdown.Toggle as={Nav.Link} className={styles.user}>
-                    <icon-logged-out></icon-logged-out>
+                    <IconLoggedOut></IconLoggedOut>
                     guest
                   </Dropdown.Toggle>
                   <Dropdown.Menu align="end">

@@ -4,7 +4,11 @@ import Page from 'components/Page';
 import { Loading } from 'components/Modals';
 import { Accordion, AccordionPanel } from 'components/Accordion';
 import ListVentas from 'components/ventas/ListVentas';
-
+import {
+  FormWrapper,
+  TextField,
+  EmailField,
+} from '@lacorazon/lit-react-integration';
 import { useQuery } from 'react-query';
 import { apiGetVendedor, VENDEDORES_SERVICE } from '@lacorazon/post-client';
 
@@ -24,22 +28,22 @@ const ShowVendedor = ({ id }: { id: ID }) => {
     >
       {vendedor && (
         <>
-          <form-wrapper>
-            <text-field
+          <FormWrapper>
+            <TextField
               label="Nombre"
               name="nombre"
               value={vendedor.nombre}
               placeholder="Nombre"
               readonly
             />
-            <email-field
+            <EmailField
               label="Email"
               name="email"
               value={vendedor.email || '-'}
               placeholder="Email"
               readonly
             />
-          </form-wrapper>
+          </FormWrapper>
           <Accordion>
             <AccordionPanel label="Ventas" name="ventas">
               <ListVentas idVendedor={id} />

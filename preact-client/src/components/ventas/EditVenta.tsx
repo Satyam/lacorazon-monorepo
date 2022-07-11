@@ -20,7 +20,16 @@ import {
   apiListVendedores,
 } from '@lacorazon/post-client';
 
-import { FormSubmitEvent } from '@lacorazon/lit-form';
+import {
+  FormWrapper,
+  FormSubmitEvent,
+  DateField,
+  TextField,
+  SelectField,
+  NumberField,
+  CurrencyField,
+  BooleanField,
+} from '@lacorazon/lit-react-integration';
 
 export const EditVenta = ({ id }: { id: ID }) => {
   const { data: venta, isLoading: isLoadingVenta } = useQuery<Venta, Error>(
@@ -100,48 +109,40 @@ export const EditVenta = ({ id }: { id: ID }) => {
       heading={`${id ? 'Edit' : 'Add'} Venta`}
     >
       {venta ? (
-        <form-wrapper onformSubmit={onSubmit}>
-          <date-field
-            label="Fecha"
-            name="fecha"
-            value={venta.fecha}
-          ></date-field>
-          <text-field
+        <FormWrapper onFormSubmit={onSubmit}>
+          <DateField label="Fecha" name="fecha" value={venta.fecha}></DateField>
+          <TextField
             label="Concepto"
             name="concepto"
             value={venta.concepto || ''}
-          ></text-field>
-          <select-field
+          />
+          <SelectField
             label="Vendedor"
             name="idVendedor"
             labelFieldName="nombre"
             valueFieldName="id"
             nullLabel="--"
-            options={vendedores as unknown as Record<string, VALUE>}
+            options={vendedores as unknown as AnyRow[]}
             value={String(venta.idVendedor)}
-          ></select-field>
-          <number-field
+          />
+          <NumberField
             label="Cantidad"
             name="cantidad"
             value={venta.cantidad || 0}
-          ></number-field>
-          <currency-field
+          />
+          <CurrencyField
             label="Precio Unitario"
             name="precioUnitario"
             value={venta.precioUnitario || 0}
-          ></currency-field>
-          <boolean-field
-            checkLabel="IVA"
-            name="iva"
-            value={!!venta.iva}
-          ></boolean-field>
-          <currency-field
+          />
+          <BooleanField checkLabel="IVA" name="iva" value={!!venta.iva} />
+          <CurrencyField
             label="Precio Total"
             name="precioTotal"
             value={(venta.cantidad || 0) * (venta.precioUnitario || 0)}
-          ></currency-field>
+          />
           <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
-        </form-wrapper>
+        </FormWrapper>
       ) : id ? (
         <Alert color="danger">El usuario no existe o fue borrado</Alert>
       ) : null}
