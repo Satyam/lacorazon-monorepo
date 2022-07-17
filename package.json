@@ -21,7 +21,8 @@
     "react-client",
     "mongo-server",
     "react-client-swr",
-    "lit-react-integration"
+    "lit-react-integration",
+    "sanejs"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",

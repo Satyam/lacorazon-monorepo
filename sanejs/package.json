@@ -1,0 +1,44 @@
+{
+  "name": "@lacorazon/sanejs",
+  "version": "1.0.0",
+  "description": "Trying out SaneJS https://www.sanejs.dev/",
+  "type": "module",
+  "module": "dist/index.js",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "connect-livereload": "^0.6.1",
+    "cookie-parser": "^1.4.6",
+    "cuid": "^2.1.8",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "express-session": "^1.17.3",
+    "helmet": "^5.1.0",
+    "livereload": "^0.9.3",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^2.0.15",
+    "sqlite": "^4.0.23",
+    "sqlite3": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^18.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Satyam/lacorazon-monorepo.git"
+  },
+  "keywords": [],
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Satyam/lacorazon-monorepo/issues"
+  },
+  "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme"
+}
