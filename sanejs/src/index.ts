@@ -53,6 +53,9 @@ if (app.get('env') === 'development') {
   app.use(connectLivereload());
 }
 
+app.get('/htmx.org', (_req: Request, res: Response) => {
+  res.sendFile(join(__dirname, '../../node_modules/htmx.org/dist/htmx.min.js'));
+});
 // Serve static resources like images and css.
 app.use(express.static(staticDirectory));
 
