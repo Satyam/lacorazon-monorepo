@@ -1,14 +1,15 @@
-import express, {
+const express = require('express');
+import type {
   Request,
   Response,
   NextFunction,
   Handler,
   Application,
 } from 'express';
-import fs from 'fs';
-import { parse } from 'node-html-parser-hyperscript';
-import { marked } from 'marked';
-import { join, normalize, dirname } from 'path';
+const fs = require('fs');
+const { parse } = require('node-html-parser-hyperscript');
+const { marked } = require('marked');
+const { join, normalize, dirname } = require('path');
 const rootDir = join(__dirname, '..');
 const routesDir = join(rootDir, 'routes');
 
@@ -51,11 +52,7 @@ declare global {
     }
   }
 }
-export const saneMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Require >= Node 16
   const nodeVersion = Number(process.versions.node.split('.')[0]);
   if (nodeVersion < 16) {
@@ -67,12 +64,14 @@ export const saneMiddleware = (
 
   res.deliver = async (route: string, vars: object, swapIds?: string[]) => {
     // Build cache if not already set (null means we've cached this route as a 404)
-    let template: Template | null = null;
-    if (!cache.page[route] && cache.page[route] !== null) {
+    let template: Template | undefined = cache.page[route];
+    if (!template) {
       template = await buildTemplate(route, false);
       if (template) cache.page[route] = template;
     }
     if (!template) return next();
+    const { html, ...rest } = template;
+    console.log('res.deliver', { route, vars, rest });
 
     // Populate template vars
     const fmAndVars = { ...template.fm, ...vars };
@@ -94,8 +93,8 @@ export const saneMiddleware = (
 
   res.partial = async (route: string, vars: object) => {
     // Build cache if not already set (null means we've cached this route as a 404)
-    let template: Template | null = null;
-    if (!cache.partial[route] && cache.partial[route] !== null) {
+    let template: Template | undefined = cache.partial[route];
+    if (!template) {
       template = await buildTemplate(route, true);
       if (template) cache.partial[route] = template;
     }
@@ -163,7 +162,7 @@ export const saneMiddleware = (
 
 async function buildTemplate(route: string, isPartial: boolean) {
   let template = await loadTemplate(route); // Sets { html, path }
-  if (!template) return null;
+  if (!template) return undefined;
 
   // Process front-matter.
   template = await processFrontMatter(template); // Sets { fm }
@@ -184,18 +183,19 @@ async function buildTemplate(route: string, isPartial: boolean) {
   return template;
 }
 
-async function loadTemplate(route: string): Promise<null | Template> {
+async function loadTemplate(route: string): Promise<void | Template> {
   const reServerBlock = /<script[\s]server>([\s\S]+?)<\/script>/m;
   const routePath = join(routesDir, route);
-  for (let possiblePathSuffix of ['.html', '.md', '/index.html', '/index.md']) {
+  for (let possiblePathSuffix of ['.html', '.md', 'index.html', 'index.md']) {
     try {
       const path = routePath + possiblePathSuffix;
       const htmlWithServerBlock = await fs.promises.readFile(path, 'utf-8');
       const html = htmlWithServerBlock.replace(reServerBlock, '');
+      console.log('loadTemplate', { route, routePath, path });
       return { html, path };
     } catch (err) {} // Eat the error and try next possiblePathSuffix.
   }
-  return null;
+  return undefined;
 }
 
 function processFrontMatter(template: Template): Template {
@@ -240,7 +240,7 @@ async function processExtends(template: Template): Promise<Template> {
   const extendsTag = reExtendsTagMatch[0];
   const wrapperRoute = reExtendsTagMatch[1];
 
-  // Remove this extends tag from template.html)
+  // Remove this extends tag = require( template.html)
   template.html = template.html.replace(extendsTag, '');
 
   // Wrap template with extends template (and merge front-matter).
@@ -419,7 +419,7 @@ function formatSlashes(route: string): string {
   return route;
 }
 
-export async function dynamicallyLoadRoutes(
+async function dynamicallyLoadRoutes(
   dirPath: string,
   app: Application
 ): Promise<void> {
@@ -455,7 +455,7 @@ export async function dynamicallyLoadRoutes(
           const routeHandler = new Function(
             'server',
             'require',
-            'route',
+            'self',
             serverBlock
           );
           useRoute(
@@ -504,3 +504,5 @@ function useRoute(
     routes[route] = absPath;
   }
 }
+
+module.exports = { saneMiddleware, dynamicallyLoadRoutes };

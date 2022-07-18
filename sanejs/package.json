@@ -2,12 +2,13 @@
   "name": "@lacorazon/sanejs",
   "version": "1.0.0",
   "description": "Trying out SaneJS https://www.sanejs.dev/",
-  "type": "module",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon src/index.js",
+    "prestart": "tsc",
+    "start": "node dist/index.js",
+    "nodemon": "nodemon -w .env -w ./src -w ./routes -e env,ts,html",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --inspect-brk dist/index.js"
   },
   "dependencies": {
     "compression": "^1.7.4",
@@ -21,6 +22,7 @@
     "livereload": "^0.9.3",
     "marked": "^4.0.18",
     "multer": "^1.4.5-lts.1",
+    "node-fetch": "^2.6.7",
     "node-html-parser-hyperscript": "^5.4.3",
     "nodemon": "^2.0.15",
     "sqlite": "^4.0.23",

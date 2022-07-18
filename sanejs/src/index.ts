@@ -1,15 +1,15 @@
-import express, { NextFunction, Request, Response } from 'express';
-import helmet from 'helmet';
+const express = require('express');
+import type { NextFunction, Request, Response } from 'express';
+const helmet = require('helmet');
 
-import compression from 'compression';
-import session from 'express-session';
-import { saneMiddleware, dynamicallyLoadRoutes } from './sane';
-// import { protectAdminRoutes } from './lib/auth';
-import { join } from 'path';
-import livereload from 'livereload';
-import connectLivereload from 'connect-livereload';
-// import { requestLogger, logger } from './lib/logger';
-import dotenv from 'dotenv';
+const compression = require('compression');
+const session = require('express-session');
+const { saneMiddleware, dynamicallyLoadRoutes } = require('./sane.js');
+// const { protectAdminRoutes } = require( './lib/auth');
+const { join } = require('path');
+const livereload = require('livereload');
+const connectLivereload = require('connect-livereload');
+const dotenv = require('dotenv');
 dotenv.config();
 
 // Check for required .env values.
@@ -36,7 +36,7 @@ app.use(
 );
 
 // Set path to static dir.
-const staticDirectory = join(__dirname, 'static');
+const staticDirectory = join(__dirname, '../static');
 
 // Connect to LiveReload for development: Watch static dir and nodemon refresh.
 if (app.get('env') === 'development') {
@@ -73,10 +73,6 @@ if (process.env.SESSION_SECRET && process.env.MONGO_URI) {
       secret: process.env.SESSION_SECRET,
       saveUninitialized: true,
       resave: true,
-      store: new MongoDBStore({
-        uri: process.env.MONGO_URI,
-        collection: '_express_sessions',
-      }),
       cookie: { maxAge: 1000 * 60 * 60 * 2 }, // 2 hours
       rolling: true,
     })
@@ -88,17 +84,17 @@ if (process.env.SESSION_SECRET && process.env.MONGO_URI) {
 // Need to use self-executing function for the rest so we can await dynamic routes.
 (async function () {
   // Dynamically add all routes found in routes/ dir excluding those prefixed with underscore.
-  await dynamicallyLoadRoutes(join(__dirname, 'routes'), app);
+  await dynamicallyLoadRoutes(join(__dirname, '../routes'), app);
 
   // If route hasn't been handled yet, serve a plain .html template if present.
-  app.use((req, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.method != 'GET') return next();
     if (req.path.indexOf('.') !== -1) return next(); // Don't waste cpu on .css and favicons
-    res.render(req.path, {});
+    res.deliver(req.path, {});
   });
 
   // Handle simple 404.
-  app.use((req, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.url == '/service-worker.js') return next();
     console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
     res.error404();
@@ -138,9 +134,6 @@ if (process.env.SESSION_SECRET && process.env.MONGO_URI) {
       res.error500(error);
     }
   );
-
-  // Connect to Mongo
-  if (process.env.MONGO_URI) connectToMongo();
 
   // Start the server.
   const port = process.env.PORT || 3000;
