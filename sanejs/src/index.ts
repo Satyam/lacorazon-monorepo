@@ -4,7 +4,7 @@ const helmet = require('helmet');
 
 const compression = require('compression');
 const session = require('express-session');
-const { saneMiddleware, dynamicallyLoadRoutes } = require('./sane.js');
+const { saneMiddleware, loadRoutes } = require('./sane.js');
 // const { protectAdminRoutes } = require( './lib/auth');
 const { join } = require('path');
 const livereload = require('livereload');
@@ -87,7 +87,7 @@ if (process.env.SESSION_SECRET && process.env.MONGO_URI) {
 // Need to use self-executing function for the rest so we can await dynamic routes.
 (async function () {
   // Dynamically add all routes found in routes/ dir excluding those prefixed with underscore.
-  await dynamicallyLoadRoutes(join(__dirname, '../routes'), app);
+  await loadRoutes(join(__dirname, '../routes'), app);
 
   // If route hasn't been handled yet, serve a plain .html template if present.
   app.use((req: Request, res: Response, next: NextFunction) => {

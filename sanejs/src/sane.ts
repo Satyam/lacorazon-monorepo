@@ -416,10 +416,7 @@ function formatSlashes(route: string): string {
   return route;
 }
 
-async function dynamicallyLoadRoutes(
-  dirPath: string,
-  app: Application
-): Promise<void> {
+async function loadRoutes(dirPath: string, app: Application): Promise<void> {
   await continueLoadingRoutes(dirPath);
   async function continueLoadingRoutes(thisDir: string) {
     const files = await fs.promises.readdir(thisDir);
@@ -502,4 +499,4 @@ function useRoute(
   }
 }
 
-module.exports = { saneMiddleware, dynamicallyLoadRoutes };
+module.exports = { saneMiddleware, loadRoutes };
