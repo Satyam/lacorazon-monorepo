@@ -1,4 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import express, {
+  Request,
+  Response,
+  NextFunction,
+  Handler,
+  Application,
+} from 'express';
 import fs from 'fs';
 import { parse } from 'node-html-parser-hyperscript';
 import { marked } from 'marked';
@@ -37,7 +43,7 @@ declare global {
       partial(route: string, vars: unknown): void;
       deliver(route: string, vars?: object, swapIds?: string[]): void;
       error404(): void;
-      error500(debug: string): void;
+      error500(error: Error): void;
       serverRedirect(url: string): void;
       serverRedirect(status: number, url: string): void;
       serverRedirect(url: string, status: number): void;
@@ -117,9 +123,9 @@ export const saneMiddleware = (
     res.deliver('_404', { method: req.method, path: req.url });
   };
 
-  res.error500 = (debug) => {
+  res.error500 = (error: Error) => {
     res.set('HX-Retarget', 'body');
-    res.deliver('_500', { debug });
+    res.deliver('_500', { error });
   };
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
@@ -411,4 +417,90 @@ function formatSlashes(route: string): string {
   route = route.charAt(0) === '/' ? route : '/' + route;
   route = route.charAt(route.length - 1) == '/' ? route.slice(0, -1) : route;
   return route;
+}
+
+export async function dynamicallyLoadRoutes(
+  dirPath: string,
+  app: Application
+): Promise<void> {
+  await continueLoadingRoutes(dirPath);
+  async function continueLoadingRoutes(thisDir: string) {
+    const files = await fs.promises.readdir(thisDir);
+
+    for (const fileName of files) {
+      // Ignore files starting with a double underscore.
+      if (fileName.startsWith('__')) continue;
+      // Set the full abs path to file.
+      const absPath = join(thisDir, fileName);
+      // Recurse into directories for nested routes.
+      if (fs.statSync(absPath).isDirectory()) {
+        await continueLoadingRoutes(absPath);
+        continue;
+      }
+      // Set the route endpoint for .html or .md files only.
+      const matchRoute = absPath.match(/([\w\-\/. ]+)\.(html|md)/);
+      if (!matchRoute || matchRoute.length < 2) continue;
+      const route = matchRoute[1].replace(dirPath, '');
+      // Read the file and look for <script server>
+      const template = await fs.promises.readFile(absPath, 'utf-8');
+      const matchScript = template.match(
+        /<script[\s]server>([\s\S]+?)<\/script>/m
+      );
+      let serverBlock = matchScript && matchScript[1] + '\nreturn server';
+      if (serverBlock) {
+        // Parse the serverBlock, passing in refs to
+        // * Express router `server`,
+        // * Node `require`, and `self` route reference.
+        try {
+          const routeHandler = new Function(
+            'server',
+            'require',
+            'route',
+            serverBlock
+          );
+          useRoute(
+            route,
+            routeHandler(express.Router(), require, route),
+            absPath,
+            app
+          );
+        } catch (err) {
+          console.error(
+            `Unable to parse server block in: ${absPath}\n\n${
+              (err as Error).stack
+            }`
+          );
+        }
+      }
+    }
+  }
+}
+
+const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
+function useRoute(
+  route: string,
+  handler: Handler,
+  absPath: string,
+  app: Application
+) {
+  // Avoid adding duplicate route.
+  if (routes[route]) {
+    console.error(
+      'Duplicate routes defined for',
+      route,
+      'in:\n - ',
+      routes[route],
+      '\n - ',
+      absPath
+    );
+    return;
+  }
+  app.use(route, handler);
+  routes[route] = absPath;
+  // Also add special route for index file?
+  if (route.endsWith('/index')) {
+    const indexRoute = route.slice(0, -5);
+    app.use(indexRoute, handler);
+    routes[route] = absPath;
+  }
 }
