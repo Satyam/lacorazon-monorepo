@@ -70,8 +70,6 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
       if (template) cache.page[route] = template;
     }
     if (!template) return next();
-    const { html, ...rest } = template;
-    console.log('res.deliver', { route, vars, rest });
 
     // Populate template vars
     const fmAndVars = { ...template.fm, ...vars };
@@ -191,7 +189,6 @@ async function loadTemplate(route: string): Promise<void | Template> {
       const path = routePath + possiblePathSuffix;
       const htmlWithServerBlock = await fs.promises.readFile(path, 'utf-8');
       const html = htmlWithServerBlock.replace(reServerBlock, '');
-      console.log('loadTemplate', { route, routePath, path });
       return { html, path };
     } catch (err) {} // Eat the error and try next possiblePathSuffix.
   }

@@ -7,7 +7,6 @@ title: SaneJS - Home
   server.get('/', async (req, res) => {
     const apiRes = await fetch(`http://ip-api.com/json`);
     const apiJson = await apiRes.json();
-    console.log('server block', apiJson);
     res.deliver(self, { state: apiJson.regionName });
   });
 </script>
