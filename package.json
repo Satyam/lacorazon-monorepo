@@ -32,6 +32,7 @@
     "build:icons": "npm run build -w lit-icons",
     "build:react": "npm run build -w react-client",
     "build:swr": "npm run build -w react-client-swr",
+    "build:sane": "npm run build -w sanejs",
     "buildAll": "npm run build --workspaces --if-present",
     "w:vainilla": "npm run watch -w vainilla-client",
     "w:lit": "npm run watch -w lit-client",
@@ -43,7 +44,8 @@
     "build:server": "npm run build -w post-server",
     "build:mongo": "npm run build -w mongo-server",
     "start": "npm start -w post-server",
-    "start:mongo": "npm start -w mongo-server"
+    "start:mongo": "npm start -w mongo-server",
+    "start:sane": "npm start -w sanejs"
   },
   "dependencies": {
     "bootstrap": "^5.1.3",
