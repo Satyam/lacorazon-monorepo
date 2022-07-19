@@ -1,0 +1,35 @@
+---
+title: La Corazón - Vendedores
+---
+
+<script server>
+  const { join } = require('path');
+  const { list } = require('~/dist/data/vendedores.js');
+  server.get('/', async (req, res) => {
+    const vendedores = await list();
+    res.deliver(self, { vendedores });
+  });
+</script>
+
+<table striped hover size="sm" responsive bordered>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>E-mail</th>
+      <th className="text-center">
+        <button onClick="{onAdd}" variant="primary" title="Agregar">
+          <IconAddPerson>Agregar</IconAddPerson>
+        </button>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {@ vendedores}
+    <tr>
+      <td>{= this.nombre}</td>
+      <td>{= this.email}</td>
+      <td className="text-center"></td>
+    </tr>
+    {/@ vendedores}
+  </tbody>
+</table>
