@@ -11,13 +11,19 @@ title: La Corazón - Vendedores
   });
 </script>
 
-<table striped hover size="sm" responsive bordered>
-  <thead>
+<table
+  class="table table-striped table-hover table-bordered table-responsive table-sm"
+>
+  <thead class="bg-secondary text-white border border-dark">
     <tr>
       <th>Nombre</th>
       <th>E-mail</th>
       <th className="text-center">
-        <button onClick="{onAdd}" variant="primary" title="Agregar">
+        <button
+          onClick="{onAdd}"
+          class="btn btn-primary action"
+          title="Agregar"
+        >
           <IconAddPerson>Agregar</IconAddPerson>
         </button>
       </th>
