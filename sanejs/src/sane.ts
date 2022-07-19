@@ -416,6 +416,10 @@ function formatSlashes(route: string): string {
   return route;
 }
 
+function relativeRequire(path: string) {
+  return require(path.startsWith('~/') ? path.replace('~', rootDir) : path);
+}
+
 async function loadRoutes(dirPath: string, app: Application): Promise<void> {
   await continueLoadingRoutes(dirPath);
   async function continueLoadingRoutes(thisDir: string) {
@@ -454,7 +458,7 @@ async function loadRoutes(dirPath: string, app: Application): Promise<void> {
           );
           useRoute(
             route,
-            routeHandler(express.Router(), require, route),
+            routeHandler(express.Router(), relativeRequire, route),
             absPath,
             app
           );
