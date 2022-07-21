@@ -1,5 +1,5 @@
 <nav id="navbar" class="navbar navbar-light navbar-expand-lg">
-  <a class="navbar-brand" href="#"
+  <a class="navbar-brand" href="#" hx-get="/"
     ><img src="/La Corazon.png" alt="La Corazón" /> La Corazón</a
   >
   <button class="navbar-toggler" type="button">
@@ -36,7 +36,7 @@
     <ul class="navbar-nav">
       {? currentUser}
       <li class="nav-item logged-in">
-        <a class="nav-link" href="/logout"> Logout</a>
+        <a class="nav-link" href="#" hx-get="pages/logout"> Logout</a>
       </li>
       {: currentUser}
       <li class="nav-item">
