@@ -42,7 +42,6 @@ declare global {
     interface Response {
       trigger: (eventName: string) => Response;
       partial(route: string, vars: unknown): void;
-      deliver(route: string, vars?: object, swapIds?: string[]): void;
       error404(): void;
       error500(error: Error): void;
       expressRedirect(url: string): void;
@@ -95,20 +94,20 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
     // Populate template vars
     const fmAndVars = { ...template.fm, ...vars };
-    template.html = processVars(template.html, fmAndVars);
+    let html = processVars(template.html, fmAndVars);
 
     // Strip \ char for escaped blocks and vals.
-    template.html = template.html.replaceAll('\\{', '{');
-    template.html = template.html.replaceAll(/ \\server/gm, ' server');
+    html = html.replaceAll('\\{', '{');
+    html = html.replaceAll(/ \\server/gm, ' server');
 
     // Convert template response to HTMX out-of-band swaps?
     if (swapIds && req.isHtmx) {
       const triggerId = req.headers['hx-trigger'] as string;
-      template = processSwapIds(template, swapIds, triggerId);
+      html = processSwapIds(html, swapIds, triggerId);
     }
 
     // Render template.
-    res.send(template.html);
+    res.send(html);
   };
 
   res.partial = async (route: string, vars: object) => {
@@ -121,14 +120,14 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     if (!template) return next();
 
     // Populate template vars
-    template.html = vars ? processVars(template.html, vars) : template.html;
+    let html = vars ? processVars(template.html, vars) : template.html;
 
     // Strip \ char for escaped blocks and vals.
-    template.html = template.html.replaceAll('\\{', '{');
-    template.html = template.html.replaceAll(/ \\server/gm, ' server');
+    html = html.replaceAll('\\{', '{');
+    html = html.replaceAll(/ \\server/gm, ' server');
 
     // Render template.
-    res.send(template.html);
+    res.send(html);
   };
 
   res.trigger = (eventName: string) => {
@@ -139,12 +138,12 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
   res.error404 = () => {
     res.set('HX-Retarget', 'body');
-    res.deliver('_404', { method: req.method, path: req.url });
+    res.render('_404', { method: req.method, path: req.url });
   };
 
   res.error500 = (error: Error) => {
     res.set('HX-Retarget', 'body');
-    res.deliver('_500', { error });
+    res.render('_500', { error });
   };
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
@@ -154,7 +153,7 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const uri = normalized.startsWith('/') ? path : '/' + path;
     res.set('HX-Retarget', target);
     res.set('HX-Push', uri);
-    res.deliver(path, opts);
+    res.render(path, opts);
   };
 
   res.expressRedirect = res.redirect;
@@ -395,14 +394,10 @@ function processVars(html: string, vars: object): string {
   }
 }
 
-function processSwapIds(
-  template: Template,
-  swapIds: string[],
-  triggerId: string
-) {
+function processSwapIds(html: string, swapIds: string[], triggerId: string) {
   const swapIdsArray = [swapIds].flat(); // Convert single string to array.
   const oobSwapElements: string[] = []; // oob is HTMX "out of band" https://htmx.org/docs
-  const dom = parse(template.html);
+  const dom = parse(html);
 
   // Is the element that triggered this event also being swapped?
   const triggerIndex = swapIdsArray.indexOf(triggerId);
@@ -425,10 +420,7 @@ function processSwapIds(
     ? dom.getElementById(triggerId)
     : null;
   const oobResponse = oobSwapElements.join('\n\n');
-  template.html = primaryResponse
-    ? primaryResponse + '\n\n' + oobResponse
-    : oobResponse;
-  return template;
+  return primaryResponse ? primaryResponse + '\n\n' + oobResponse : oobResponse;
 }
 
 function formatSlashes(route: string): string {
