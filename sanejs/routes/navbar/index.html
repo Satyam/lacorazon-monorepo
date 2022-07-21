@@ -1,0 +1,51 @@
+<nav id="navbar" class="navbar navbar-light navbar-expand-lg">
+  <a class="navbar-brand" href="#"
+    ><img src="/La Corazon.png" alt="La Corazón" /> La Corazón</a
+  >
+  <button class="navbar-toggler" type="button">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse">
+    {? currentUser}
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/usuarios">Usuarios</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" hx-get="pages/vendedores" hx-target="main"
+          >Vendedores</a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/distribuidores">Distribuidores</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/ventas">Ventas</a>
+      </li>
+    </ul>
+    {/? currentUser}
+    <span class="navbar-text ms-auto">
+      {? currentUser}
+      <i class="bi bi-person-check-fill logged-in">
+        <span class="user-name">{= currentUser.nombre}</span></i
+      >
+      {: currentUser}
+      <i class="bi bi-person-x logged-out"> Invitado</i>
+      {/? currentUser}
+    </span>
+    <ul class="navbar-nav">
+      {? currentUser}
+      <li class="nav-item logged-in">
+        <a class="nav-link" href="/logout"> Logout</a>
+      </li>
+      {: currentUser}
+      <li class="nav-item">
+        <a class="nav-link" href="#" hx-get="pages/login" hx-target="main"
+          >Login</a
+        >
+      </li>
+      {/? currentUser}
+    </ul>
+  </div>
+</nav>
+<h1></h1>
