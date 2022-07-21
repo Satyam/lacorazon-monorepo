@@ -1,5 +1,6 @@
 ---
 title: La Corazón
+header: La Corazón
 ---
 
 <!DOCTYPE html>
@@ -9,10 +10,11 @@ title: La Corazón
   </head>
   <body hx-boost="true">
     <!-- Header -->
-    <header>{> navbar/}</header>
+    <header>{> _/navbar}</header>
+    <h1>{= header}</h1>
 
     <!-- Main Section -->
-    <main>{ slot }</main>
+    <main id="main" hx-swap-oob="true">{ slot }</main>
 
     <script>
       // htmx.logAll()

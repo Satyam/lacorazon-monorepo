@@ -12,7 +12,7 @@
         <a class="nav-link" href="/usuarios">Usuarios</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" hx-get="pages/vendedores" hx-target="main"
+        <a class="nav-link" href="#" hx-get="/vendedores" hx-swap="none"
           >Vendedores</a
         >
       </li>
@@ -36,13 +36,11 @@
     <ul class="navbar-nav">
       {? currentUser}
       <li class="nav-item logged-in">
-        <a class="nav-link" href="#" hx-get="pages/logout"> Logout</a>
+        <a class="nav-link" href="#" hx-get="/logout" hx-swap="none"> Logout</a>
       </li>
       {: currentUser}
       <li class="nav-item">
-        <a class="nav-link" href="#" hx-get="pages/login" hx-target="main"
-          >Login</a
-        >
+        <a class="nav-link" href="#" hx-get="/login" hx-swap="none">Login</a>
       </li>
       {/? currentUser}
     </ul>

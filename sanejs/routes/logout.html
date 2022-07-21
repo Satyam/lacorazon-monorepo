@@ -1,5 +1,5 @@
 <script server>
-  server.get('', (req, res) => {
+  server.get('/', (req, res) => {
     req.session.destroy();
     res.redirect('/');
   });

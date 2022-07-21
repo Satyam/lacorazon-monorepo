@@ -1,0 +1,12 @@
+---
+title: La Corazón - Vendedores
+header: Vendedores
+---
+
+<script server>
+  const { list } = require('~/dist/data/vendedores.js');
+  server.get('/', async (req, res) => {
+    const vendedores = await list();
+    res.render('_/main/vendedores/list', { vendedores }, ['main']);
+  });
+</script>

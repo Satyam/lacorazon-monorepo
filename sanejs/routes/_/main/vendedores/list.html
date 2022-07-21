@@ -1,15 +1,3 @@
----
-title: La Corazón - Vendedores
----
-
-<script server>
-  const { list } = require('~/dist/data/vendedores.js');
-  server.get('/', async (req, res) => {
-    const vendedores = await list();
-    res.render(self, { vendedores });
-  });
-</script>
-
 <table
   class="table table-striped table-hover table-bordered table-responsive table-sm"
 >
