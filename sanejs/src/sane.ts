@@ -138,12 +138,12 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
   res.error404 = () => {
     res.set('HX-Retarget', 'body');
-    res.render('_404', { method: req.method, path: req.url });
+    res.render('_/404', { method: req.method, path: req.url });
   };
 
   res.error500 = (error: Error) => {
     res.set('HX-Retarget', 'body');
-    res.render('_500', { error });
+    res.render('_/500', { error });
   };
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
