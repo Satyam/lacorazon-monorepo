@@ -45,9 +45,19 @@ declare global {
       deliver(route: string, vars?: object, swapIds?: string[]): void;
       error404(): void;
       error500(error: Error): void;
-      serverRedirect(url: string): void;
-      serverRedirect(status: number, url: string): void;
-      serverRedirect(url: string, status: number): void;
+      expressRedirect(url: string): void;
+      expressRedirect(status: number, url: string): void;
+      expressRedirect(url: string, status: number): void;
+      expressRender(
+        view: string,
+        vars?: object,
+        callback?: (err: Error, html: string) => void
+      ): void;
+      expressRender(
+        view: string,
+        callback?: (err: Error, html: string) => void
+      ): void;
+      render(view: string, vars?: object, swapIds?: string[]): void;
       retarget(path: string, opts: object, target: string): void;
     }
   }
@@ -62,7 +72,19 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     process.exit();
   }
 
-  res.deliver = async (route: string, vars: object, swapIds?: string[]) => {
+  res.expressRender = res.render;
+
+  res.render = async (
+    route: string,
+    vars?: object | ((err: Error, html: string) => void),
+    swapIds?: string[] | ((err: Error, html: string) => void)
+  ) => {
+    if (typeof vars === 'function') {
+      return res.expressRender(route, vars);
+    }
+    if (typeof swapIds === 'function') {
+      return res.expressRender(route, vars, swapIds);
+    }
     // Build cache if not already set (null means we've cached this route as a 404)
     let template: Template | undefined = cache.page[route];
     if (!template) {
@@ -135,7 +157,7 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     res.deliver(path, opts);
   };
 
-  res.serverRedirect = res.redirect;
+  res.expressRedirect = res.redirect;
 
   res.redirect = (url: string | number, status?: string | number) => {
     if (typeof url === 'string') {
@@ -144,10 +166,10 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
         res.set('HX-Redirect', route);
         res.end();
       } else {
-        res.serverRedirect(route, status as number);
+        res.expressRedirect(route, status as number);
       }
     } else {
-      res.serverRedirect(url as number, status as string);
+      res.expressRedirect(url as number, status as string);
     }
   };
 
