@@ -93,7 +93,7 @@ if (process.env.SESSION_SECRET) {
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.method != 'GET') return next();
     if (req.path.indexOf('.') !== -1) return next(); // Don't waste cpu on .css and favicons
-    res.deliver(req.path, {});
+    res.render(req.path, {});
   });
 
   // Handle simple 404.
