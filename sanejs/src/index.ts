@@ -69,7 +69,7 @@ app.use(express.json());
 app.use(saneMiddleware);
 
 // Use Express Session
-if (process.env.SESSION_SECRET && process.env.MONGO_URI) {
+if (process.env.SESSION_SECRET) {
   app.set('trustproxy', true);
   app.use(
     session({
