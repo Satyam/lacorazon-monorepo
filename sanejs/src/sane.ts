@@ -425,8 +425,9 @@ function processSwapIds(html: string, swapIds: string[], triggerId: string) {
 
 function formatSlashes(route: string): string {
   // Always use leading slash, never use trailing slash.
-  route = route.charAt(0) === '/' ? route : '/' + route;
-  route = route.charAt(route.length - 1) == '/' ? route.slice(0, -1) : route;
+  if (route === '/') return route;
+  route = route.startsWith('/') ? route : '/' + route;
+  route = route.endsWith('/') ? route.slice(0, -1) : route;
   return route;
 }
 
