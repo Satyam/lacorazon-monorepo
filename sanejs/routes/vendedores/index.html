@@ -7,6 +7,7 @@ header: Vendedores
   const { list } = require('~/dist/data/vendedores.js');
   server.get('/', async (req, res) => {
     const vendedores = await list();
-    res.render('_/main/vendedores/list', { vendedores }, ['main']);
+    res.render(self, { vendedores }, req.isHtmx ? 'main' : []);
   });
 </script>
+{> _/main/vendedores/list}

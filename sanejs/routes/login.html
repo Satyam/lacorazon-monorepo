@@ -4,7 +4,10 @@ header: Login
 ---
 
 <script server>
-  // POST /admin/login
+  server.get('/', (req, res) => {
+    res.render(self, {}, req.isHtmx ? 'main' : []);
+  });
+
   server.post('/', async (req, res) => {
     const { checkValidUser } = require('~/dist/data/user.js');
     const { email, password } = req.body;
@@ -13,9 +16,8 @@ header: Login
       req.session.currentUser = user;
       res.redirect('/');
     } else {
-      res.render('_/main/login', { form: req.body, authFailed: true }, [
-        'main',
-      ]);
+      res.render('self', { form: req.body, authFailed: true }, 'main');
     }
   });
 </script>
+{> _/main/login}

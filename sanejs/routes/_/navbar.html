@@ -1,5 +1,5 @@
 <nav id="navbar" class="navbar navbar-light navbar-expand-lg">
-  <a class="navbar-brand" href="#" hx-get="/"
+  <a class="navbar-brand" href="/" hx-swap="none"
     ><img src="/La Corazon.png" alt="La Corazón" /> La Corazón</a
   >
   <button class="navbar-toggler" type="button">
@@ -9,18 +9,18 @@
     {? currentUser}
     <ul class="navbar-nav me-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/usuarios">Usuarios</a>
+        <a class="nav-link" href="/usuarios" hx-swap="none">Usuarios</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" hx-get="/vendedores" hx-swap="none"
-          >Vendedores</a
+        <a class="nav-link" href="/vendedores" hx-swap="none">Vendedores</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/distribuidores" hx-swap="none"
+          >Distribuidores</a
         >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/distribuidores">Distribuidores</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/ventas">Ventas</a>
+        <a class="nav-link" href="/ventas" hx-swap="none">Ventas</a>
       </li>
     </ul>
     {/? currentUser}
@@ -36,14 +36,13 @@
     <ul class="navbar-nav">
       {? currentUser}
       <li class="nav-item logged-in">
-        <a class="nav-link" href="#" hx-get="/logout" hx-swap="none"> Logout</a>
+        <a href="/logout" class="nav-link" hx-swap="none"> Logout</a>
       </li>
       {: currentUser}
       <li class="nav-item">
-        <a class="nav-link" href="#" hx-get="/login" hx-swap="none">Login</a>
+        <a href="/login" class="nav-link" hx-swap="none"> Login </a>
       </li>
       {/? currentUser}
     </ul>
   </div>
 </nav>
-<h1></h1>

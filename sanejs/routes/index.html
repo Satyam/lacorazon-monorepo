@@ -5,8 +5,13 @@ header: Bienvenido
 
 <script server>
   server.get('/', (req, res) => {
-    res.render(self, {
-      currentUser: req.session.currentUser,
-    });
+    res.render(
+      self,
+      {
+        currentUser: req.session.currentUser,
+      },
+      req.isHtmx ? 'main' : []
+    );
   });
 </script>
+{> _/main/home }
