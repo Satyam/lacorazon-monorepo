@@ -36,7 +36,9 @@
     <ul class="navbar-nav">
       {? currentUser}
       <li class="nav-item logged-in">
-        <a href="/logout" class="nav-link" hx-swap="none"> Logout</a>
+        <a href="/#logout" hx-delete="/login" class="nav-link" hx-swap="none">
+          Logout</a
+        >
       </li>
       {: currentUser}
       <li class="nav-item">

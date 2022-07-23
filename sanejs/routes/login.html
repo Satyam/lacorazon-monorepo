@@ -19,6 +19,10 @@ header: Login
       res.render(self, { form: req.body, authFailed: true }, 'main');
     }
   });
+  server.delete('/', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+  });
 </script>
 <form novalidate action="/login" method="post" hx-select="form">
   <label class="form-group row">
