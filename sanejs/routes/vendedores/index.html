@@ -10,4 +10,31 @@ header: Vendedores
     res.render(self, { vendedores }, req.isHtmx ? 'main' : []);
   });
 </script>
-{> _/main/vendedores/list}
+<table
+  class="table table-striped table-hover table-bordered table-responsive table-sm"
+>
+  <thead class="bg-secondary text-white border border-dark">
+    <tr>
+      <th>Nombre</th>
+      <th>E-mail</th>
+      <th className="text-center">
+        <button
+          onClick="{onAdd}"
+          class="btn btn-primary action"
+          title="Agregar"
+        >
+          <IconAddPerson>Agregar</IconAddPerson>
+        </button>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {@ vendedores}
+    <tr>
+      <td>{= this.nombre}</td>
+      <td>{= this.email}</td>
+      <td className="text-center"></td>
+    </tr>
+    {/@ vendedores}
+  </tbody>
+</table>
