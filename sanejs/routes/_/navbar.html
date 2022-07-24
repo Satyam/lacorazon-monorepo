@@ -6,25 +6,43 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse">
-    {? currentUser}
-    <ul class="navbar-nav me-auto">
+    <ul id="menu" class="navbar-nav me-auto">
+      {? currentUser}
       <li class="nav-item">
-        <a class="nav-link" href="/usuarios" hx-swap="none">Usuarios</a>
+        <a
+          class="nav-link{? menu.usuarios} active{/? menu.usuarios}"
+          href="/usuarios"
+          hx-swap="none"
+          >Usuarios</a
+        >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/vendedores" hx-swap="none">Vendedores</a>
+        <a
+          class="nav-link{? menu.vendedores} active{/? menu.vendedores}"
+          href="/vendedores"
+          hx-swap="none"
+          >Vendedores</a
+        >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/distribuidores" hx-swap="none"
+        <a
+          class="nav-link{? menu.distribuidores} active{/? menu.distribuidores}"
+          href="/distribuidores"
+          hx-swap="none"
           >Distribuidores</a
         >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/ventas" hx-swap="none">Ventas</a>
+        <a
+          class="nav-link{? menu.ventas} active{/? menu.ventas}"
+          href="/ventas"
+          hx-swap="none"
+          >Ventas</a
+        >
       </li>
+      {/? currentUser}
     </ul>
-    {/? currentUser}
-    <span class="navbar-text ms-auto">
+    <span id="loginStatus" class="navbar-text ms-auto">
       {? currentUser}
       <i class="bi bi-person-check-fill">
         <span class="user-name">{= currentUser.nombre}</span></i
@@ -33,7 +51,7 @@
       <i class="bi bi-person-x"> Invitado</i>
       {/? currentUser}
     </span>
-    <ul class="navbar-nav">
+    <ul id="loginActions" class="navbar-nav">
       {? currentUser}
       <li class="nav-item">
         <a href="/#logout" hx-delete="/login" class="nav-link" hx-swap="none">

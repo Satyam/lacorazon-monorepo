@@ -7,7 +7,15 @@ header: Vendedores
   const { list } = require('~/dist/data/vendedores.js');
   server.get('/', async (req, res) => {
     const vendedores = await list();
-    res.render(self, { vendedores }, req.isHtmx ? 'main' : []);
+    res.render(
+      self,
+      {
+        vendedores,
+        currentUser: req.session.currentUser,
+        menu: { vendedores: true },
+      },
+      req.isHtmx ? ['main', 'menu'] : []
+    );
   });
 </script>
 <table
