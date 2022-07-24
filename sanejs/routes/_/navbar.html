@@ -13,6 +13,7 @@
           class="nav-link{? menu.usuarios} active{/? menu.usuarios}"
           href="/usuarios"
           hx-swap="none"
+          hx-push-url="true"
           >Usuarios</a
         >
       </li>
@@ -21,6 +22,7 @@
           class="nav-link{? menu.vendedores} active{/? menu.vendedores}"
           href="/vendedores"
           hx-swap="none"
+          hx-push-url="true"
           >Vendedores</a
         >
       </li>
@@ -29,6 +31,7 @@
           class="nav-link{? menu.distribuidores} active{/? menu.distribuidores}"
           href="/distribuidores"
           hx-swap="none"
+          hx-push-url="true"
           >Distribuidores</a
         >
       </li>
@@ -37,6 +40,7 @@
           class="nav-link{? menu.ventas} active{/? menu.ventas}"
           href="/ventas"
           hx-swap="none"
+          hx-push-url="true"
           >Ventas</a
         >
       </li>
@@ -60,7 +64,9 @@
       </li>
       {: currentUser}
       <li class="nav-item">
-        <a href="/login" class="nav-link" hx-swap="none"> Login </a>
+        <a href="/login" class="nav-link" hx-swap="none" hx-push-url="true">
+          Login
+        </a>
       </li>
       {/? currentUser}
     </ul>
