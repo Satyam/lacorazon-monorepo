@@ -407,10 +407,12 @@ function processSwapIds(html: string, swapIds: string[], triggerId: string) {
   // Append elements specified by id to oobSwapElements.
   swapIdsArray.forEach((id) => {
     const el = dom.getElementById(id);
-    if (!el)
+    if (!el) {
       console.error(
         `res.render failed: No DOM element with id="${id}" found in template.`
       );
+      return;
+    }
     el.setAttribute('hx-swap-oob', 'true');
     oobSwapElements.push(el.toString());
   });
