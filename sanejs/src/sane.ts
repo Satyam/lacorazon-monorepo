@@ -333,20 +333,12 @@ async function processPartials(template: Template): Promise<Template> {
 
 function processVars(html: string, vars: object): string {
   // This is a customized version of t.js -> https://github.com/jasonmoo/t.js
-  const processedVars = Object.keys(vars)
-    .map(
-      (v) =>
-        //@ts-ignore
-        `const ${v} = ${JSON.stringify(vars[v])};`
-    )
-    .join('\n');
-
   return (
     html
       .replace(
         reTjsBlock,
         (_, __, meta, key, inner, ifTrue, hasElse, ifFalse) => {
-          let val = getValue(key, processedVars);
+          let val = getValue(vars, key);
           if (!val) {
             // Handle if not.
             if (meta === '!') {
@@ -377,7 +369,7 @@ function processVars(html: string, vars: object): string {
       )
       // Swap out variables.
       .replace(reTjsVal, (_: string, meta: string, key: string) => {
-        var val = getValue(key, processedVars);
+        var val = getValue(vars, key);
         if (val || val === 0) {
           return meta === '=' ? scrub(val) : val;
         }
@@ -394,19 +386,11 @@ function processVars(html: string, vars: object): string {
       .replace(/"/g, '&quot;');
   }
 
-  function getValue(key: string, processedVars: string) {
-    return Function(
-      'key',
-      `
-        'use strict';
-        ${processedVars} 
-        try {
-          return (${key})
-        } catch (err) {
-          return undefined
-        }
-      `
-    )(key);
+  function getValue(vars: object, key: string) {
+    return key.split('.').reduce<any>((acc, part) => {
+      if (typeof acc === 'object' && part in acc) return acc[part];
+      return undefined;
+    }, vars);
   }
 }
 
