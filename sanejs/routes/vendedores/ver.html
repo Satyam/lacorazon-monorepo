@@ -11,32 +11,21 @@ header: Detalle vendedor
     res.render(self, { vendedor }, req.isHtmx ? ['main', 'menu'] : []);
   });
 </script>
-<form id="main">
-  <label class="form-group row">
-    <div class="col-sm-2 col-form-label">Nombre</div>
-    <div class="col-sm-10">
-      <input
-        name="nombre"
-        value="{= vendedor.nombre}"
-        class="form-control"
-        placeholder="Nombre"
-        readonly
-      />
-    </div>
-  </label>
-  <label class="form-group row">
-    <div class="col-sm-2 col-form-label">Email</div>
-    <div class="col-sm-10">
-      <input
-        type="email"
-        name="email"
-        value="{= vendedor.email}"
-        class="form-control"
-        placeholder="Email"
-        readonly
-      />
-    </div>
-  </label>
-</form>
+<form-wrapper>
+  <text-field
+    label="Nombre"
+    name="nombre"
+    value="{= vendedor.nombre}"
+    placeholder="Nombre"
+    readonly
+  ></text-field>
+  <email-field
+    label="Email"
+    name="email"
+    value="{= vendedor.email}"
+    placeholder="Email"
+    readonly
+  ></email-field>
+</form-wrapper>
 <hr />
 <div class="accordion">(acá irian las ventas)</div>
