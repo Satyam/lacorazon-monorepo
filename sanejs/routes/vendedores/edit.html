@@ -33,5 +33,49 @@ header: Modificar vendedor
       );
     }
   });
+
+  server.post('/', async (req, res) => {
+    console.log('vendedor post', req.body);
+    res.render(
+      self,
+      {
+        vendedor: req.body,
+        title: `La Corazón - Nuevo Vendedor`,
+        header: 'Alta vendedor',
+      },
+      req.isHtmx ? ['main', 'menu'] : []
+    );
+  });
 </script>
-<pre id="main">{= vendedor}</pre>
+<form-wrapper id="form" novalidate>
+  <text-field
+    label="Nombre"
+    name="nombre"
+    value="{= vendedor.nombre}"
+    placeholder="Nombre"
+  ></text-field>
+  <email-field
+    label="Email"
+    name="email"
+    value="{= vendedor.email}"
+    placeholder="Email"
+  ></email-field>
+  {? authFailed }
+  <span class="text-error">Authentication failed</span>
+  {/? authFailed }
+  <button type="submit" class="btn btn-primary">Aceptar</button>
+</form-wrapper>
+<script>
+  function onSubmit(ev) {
+    const vendedor = ev.values;
+    console.log(vendedor);
+    htmx.ajax('POST', '/vendedores/edit', {
+      swap: false,
+      values: vendedor,
+    });
+  }
+  const formEl = document.getElementById('form');
+  if (formEl) {
+    formEl.addEventListener('formSubmit', onSubmit);
+  }
+</script>
