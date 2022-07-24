@@ -1,0 +1,15 @@
+---
+title: La Corazón - Vendedor
+header: Detalle vendedor
+---
+
+<script server>
+  const { get } = require('~/dist/data/vendedores.js');
+
+  server.get('/', async (req, res) => {
+    console.log('ver vendedor', req.query.id, req.query.nombre);
+    const vendedor = await get(req.query.id);
+    res.render(self, { vendedor }, req.isHtmx ? ['main', 'menu'] : []);
+  });
+</script>
+<pre id="main">{= vendedor}</pre>

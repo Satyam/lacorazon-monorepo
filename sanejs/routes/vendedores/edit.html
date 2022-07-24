@@ -1,0 +1,37 @@
+---
+title: La Corazón - Vendedor
+header: Modificar vendedor
+---
+
+<script server>
+  const { get } = require('~/dist/data/vendedores.js');
+
+  server.get('/', async (req, res) => {
+    const { id, nombre } = req.query;
+    console.log('modificar vendedor', { id, nombre });
+    if (id) {
+      const vendedor = await get(id);
+      res.render(
+        self,
+        {
+          vendedor,
+          title: `La Corazón - Vendedor - ${vendedor.nombre}`,
+          header: 'Modificar vendedor',
+        },
+        req.isHtmx ? ['main', 'menu'] : []
+      );
+    } else {
+      const vendedor = { nombre: '', email: '' };
+      res.render(
+        self,
+        {
+          vendedor,
+          title: `La Corazón - Nuevo Vendedor`,
+          header: 'Alta vendedor',
+        },
+        req.isHtmx ? ['main', 'menu'] : []
+      );
+    }
+  });
+</script>
+<pre id="main">{= vendedor}</pre>

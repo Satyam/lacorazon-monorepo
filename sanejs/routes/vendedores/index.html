@@ -4,7 +4,8 @@ header: Vendedores
 ---
 
 <script server>
-  const { list } = require('~/dist/data/vendedores.js');
+  const { list, remove } = require('~/dist/data/vendedores.js');
+
   server.get('/', async (req, res) => {
     const vendedores = await list();
     res.render(
@@ -17,6 +18,10 @@ header: Vendedores
       req.isHtmx ? ['main', 'menu'] : []
     );
   });
+
+  server.delete('/', (req, res) => {
+    console.log(req.query.id);
+  });
 </script>
 <table
   class="table table-striped table-hover table-bordered table-responsive table-sm"
@@ -25,9 +30,10 @@ header: Vendedores
     <tr>
       <th>Nombre</th>
       <th>E-mail</th>
-      <th className="text-center">
+      <th class="text-center">
         <button
-          onClick="{onAdd}"
+          hx-get="/vendedores/edit"
+          hx-push-url="true"
           class="btn btn-primary action"
           title="Agregar"
         >
@@ -41,7 +47,34 @@ header: Vendedores
     <tr>
       <td>{= item.nombre}</td>
       <td>{= item.email}</td>
-      <td className="text-center"></td>
+      <td class="text-center">
+        <div class="btn-group btn-group-sm">
+          <button
+            class="btn btn-outline-info"
+            title="Mostrar detalle"
+            hx-get="/vendedores/ver?id={= item.id}&nombre={= item.nombre}"
+            hx-push-url="true"
+          >
+            <icon-show></icon-show>
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            title="Modificar"
+            hx-get="/vendedores/edit?id={= item.id}&nombre={= item.nombre}"
+            hx-push-url="true"
+          >
+            <icon-edit></icon-edit>
+          </button>
+          <button
+            class="btn btn-outline-danger"
+            title="Borrar"
+            hx-delete="/vendedores?id={= item.id}"
+            hx-confirm="Esta seguro que quiere borrar {= item.nombre}"
+          >
+            <icon-trash></icon-trash>
+          </button>
+        </div>
+      </td>
     </tr>
     {/@ vendedores}
   </tbody>
