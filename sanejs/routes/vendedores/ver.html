@@ -7,9 +7,36 @@ header: Detalle vendedor
   const { get } = require('~/dist/data/vendedores.js');
 
   server.get('/', async (req, res) => {
-    console.log('ver vendedor', req.query.id, req.query.nombre);
     const vendedor = await get(req.query.id);
     res.render(self, { vendedor }, req.isHtmx ? ['main', 'menu'] : []);
   });
 </script>
-<pre id="main">{= vendedor}</pre>
+<form id="main">
+  <label class="form-group row">
+    <div class="col-sm-2 col-form-label">Nombre</div>
+    <div class="col-sm-10">
+      <input
+        name="nombre"
+        value="{= vendedor.nombre}"
+        class="form-control"
+        placeholder="Nombre"
+        readonly
+      />
+    </div>
+  </label>
+  <label class="form-group row">
+    <div class="col-sm-2 col-form-label">Email</div>
+    <div class="col-sm-10">
+      <input
+        type="email"
+        name="email"
+        value="{= vendedor.email}"
+        class="form-control"
+        placeholder="Email"
+        readonly
+      />
+    </div>
+  </label>
+</form>
+<hr />
+<div class="accordion">(acá irian las ventas)</div>
