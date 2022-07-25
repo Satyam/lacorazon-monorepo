@@ -4,7 +4,7 @@ header: Modificar vendedor
 ---
 
 <script server>
-  const { get } = require('~/dist/data/vendedores.js');
+  const { get, create, update } = require('~/dist/data/vendedores.js');
 
   server.get('/', async (req, res) => {
     const { id, nombre } = req.query;
@@ -15,6 +15,7 @@ header: Modificar vendedor
         self,
         {
           vendedor,
+          action: '/vendedores/edit',
           title: `La Corazón - Vendedor - ${vendedor.nombre}`,
           header: 'Modificar vendedor',
         },
@@ -26,6 +27,7 @@ header: Modificar vendedor
         self,
         {
           vendedor,
+          action: '/vendedores/edit',
           title: `La Corazón - Nuevo Vendedor`,
           header: 'Alta vendedor',
         },
@@ -47,35 +49,4 @@ header: Modificar vendedor
     );
   });
 </script>
-<form-wrapper id="form" novalidate>
-  <text-field
-    label="Nombre"
-    name="nombre"
-    value="{= vendedor.nombre}"
-    placeholder="Nombre"
-  ></text-field>
-  <email-field
-    label="Email"
-    name="email"
-    value="{= vendedor.email}"
-    placeholder="Email"
-  ></email-field>
-  {? authFailed }
-  <span class="text-error">Authentication failed</span>
-  {/? authFailed }
-  <button type="submit" class="btn btn-primary">Aceptar</button>
-</form-wrapper>
-<script>
-  function onSubmit(ev) {
-    const vendedor = ev.values;
-    console.log(vendedor);
-    htmx.ajax('POST', '/vendedores/edit', {
-      swap: false,
-      values: vendedor,
-    });
-  }
-  const formEl = document.getElementById('form');
-  if (formEl) {
-    formEl.addEventListener('formSubmit', onSubmit);
-  }
-</script>
+{> vendedores/__form}

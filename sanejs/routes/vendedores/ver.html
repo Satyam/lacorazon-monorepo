@@ -8,24 +8,13 @@ header: Detalle vendedor
 
   server.get('/', async (req, res) => {
     const vendedor = await get(req.query.id);
-    res.render(self, { vendedor }, req.isHtmx ? ['main', 'menu'] : []);
+    res.render(
+      self,
+      { vendedor, readonly: true },
+      req.isHtmx ? ['main', 'menu'] : []
+    );
   });
 </script>
-<form-wrapper>
-  <text-field
-    label="Nombre"
-    name="nombre"
-    value="{= vendedor.nombre}"
-    placeholder="Nombre"
-    readonly
-  ></text-field>
-  <email-field
-    label="Email"
-    name="email"
-    value="{= vendedor.email}"
-    placeholder="Email"
-    readonly
-  ></email-field>
-</form-wrapper>
+{> vendedores/__form}
 <hr />
 <div class="accordion">(acá irian las ventas)</div>
