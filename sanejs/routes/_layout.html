@@ -3,7 +3,9 @@
   {> _/html-head}
   <body hx-boost="true">
     <header>{> _/navbar}</header>
-
+    <div id="indicator">
+      <img src="/icons/spinner.svg" />
+    </div>
     {slot}
 
     <script>

@@ -23,7 +23,13 @@
 <title id="title">La Corazón - Login</title>
 <h1 id="heading">Login</h1>
 <main id="main">
-  <form novalidate action="/login" method="post" hx-select="form">
+  <form
+    novalidate
+    action="/login"
+    method="post"
+    hx-select="form"
+    hx-indicator="#indicator"
+  >
     <label class="form-group row mb-3">
       <div class="col-sm-2 col-form-label">Email</div>
       <div class="col-sm-10">

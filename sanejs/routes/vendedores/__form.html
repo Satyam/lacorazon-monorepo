@@ -1,4 +1,10 @@
-<form novalidate action="{= action}" method="post" hx-select="form">
+<form
+  novalidate
+  action="{= action}"
+  method="post"
+  hx-select="form"
+  hx-indicator="#indicator"
+>
   <input type="hidden" name="id" value="{= vendedor.id}" />
   <label class="form-group row mb-3">
     <div class="col-sm-2 col-form-label">Nombre</div>

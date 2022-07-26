@@ -16,6 +16,21 @@ header {
   padding:0 1em;
   background-color: #e4ccaa
 }
+#indicator {
+  display:none;
+  position: absolute;
+  max-width: 90%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+}
+#indicator.htmx-request {
+  display:block;
+}
 
 h1 {
   max-width: 1400px;
