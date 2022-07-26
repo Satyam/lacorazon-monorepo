@@ -1,5 +1,5 @@
 <nav id="navbar" class="navbar navbar-light navbar-expand-lg">
-  <a class="navbar-brand" href="/" hx-swap="none"
+  <a class="navbar-brand" href="/"
     ><img src="/La Corazon.png" alt="La Corazón" /> La Corazón</a
   >
   <button class="navbar-toggler" type="button">
@@ -12,7 +12,6 @@
         <a
           class="nav-link{? menu.usuarios} active{/? menu.usuarios}"
           href="/usuarios"
-          hx-swap="none"
           hx-push-url="true"
           >Usuarios</a
         >
@@ -21,7 +20,6 @@
         <a
           class="nav-link{? menu.vendedores} active{/? menu.vendedores}"
           href="/vendedores"
-          hx-swap="none"
           hx-push-url="true"
           >Vendedores</a
         >
@@ -30,7 +28,6 @@
         <a
           class="nav-link{? menu.distribuidores} active{/? menu.distribuidores}"
           href="/distribuidores"
-          hx-swap="none"
           hx-push-url="true"
           >Distribuidores</a
         >
@@ -39,7 +36,6 @@
         <a
           class="nav-link{? menu.ventas} active{/? menu.ventas}"
           href="/ventas"
-          hx-swap="none"
           hx-push-url="true"
           >Ventas</a
         >
@@ -58,15 +54,11 @@
     <ul id="loginActions" class="navbar-nav">
       {? currentUser}
       <li class="nav-item">
-        <a href="/#logout" hx-delete="/login" class="nav-link" hx-swap="none">
-          Logout</a
-        >
+        <a href="/#logout" hx-delete="/login" class="nav-link"> Logout</a>
       </li>
       {: currentUser}
       <li class="nav-item">
-        <a href="/login" class="nav-link" hx-swap="none" hx-push-url="true">
-          Login
-        </a>
+        <a href="/login" class="nav-link" hx-push-url="true"> Login </a>
       </li>
       {/? currentUser}
     </ul>
