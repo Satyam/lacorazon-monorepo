@@ -9,12 +9,10 @@ header: La Corazón
     {> _/html-head}
   </head>
   <body hx-boost="true">
-    <!-- Header -->
     <header>{> _/navbar}</header>
     <h1>{= header}</h1>
 
-    <!-- Main Section -->
-    <main id="main">{ slot }</main>
+    {slot}
 
     <script>
       // htmx.logAll()

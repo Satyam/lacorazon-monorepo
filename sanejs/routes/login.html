@@ -24,38 +24,40 @@ header: Login
     res.redirect('/');
   });
 </script>
-<form novalidate action="/login" method="post" hx-select="form">
-  <label class="form-group row">
-    <div class="col-sm-2 col-form-label">Email</div>
-    <div class="col-sm-10">
-      <input
-        name="email"
-        value="{= form.email}"
-        class="form-control {? authFailed}is-invalid{/? authFailed}"
-        placeholder="Email"
-        required
-      />
-      <div class="invalid-feedback">
-        Debe indicar la dirección de correo registrada
+<main id="main">
+  <form novalidate action="/login" method="post" hx-select="form">
+    <label class="form-group row">
+      <div class="col-sm-2 col-form-label">Email</div>
+      <div class="col-sm-10">
+        <input
+          name="email"
+          value="{= form.email}"
+          class="form-control {? authFailed}is-invalid{/? authFailed}"
+          placeholder="Email"
+          required
+        />
+        <div class="invalid-feedback">
+          Debe indicar la dirección de correo registrada
+        </div>
       </div>
-    </div>
-  </label>
-  <label class="form-group row">
-    <div class="col-sm-2 col-form-label">Contraseña</div>
-    <div class="col-sm-10">
-      <input
-        type="password"
-        name="password"
-        value="{= form.password}"
-        class="form-control {? authFailed}is-invalid{/? authFailed}"
-        placeholder="Contraseña"
-        required
-      />
-      <div class="invalid-feedback">Debe indicar una contraseña</div>
-    </div>
-  </label>
-  {? authFailed }
-  <span class="text-error">Authentication failed</span>
-  {/? authFailed }
-  <button type="submit" class="btn btn-primary">Acceder</button>
-</form>
+    </label>
+    <label class="form-group row">
+      <div class="col-sm-2 col-form-label">Contraseña</div>
+      <div class="col-sm-10">
+        <input
+          type="password"
+          name="password"
+          value="{= form.password}"
+          class="form-control {? authFailed}is-invalid{/? authFailed}"
+          placeholder="Contraseña"
+          required
+        />
+        <div class="invalid-feedback">Debe indicar una contraseña</div>
+      </div>
+    </label>
+    {? authFailed }
+    <span class="text-error">Authentication failed</span>
+    {/? authFailed }
+    <button type="submit" class="btn btn-primary">Acceder</button>
+  </form>
+</main>
