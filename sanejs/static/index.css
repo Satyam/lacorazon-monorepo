@@ -12,6 +12,18 @@
   width: 1em;
   height: 1em;
 }
+
+h1 {
+  max-width: 1400px;
+  margin: .5em auto
+}
+main {
+  max-width: 800px;
+  margin: auto;
+}
+main.wide {
+  max-width: 1400px;
+}
 /*
 .hidden {
   display: none;
