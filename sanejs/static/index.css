@@ -1,5 +1,4 @@
 .navbar {
-  background-color: #e4ccaa !important;
   color: #644240;
 }
 .navbar a {
@@ -13,6 +12,11 @@
   height: 1em;
 }
 
+header {
+  padding:0 1em;
+  background-color: #e4ccaa
+}
+
 h1 {
   max-width: 1400px;
   margin: .5em auto
@@ -24,29 +28,6 @@ main {
 main.wide {
   max-width: 1400px;
 }
-/*
-.hidden {
-  display: none;
-}
-
-.card-header.is-open .bi::before {
-  /* bi-caret-up-fill * /
-  content: '\f235';
-}
-
-.card-header .bi::before {
-  /* bi-caret-down-fill * /
-  content: '\f229';
-}
-
-.is-logged-in .logged-out {
-  display: none;
-}
-
-.not-logged-in .logged-in {
-  display: none;
-}
-
 label {
   margin: 0.3rem 0;
 }
@@ -59,4 +40,3 @@ label {
 .columna label.form-group {
   display: block;
 }
-*/
