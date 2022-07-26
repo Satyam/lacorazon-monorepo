@@ -1,5 +1,6 @@
 <form novalidate action="{= action}" method="post" hx-select="form">
-  <label class="form-group row">
+  <input type="hidden" name="id" value="{= vendedor.id}" />
+  <label class="form-group row mb-3">
     <div class="col-sm-2 col-form-label">Nombre</div>
     <div class="col-sm-10">
       <!-- prettier-ignore -->
@@ -19,11 +20,13 @@
       </div>
     </div>
   </label>
-  <label class="form-group row">
+  <label class="form-group row mb-3">
     <div class="col-sm-2 col-form-label">Email</div>
     <div class="col-sm-10">
-      <!-- prettier-ignore -->
-      <input 
+      <div class="input-group">
+        <span class="input-group-text">@</span>
+        <!-- prettier-ignore -->
+        <input 
         name="email" 
         value="{= vendedor.email}" 
         class="form-control {? invalid.email}is-invalid{/? invalid.email}" 
@@ -34,6 +37,7 @@
           required 
         {/? readonly} 
       />
+      </div>
       <div class="invalid-feedback">
         Debe indicar la dirección de correo registrada
       </div>
