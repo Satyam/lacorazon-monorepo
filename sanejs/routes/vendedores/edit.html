@@ -1,8 +1,3 @@
----
-title: La Corazón - Vendedor
-header: Modificar vendedor
----
-
 <script server>
   const { get, create, update } = require('~/dist/data/vendedores.js');
 
@@ -16,10 +11,8 @@ header: Modificar vendedor
         {
           vendedor,
           action: '/vendedores/edit',
-          title: `La Corazón - Vendedor - ${vendedor.nombre}`,
-          header: 'Modificar vendedor',
         },
-        req.isHtmx ? ['main', 'menu'] : []
+        req.isHtmx ? ['main', 'heading', 'title'] : []
       );
     } else {
       const vendedor = { nombre: '', email: '' };
@@ -28,10 +21,8 @@ header: Modificar vendedor
         {
           vendedor,
           action: '/vendedores/edit',
-          title: `La Corazón - Nuevo Vendedor`,
-          header: 'Alta vendedor',
         },
-        req.isHtmx ? ['main', 'menu'] : []
+        req.isHtmx ? ['main', 'heading', 'title'] : []
       );
     }
   });
@@ -42,13 +33,14 @@ header: Modificar vendedor
       self,
       {
         vendedor: req.body,
-        title: `La Corazón - Nuevo Vendedor`,
-        header: 'Alta vendedor',
       },
-      req.isHtmx ? ['main', 'menu'] : []
+      req.isHtmx ? ['main', 'heading', 'title'] : []
     );
   });
 </script>
-<main id="main"">
-  {> vendedores/__form}
-</main>
+
+<title id="title">La Corazón - Vendedor: {= vendedor.nombre}</title>
+<h1 id="heading">
+  {? vendedor.id}Modificar{: vendedor.id}Agregar{/? vendedor.id} vendedor
+</h1>
+<main id="main">{> vendedores/__form}</main>

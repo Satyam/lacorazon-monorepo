@@ -1,8 +1,3 @@
----
-title: La Corazón - Vendedor
-header: Detalle vendedor
----
-
 <script server>
   const { get } = require('~/dist/data/vendedores.js');
 
@@ -11,10 +6,13 @@ header: Detalle vendedor
     res.render(
       self,
       { vendedor, readonly: true },
-      req.isHtmx ? ['main', 'menu'] : []
+      req.isHtmx ? ['main', 'heading', 'title'] : []
     );
   });
 </script>
+
+<title id="title">La Corazón - Vendedor: {= vendedor.nombre}</title>
+<h1 id="heading">Detalle vendedor</h1>
 <main id="main">
   {> vendedores/__form}
   <hr />

@@ -1,21 +1,13 @@
----
-title: La Corazón
-header: La Corazón
----
-
 <!DOCTYPE html>
 <html>
-  <head>
-    {> _/html-head}
-  </head>
+  {> _/html-head}
   <body hx-boost="true">
     <header>{> _/navbar}</header>
-    <h1>{= header}</h1>
 
     {slot}
 
     <script>
-      // htmx.logAll()
+      // htmx.logAll();
     </script>
   </body>
 </html>
