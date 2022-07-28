@@ -5,7 +5,9 @@
     <tr>
       <th>Fecha</th>
       <th>Concepto</th>
+      {! hide.idVendedor}
       <th class="idVendedor">Vendedor</th>
+      {/! hide.idVendedor}
       <th>Cantidad</th>
       <th>Precio Unitario</th>
       <th>IVA</th>
@@ -22,9 +24,16 @@
     <tr>
       <td class="text-center">{= item.fecha}</td>
       <td>{= item.concepto}</td>
+      {! hide.idVendedor}
       <td title="Ver detalle del vendedor">
-        <a href="/vendedores/ver?id={= item.idVendedor}">{= item.vendedor}</a>
+        <a
+          href="/vendedores/ver?id={= item.idVendedor}"
+          hx-push-url="true"
+          hx-swap="none"
+          >{= item.vendedor}</a
+        >
       </td>
+      {/! hide.idVendedor}
       <td class="text-end">{= item.cantidad}</td>
       <td class="text-end">{= item.precioUnitario}</td>
       <td class="text-center">{= item.iva}</td>
