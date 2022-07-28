@@ -7,6 +7,7 @@
     const { checkValidUser } = require('~/dist/data/user.js');
     const { email, password } = req.body;
     const user = await checkValidUser(email, password);
+    console.log({ email, password, user });
     if (user) {
       req.session.currentUser = user;
       res.redirect('/');
@@ -29,6 +30,7 @@
     method="post"
     hx-select="form"
     hx-indicator="#indicator"
+    hx-swap="none"
   >
     <label class="form-group row mb-3">
       <div class="col-sm-2 col-form-label">Email</div>
@@ -59,9 +61,6 @@
         <div class="invalid-feedback">Debe indicar una contraseña</div>
       </div>
     </label>
-    {? authFailed }
-    <span class="text-error">Authentication failed</span>
-    {/? authFailed }
     <button type="submit" class="btn btn-primary">Acceder</button>
   </form>
 </main>

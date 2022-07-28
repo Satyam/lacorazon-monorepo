@@ -1,5 +1,5 @@
 <nav id="navbar" class="navbar navbar-light navbar-expand-lg">
-  <a class="navbar-brand" href="/"
+  <a class="navbar-brand" href="/" hx-push-url="true" hx-swap="none"
     ><img src="/La Corazon.png" alt="La Corazón" /> La Corazón</a
   >
   <button class="navbar-toggler" type="button">
@@ -21,6 +21,7 @@
           class="nav-link{? menu.vendedores} active{/? menu.vendedores}"
           href="/vendedores"
           hx-push-url="true"
+          hx-swap="none"
           >Vendedores</a
         >
       </li>
@@ -29,6 +30,7 @@
           class="nav-link{? menu.distribuidores} active{/? menu.distribuidores}"
           href="/distribuidores"
           hx-push-url="true"
+          hx-swap="none"
           >Distribuidores</a
         >
       </li>
@@ -37,6 +39,7 @@
           class="nav-link{? menu.ventas} active{/? menu.ventas}"
           href="/ventas"
           hx-push-url="true"
+          hx-swap="none"
           >Ventas</a
         >
       </li>
@@ -58,7 +61,9 @@
       </li>
       {: currentUser}
       <li class="nav-item">
-        <a href="/login" class="nav-link" hx-push-url="true"> Login </a>
+        <a href="/login" class="nav-link" hx-push-url="true" hx-swap="none">
+          Login
+        </a>
       </li>
       {/? currentUser}
     </ul>

@@ -33,6 +33,7 @@
           <button
             hx-get="/vendedores/edit"
             hx-push-url="true"
+            hx-swap="none"
             hx-indicator="#indicator"
             class="btn btn-primary action"
             title="Agregar"
@@ -54,6 +55,7 @@
               title="Mostrar detalle"
               hx-get="/vendedores/ver?id={= item.id}&nombre={= item.nombre}"
               hx-push-url="true"
+              hx-swap="none"
               hx-indicator="#indicator"
             >
               <i class="bi bi-eye"></i>
@@ -63,6 +65,7 @@
               title="Modificar"
               hx-get="/vendedores/edit?id={= item.id}&nombre={= item.nombre}"
               hx-push-url="true"
+              hx-swap="none"
               hx-indicator="#indicator"
             >
               <i class="bi bi-pencil"></i>
@@ -70,6 +73,7 @@
             <button
               class="btn btn-outline-danger"
               title="Borrar"
+              hx-swap="none"
               hx-delete="/vendedores?id={= item.id}"
               hx-confirm="Esta seguro que quiere borrar {= item.nombre}"
               hx-indicator="#indicator"
