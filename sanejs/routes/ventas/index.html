@@ -1,0 +1,51 @@
+<script server>
+  const { list, remove } = require('~/dist/data/ventas.js');
+
+  const currency = 'EUR';
+  const locale = 'es-ES';
+
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+  });
+
+  const formatDate = (date) =>
+    date instanceof Date
+      ? dateFormatter.format(date)
+      : date
+      ? dateFormatter.format(new Date(date))
+      : '';
+
+  const currFormatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  });
+
+  const formatCurrency = (value) =>
+    typeof value === 'undefined' ? '' : currFormatter.format(value);
+
+  server.get('/', async (req, res) => {
+    const ventas = await list();
+    res.render(
+      self,
+      {
+        ventas: (ventas ?? []).map((v) => ({
+          ...v,
+          fecha: formatDate(v.fecha),
+          precioUnitario: formatCurrency(v.precioUnitario),
+          precioTotal: formatCurrency(v.cantidad ?? 0 * v.precioUnitario ?? 0),
+        })),
+        currentUser: req.session.currentUser,
+        menu: { ventas: true },
+      },
+      req.isHtmx ? ['main', 'heading', 'title'] : []
+    );
+  });
+
+  server.delete('/', (req, res) => {
+    console.log(req.query.id);
+  });
+</script>
+
+<title id="title">La Corazón - Ventas</title>
+<h1 id="heading">Ventas</h1>
+<main id="main" class="wide">{> ventas/__table}</main>
