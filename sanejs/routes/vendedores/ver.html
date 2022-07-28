@@ -1,5 +1,7 @@
 <script server>
   const { get } = require('~/dist/data/vendedores.js');
+  const { list } = require('~/dist/data/ventas.js');
+  const { formatCurrency, formatDate } = require('~/dist/utils.js');
 
   server.get('/', async (req, res) => {
     const vendedor = await get(req.query.id);
@@ -12,16 +14,41 @@
 
   server.patch('/', async (req, res) => {
     const { id, tab } = req.query;
-    res.render(
-      self,
-      {
-        details: {
-          ventas: tab === 'ventas',
-          consigna: tab === 'consigna',
-        },
-      },
-      'details'
-    );
+    switch (tab) {
+      case 'ventas':
+        {
+          const ventas = await list();
+          res.render(
+            self,
+            {
+              details: { ventas: true },
+              ventas: (ventas ?? []).map((v) => ({
+                ...v,
+                fecha: formatDate(v.fecha),
+                precioUnitario: formatCurrency(v.precioUnitario),
+                precioTotal: formatCurrency(
+                  v.cantidad ?? 0 * v.precioUnitario ?? 0
+                ),
+              })),
+            },
+            'details'
+          );
+        }
+        break;
+      case 'consigna':
+        res.render(
+          self,
+          {
+            details: {
+              consigna: true,
+            },
+          },
+          'details'
+        );
+        break;
+      default:
+        res.render(self, {}, 'details');
+    }
   });
 </script>
 
@@ -37,7 +64,7 @@
     class="card"
   >
     <summary class="card-header">Ventas</summary>
-    <p class="card-body">Aquí van las ventas</p>
+    {> ventas/__table}
   </details>
   {: details.ventas}
   <details
