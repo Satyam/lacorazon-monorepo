@@ -40,8 +40,10 @@ main {
   max-width: 800px;
   margin: auto;
 }
-main.wide {
+
+.wide {
   max-width: 1400px;
+  margin: auto;
 }
 label {
   margin: 0.3rem 0;
