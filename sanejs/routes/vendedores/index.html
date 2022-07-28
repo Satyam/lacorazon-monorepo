@@ -1,5 +1,6 @@
 <script server>
   const { list, remove } = require('~/dist/data/vendedores.js');
+  const { allSections } = require('~/dist/utils.js');
 
   server.get('/', async (req, res) => {
     const vendedores = await list();
@@ -10,7 +11,7 @@
         currentUser: req.session.currentUser,
         menu: { vendedores: true },
       },
-      req.isHtmx ? ['main', 'heading', 'title'] : []
+      req.isHtmx ? allSections : []
     );
   });
 
@@ -87,3 +88,4 @@
     </tbody>
   </table>
 </main>
+<div id="details"></div>

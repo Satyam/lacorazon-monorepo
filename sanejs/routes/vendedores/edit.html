@@ -1,5 +1,6 @@
 <script server>
   const { get, create, update } = require('~/dist/data/vendedores.js');
+  const { allSections } = require('~/dist/utils.js');
 
   server.get('/', async (req, res) => {
     const { id, nombre } = req.query;
@@ -12,7 +13,7 @@
           vendedor,
           action: '/vendedores/edit',
         },
-        req.isHtmx ? ['main', 'heading', 'title'] : []
+        req.isHtmx ? allSections : []
       );
     } else {
       const vendedor = { nombre: '', email: '' };
@@ -22,7 +23,7 @@
           vendedor,
           action: '/vendedores/edit',
         },
-        req.isHtmx ? ['main', 'heading', 'title'] : []
+        req.isHtmx ? allSections : []
       );
     }
   });
@@ -34,7 +35,7 @@
       {
         vendedor: req.body,
       },
-      req.isHtmx ? ['main', 'heading', 'title'] : []
+      req.isHtmx ? allSections : []
     );
   });
 </script>
@@ -44,3 +45,4 @@
   {? vendedor.id}Modificar{: vendedor.id}Agregar{/? vendedor.id} vendedor
 </h1>
 <main id="main">{> vendedores/__form}</main>
+<div id="details"></div>

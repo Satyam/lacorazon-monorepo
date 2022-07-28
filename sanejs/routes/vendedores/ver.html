@@ -1,14 +1,18 @@
 <script server>
   const { get } = require('~/dist/data/vendedores.js');
   const { list } = require('~/dist/data/ventas.js');
-  const { formatCurrency, formatDate } = require('~/dist/utils.js');
+  const {
+    formatCurrency,
+    formatDate,
+    allSections,
+  } = require('~/dist/utils.js');
 
   server.get('/', async (req, res) => {
     const vendedor = await get(req.query.id);
     res.render(
       self,
       { vendedor, readonly: true },
-      req.isHtmx ? ['main', 'heading', 'title', 'details'] : []
+      req.isHtmx ? allSections : []
     );
   });
 
@@ -22,6 +26,7 @@
             self,
             {
               details: { ventas: true },
+              hide: { idVendedor: true },
               ventas: (ventas ?? []).map((v) => ({
                 ...v,
                 fecha: formatDate(v.fecha),

@@ -1,6 +1,10 @@
 <script server>
   const { list, remove } = require('~/dist/data/ventas.js');
-  const { formatCurrency, formatDate } = require('~/dist/utils.js');
+  const {
+    formatCurrency,
+    formatDate,
+    allSections,
+  } = require('~/dist/utils.js');
   server.get('/', async (req, res) => {
     const ventas = await list();
     res.render(
@@ -15,7 +19,7 @@
         currentUser: req.session.currentUser,
         menu: { ventas: true },
       },
-      req.isHtmx ? ['main', 'heading', 'title'] : []
+      req.isHtmx ? allSections : []
     );
   });
 
@@ -27,3 +31,4 @@
 <title id="title">La Corazón - Ventas</title>
 <h1 id="heading">Ventas</h1>
 <main id="main" class="wide">{> ventas/__table}</main>
+<div id="details"></div>

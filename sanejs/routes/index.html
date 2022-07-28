@@ -1,11 +1,12 @@
 <script server>
+  const { allSections } = require('~/dist/utils.js');
   server.get('/', (req, res) => {
     res.render(
       self,
       {
         currentUser: req.session.currentUser,
       },
-      req.isHtmx ? ['main', 'heading', 'title'] : []
+      req.isHtmx ? allSections : []
     );
   });
 </script>
@@ -13,3 +14,4 @@
 <title id="title">La Corazón</title>
 <h1 id="heading">Bienvenido</h1>
 <main id="main">Hola</main>
+<div id="details"></div>

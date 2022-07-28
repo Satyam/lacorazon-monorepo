@@ -1,6 +1,8 @@
 <script server>
+  const { allSections } = require('~/dist/utils.js');
+
   server.get('/', (req, res) => {
-    res.render(self, {}, req.isHtmx ? ['main', 'heading', 'title'] : []);
+    res.render(self, {}, req.isHtmx ? allSections : []);
   });
 
   server.post('/', async (req, res) => {
@@ -64,3 +66,4 @@
     <button type="submit" class="btn btn-primary">Acceder</button>
   </form>
 </main>
+<div id="details"></div>
