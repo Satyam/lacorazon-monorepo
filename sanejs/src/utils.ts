@@ -20,4 +20,4 @@ const currFormatter = new Intl.NumberFormat(locale, {
 export const formatCurrency = (value?: number) =>
   typeof value === 'undefined' ? '' : currFormatter.format(value);
 
-export const allSections = ['main', 'heading', 'title', 'details'];
+export const allSections = ['main', 'heading', 'title'];

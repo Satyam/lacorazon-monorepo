@@ -59,43 +59,45 @@
 
 <title id="title">La Corazón - Vendedor: {= vendedor.nombre}</title>
 <h1 id="heading">Detalle vendedor</h1>
-<main id="main">{> vendedores/__form}</main>
-<div id="details" class="wide">
-  {? details.ventas}
-  <details
-    open
-    hx-patch="/vendedores/ver?id={= item.id}"
-    hx-swap="none"
-    class="card"
-  >
-    <summary class="card-header">Ventas</summary>
-    {> ventas/__table}
-  </details>
-  {: details.ventas}
-  <details
-    hx-patch="/vendedores/ver?id={= item.id}&tab=ventas"
-    hx-swap="none"
-    class="card"
-  >
-    <summary class="card-header">Ventas</summary>
-  </details>
-  {/? details.ventas} {? details.consigna}
-  <details
-    open
-    hx-patch="/vendedores/ver?id={= item.id}"
-    hx-swap="none"
-    class="card"
-  >
-    <summary class="card-header">Consigna</summary>
-    <p class="card-body">Aquí va la consigna</p>
-  </details>
-  {: details.consigna}
-  <details
-    hx-patch="/vendedores/ver?id={= item.id}&tab=consigna"
-    hx-swap="none"
-    class="card"
-  >
-    <summary class="card-header">Consigna</summary>
-  </details>
-  {/? details.consigna}
-</div>
+<main id="main">
+  {> vendedores/__form}
+  <div id="details" class="wide">
+    {? details.ventas}
+    <details
+      open
+      hx-patch="/vendedores/ver?id={= item.id}"
+      hx-swap="none"
+      class="card"
+    >
+      <summary class="card-header">Ventas</summary>
+      {> ventas/__table}
+    </details>
+    {: details.ventas}
+    <details
+      hx-patch="/vendedores/ver?id={= item.id}&tab=ventas"
+      hx-swap="none"
+      class="card"
+    >
+      <summary class="card-header">Ventas</summary>
+    </details>
+    {/? details.ventas} {? details.consigna}
+    <details
+      open
+      hx-patch="/vendedores/ver?id={= item.id}"
+      hx-swap="none"
+      class="card"
+    >
+      <summary class="card-header">Consigna</summary>
+      <p class="card-body">Aquí va la consigna</p>
+    </details>
+    {: details.consigna}
+    <details
+      hx-patch="/vendedores/ver?id={= item.id}&tab=consigna"
+      hx-swap="none"
+      class="card"
+    >
+      <summary class="card-header">Consigna</summary>
+    </details>
+    {/? details.consigna}
+  </div>
+</main>
