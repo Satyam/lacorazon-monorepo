@@ -9,6 +9,7 @@
       res.render(
         self,
         {
+          currentUser: req.session.currentUser,
           vendedor,
           action: '/vendedores/edit',
         },
@@ -19,6 +20,7 @@
       res.render(
         self,
         {
+          currentUser: req.session.currentUser,
           vendedor,
           action: '/vendedores/edit',
         },
@@ -53,6 +55,7 @@
     res.render(
       self,
       {
+        currentUser: req.session.currentUser,
         vendedor,
         invalid,
       },

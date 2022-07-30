@@ -11,7 +11,7 @@
     const vendedor = await get(req.query.id);
     res.render(
       self,
-      { vendedor, readonly: true },
+      { vendedor, readonly: true, currentUser: req.session.currentUser },
       req.isHtmx ? allSections : []
     );
   });
@@ -25,6 +25,7 @@
           res.render(
             self,
             {
+              currentUser: req.session.currentUser,
               details: { ventas: true },
               hide: { idVendedor: true },
               ventas: (ventas ?? []).map((v) => ({
@@ -44,6 +45,7 @@
         res.render(
           self,
           {
+            currentUser: req.session.currentUser,
             details: {
               consigna: true,
             },
@@ -52,7 +54,7 @@
         );
         break;
       default:
-        res.render(self, {}, 'details');
+        res.render(self, { currentUser: req.session.currentUser }, 'details');
     }
   });
 </script>
