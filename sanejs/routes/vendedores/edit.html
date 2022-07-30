@@ -28,14 +28,42 @@
     }
   });
 
-  server.post('/', async (req, res) => {
-    console.log('vendedor post', req.body);
+  server.post('/', async (req, res, next) => {
+    let vendedor = req.body;
+    const { id, ...rest } = vendedor;
+    const invalid = {};
+    update: try {
+      vendedor = id ? await update(id, rest) : await create(rest);
+    } catch (err) {
+      console.error('----', err.name, err);
+      if (err.errno === 19) {
+        if (err.message.includes('UNIQUE')) {
+          if (err.message.includes('.email')) {
+            invalid.email = 'Esa dirección de correo ya existe';
+            break update;
+          }
+          if (err.message.includes('.nombre')) {
+            invalid.nombre = 'Ese nombre de vendedor ya existe';
+            break update;
+          }
+        }
+      }
+      next(err);
+      return;
+    }
+    console.log('vendedor post', {
+      id,
+      rest,
+      vendedor,
+      invalid,
+    });
     res.render(
       self,
       {
-        vendedor: req.body,
+        vendedor,
+        invalid,
       },
-      req.isHtmx ? allSections : []
+      'main'
     );
   });
 </script>
