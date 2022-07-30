@@ -9,7 +9,6 @@
     const { checkValidUser } = require('~/dist/data/user.js');
     const { email, password } = req.body;
     const user = await checkValidUser(email, password);
-    console.log({ email, password, user });
     if (user) {
       req.session.currentUser = user;
       res.redirect('/');

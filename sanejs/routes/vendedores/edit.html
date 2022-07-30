@@ -4,7 +4,6 @@
 
   server.get('/', async (req, res) => {
     const { id, nombre } = req.query;
-    console.log('modificar vendedor', { id, nombre });
     if (id) {
       const vendedor = await get(id);
       res.render(
@@ -51,12 +50,6 @@
       next(err);
       return;
     }
-    console.log('vendedor post', {
-      id,
-      rest,
-      vendedor,
-      invalid,
-    });
     res.render(
       self,
       {

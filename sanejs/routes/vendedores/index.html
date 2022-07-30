@@ -16,8 +16,6 @@
   });
 
   server.delete('/', async (req, res) => {
-    console.log(req.query.id);
-    console.log('remove', await remove(req.query.id));
     const vendedores = await list();
     res.render(
       self,
