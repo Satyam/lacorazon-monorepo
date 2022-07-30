@@ -22,9 +22,7 @@
           required 
         {/? readonly} 
       />
-      <div class="invalid-feedback">
-        Debe indicar la dirección de correo registrada
-      </div>
+      <div class="invalid-feedback">{= invalid.nombre}</div>
     </div>
   </label>
   <label class="form-group row mb-3">
@@ -34,19 +32,17 @@
         <span class="input-group-text">@</span>
         <!-- prettier-ignore -->
         <input 
-        name="email" 
-        value="{= vendedor.email}" 
-        class="form-control {? invalid.email}is-invalid{/? invalid.email}" 
-        placeholder="Email" 
-        {? readonly} 
-          readonly 
-        {: readonly} 
-          required 
-        {/? readonly} 
-      />
-      </div>
-      <div class="invalid-feedback">
-        Debe indicar la dirección de correo registrada
+          name="email" 
+          value="{= vendedor.email}" 
+          class="form-control {? invalid.email}is-invalid{/? invalid.email}" 
+          placeholder="Email" 
+          {? readonly} 
+            readonly 
+          {: readonly} 
+            required 
+          {/? readonly} 
+          />
+        <div class="invalid-feedback">{= invalid.email}</div>
       </div>
     </div>
   </label>
