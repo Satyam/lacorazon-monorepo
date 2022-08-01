@@ -1,0 +1,90 @@
+<script server>
+  const { get } = require('~/dist/data/ventas.js');
+  const { allSections, formatDate, formatCurrency } = require('~/dist/utils.js');
+
+  server.get('/', async (req, res) => {
+    const venta = await get(req.query.id);
+    res.render(
+      self,
+      {
+        venta: {
+          ...venta,
+          fecha: formatDate(venta.fecha),
+          precioUnitario: formatCurrency(venta.precioUnitario),
+          precioTotal: formatCurrency((venta.cantidad ?? 0) * (venta.precioUnitario ?? 0)),
+        },
+        readonly: true,
+        currentUser: req.session.currentUser,
+      },
+      req.isHtmx ? allSections : []
+    );
+  });
+</script>
+
+<title id="title">La Corazón - Venta: {= venta.fecha}</title>
+<h1 id="heading">Detalle venta</h1>
+<main id="main"><form
+  novalidate
+  action="{= action}"
+  method="post"
+  hx-swap="none"
+  hx-select="form"
+  hx-indicator="#indicator"
+>
+  <input type="hidden" name="id" value="{= venta.id}" />
+
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">Fecha</div>
+    <div class="col-sm-10 ">
+      <input value="{= venta.fecha}" class="form-control" readonly />
+    </div>
+  </label>
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">Concepto</div>
+    <div class="col-sm-10">
+      <textarea class="form-control" readonly >{= venta.concepto}</textarea>
+      
+    </div>
+  </label>
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">Vendedor</div>
+    <div class="col-sm-10">
+      <input value="{= venta.vendedor}" class="form-control" readonly />
+      
+    </div>
+  </label>
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">Cantidad</div>
+    <div class="col-sm-10">
+      <input value="{= venta.cantidad}" class="form-control" readonly />
+      
+    </div>
+  </label>
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">Precio Unitario</div>
+    <div class="col-sm-10">
+        <input value="{= venta.precioUnitario}" class="form-control" readonly />
+    </div>
+  </label>
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">IVA</div>
+      <div class="col-sm-10">
+          {? venta.iva}
+            <span class="form-check-input">
+              <i class="bi bi-check-square"></i>
+            </span>
+          {: venta.iva}
+            <i class="bi bi-square"></i>
+          {/? venta.iva}
+      </div>
+    </div>
+  </label>
+  <label class="form-group row mb-3">
+    <div class="col-sm-2 col-form-label">Precio Total</div>
+    <div class="col-sm-10">
+        <input value="{= venta.precioTotal}" class="form-control" readonly />
+    </div>
+  </label>
+
+</form>
+</main>
