@@ -6,7 +6,6 @@ const {
   createWithAutoId,
   updateById,
   deleteById,
-  formatReply,
 } = require('./utils.js');
 import type { DbFunctions } from './utils';
 
@@ -28,14 +27,12 @@ const dbFunctions: DbFunctions<Venta, { idVendedor: ID } | undefined> = {
     ),
   remove: (id) => deleteById(TABLE_VENTAS, id),
   get: (id) =>
-    formatReply(
-      getDb().then((db: Database) =>
-        db.get(
-          `select ${TABLE_VENTAS}.*, ${TABLE_VENDEDORES}.nombre as vendedor from ${TABLE_VENTAS}
+    getDb().then((db: Database) =>
+      db.get(
+        `select ${TABLE_VENTAS}.*, ${TABLE_VENDEDORES}.nombre as vendedor from ${TABLE_VENTAS}
         left join ${TABLE_VENDEDORES} on ${TABLE_VENTAS}.idVendedor = ${TABLE_VENDEDORES}.id  
         where ${TABLE_VENTAS}.id = $id`,
-          { $id: id }
-        )
+        { $id: id }
       )
     ),
   create: (data) => createWithAutoId(TABLE_VENTAS, data),
