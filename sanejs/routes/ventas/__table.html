@@ -43,7 +43,7 @@
           <button
             class="btn btn-outline-info"
             title="Mostrar detalle"
-            hx-get="/ventas/ver?id={= item.id}&nombre={= item.nombre}"
+            hx-get="/ventas/ver?id={= item.id}"
             hx-push-url="true"
             hx-swap="none"
             hx-indicator="#indicator"
@@ -53,7 +53,7 @@
           <button
             class="btn btn-outline-secondary"
             title="Modificar"
-            hx-get="/ventas/edit?id={= item.id}&nombre={= item.nombre}"
+            hx-get="/ventas/edit?id={= item.id}"
             hx-push-url="true"
             hx-swap="none"
             hx-indicator="#indicator"
