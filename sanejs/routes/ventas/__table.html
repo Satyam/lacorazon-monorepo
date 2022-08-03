@@ -13,7 +13,15 @@
       <th>IVA</th>
       <th>Precio Total</th>
       <th class="text-center">
-        <button type="button" class="btn btn-primary" title="Agregar">
+        <button
+          type="button"
+          class="btn btn-primary"
+          title="Agregar"
+          hx-get="/ventas/edit"
+          hx-push-url="true"
+          hx-swap="none"
+          hx-indicator="#indicator"
+        >
           <i class="bi bi-cart-plus"></i>
         </button>
       </th>
@@ -36,7 +44,15 @@
       {/! hide.idVendedor}
       <td class="text-end">{= item.cantidad}</td>
       <td class="text-end">{= item.precioUnitario}</td>
-      <td class="text-center">{= item.iva}</td>
+      <td class="text-center">
+        {? item.iva}
+        <span class="form-check-input">
+          <i class="bi bi-check-square"></i>
+        </span>
+        {: item.iva}
+        <i class="bi bi-square"></i>
+        {/? item.iva}
+      </td>
       <td class="text-end">{= item.precioTotal}</td>
       <td class="text-center">
         <div class="btn-group btn-group-sm">
