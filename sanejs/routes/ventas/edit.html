@@ -1,7 +1,14 @@
 <script server>
   const { get, create, update } = require('~/dist/data/ventas.js');
   const { list } = require('~/dist/data/vendedores.js');
-  const { allSections } = require('~/dist/utils.js');
+  const { allSections, datePart, invalidateCache } = require('~/dist/utils.js');
+
+  const formatVenta = (venta) => ({
+    ...venta,
+    fecha: datePart(new Date(venta.fecha)),
+    precioTotal: (venta.cantidad ?? 0) * (venta.precioUnitario ?? 0),
+    iva: !!venta.iva
+  });
 
   server.get('/', async (req, res) => {
     const { id } = req.query;
@@ -12,27 +19,25 @@
         self,
         {
           currentUser: req.session.currentUser,
-          venta: {
-            ...venta,
-            fecha: venta.fecha.split('T')[0],
-            precioTotal: (venta.cantidad ?? 0) * (venta.precioUnitario ?? 0),
-          },
+          venta: formatVenta(venta),
           vendedores,
           action: '/ventas/edit',
         },
         req.isHtmx ? allSections : []
       );
     } else {
-      const venta = { nombre: '', email: '' };
       res.render(
         self,
         {
           currentUser: req.session.currentUser,
-          venta: {
-            ...venta,
-            fecha: venta.fecha.split('T')[0],
-            precioTotal: (venta.cantidad ?? 0) * (venta.precioUnitario ?? 0),
-          },
+          venta: formatVenta({
+            fecha: new Date(),
+            concepto: '',
+            cantidad: 1,
+            precioUnitario: 10,
+            iva: false,
+
+          }),
           vendedores,
           action: '/ventas/edit',
         },
@@ -52,11 +57,12 @@
       next(err);
       return;
     }
+    res.invalidateCache('/ventas')
     res.render(
       self,
       {
         currentUser: req.session.currentUser,
-        venta,
+        venta: formatVenta(venta),
         invalid,
       },
       'main'
@@ -70,118 +76,118 @@
 </h1>
 <main id="main">
   <form
-  novalidate
-  action="{= action}"
-  method="post"
-  hx-swap="none"
-  hx-select="form"
-  hx-indicator="#indicator"
->
-  <input type="hidden" name="id" value="{= venta.id}" />
+    novalidate
+    action="{= action}"
+    method="post"
+    hx-swap="none"
+    hx-select="form"
+    hx-indicator="#indicator"
+  >
+    <input type="hidden" name="id" value="{= venta.id}" />
 
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">Fecha</div>
-    <div class="col-sm-10">
-      <input
-        type="date"
-        name="fecha"
-        class="form-control"
-        placeholder="dd/mm/aaaa"
-        pattern="\d{2}/\d{2}/\d{4}"
-        value="{= venta.fecha}"
-        required 
-      />
-    </div>
-  </label>
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">Concepto</div>
-    <div class="col-sm-10">
-      <textarea
-        name="concepto"
-        class="form-control"
-        placeholder="Concepto"
-        required 
-      >{= venta.concepto}</textarea>
-    </div>
-  </label>
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">Vendedor</div>
-    <div class="col-sm-10">
-      <select
-        name="idVendedor"
-        data-options="optionsVendedores"
-        class="form-control"
-        value="{= venta.idVendedor}"
-        placeholder="Vendedor"
-        >
-        {@ vendedores}
-          <option value="{= item.id}">{= item.nombre}</option>
-        {/@ vendedores}
-      </select>
-    </div>
-  </label>
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">Cantidad</div>
-    <div class="col-sm-10">
-      <input
-        type="number"
-        min="0"
-        name="cantidad"
-        class="form-control"
-        value="{= venta.cantidad}"
-        placeholder="Cantidad"
-      />
-    </div>
-  </label>
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">Precio Unitario</div>
-    <div class="col-sm-10">
-      <div class="input-group">
-        <input
-          type="number"
-          step="0.01"
-          name="precioUnitario"
-          data-currency="true"
-          class="form-control"
-          placeholder="Precio Unitario"
-          value="{= venta.precioUnitario}"
-        />
-        <span class="input-group-text">€</span>
-      </div>
-    </div>
-  </label>
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">IVA</div>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">Fecha</div>
       <div class="col-sm-10">
         <input
-          type="checkbox"
-          name="iva"
-          class="form-check-input"
-          placeholder="IVA"
-          {? venta.iva}checked{/? venta.iva}
+          type="date"
+          name="fecha"
+          class="form-control"
+          placeholder="dd/mm/aaaa"
+          pattern="\d{2}/\d{2}/\d{4}"
+          value="{= venta.fecha}"
+          required 
         />
       </div>
-    </div>
-  </label>
-  <label class="form-group row mb-3">
-    <div class="col-sm-2 col-form-label">Precio Total</div>
-    <div class="col-sm-10">
-      <div class="input-group">
+    </label>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">Concepto</div>
+      <div class="col-sm-10">
+        <textarea
+          name="concepto"
+          class="form-control"
+          placeholder="Concepto"
+          required 
+        >{= venta.concepto}</textarea>
+      </div>
+    </label>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">Vendedor</div>
+      <div class="col-sm-10">
+        <select
+          name="idVendedor"
+          class="form-control"
+          value="{= venta.idVendedor}"
+          placeholder="Vendedor"
+        >
+          <option>--</option>
+          {@ vendedores}
+            <option value="{= item.id}">{= item.nombre}</option>
+          {/@ vendedores}
+        </select>
+      </div>
+    </label>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">Cantidad</div>
+      <div class="col-sm-10">
         <input
           type="number"
-          step="0.01"
-          data-currency="true"
-          name="precioTotal"
+          min="0"
+          name="cantidad"
           class="form-control"
-          value="{= venta.precioTotal}"
-          placeholder="Precio Total"
-           readonly 
+          value="{= venta.cantidad}"
+          placeholder="Cantidad"
         />
-        <span class="input-group-text">€</span>
       </div>
-    </div>
-  </label>
-  <button type="submit" class="btn btn-primary">Aceptar</button>
-</form>
+    </label>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">Precio Unitario</div>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input
+            type="number"
+            step="0.01"
+            name="precioUnitario"
+            class="form-control"
+            placeholder="Precio Unitario"
+            value="{= venta.precioUnitario}"
+          />
+          <span class="input-group-text">€</span>
+        </div>
+      </div>
+    </label>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">IVA</div>
+        <div class="col-sm-10">
+          <input
+            type="checkbox"
+            name="iva"
+            class="form-check-input"
+            placeholder="IVA"
+            {? venta.iva}checked{/? venta.iva}
+          />
+        </div>
+      </div>
+    </label>
+    <label class="form-group row mb-3">
+      <div class="col-sm-2 col-form-label">Precio Total</div>
+      <div class="col-sm-10">
+        <div class="input-group">
+          <input
+            class="form-control"
+            value="{= venta.precioTotal}"
+            placeholder="Precio Total"
+            readonly 
+          />
+          <span class="input-group-text">€</span>
+        </div>
+      </div>
+    </label>
+    <button type="submit" class="btn btn-primary">
+      {? venta.id}
+        Modificar
+      {: venta.id}
+        Agregar
+      {/? venta.id}</button>
+  </form>
 
 </main>

@@ -14,7 +14,10 @@
           ...v,
           fecha: formatDate(v.fecha),
           precioUnitario: formatCurrency(v.precioUnitario),
-          precioTotal: formatCurrency(v.cantidad ?? 0 * v.precioUnitario ?? 0),
+          precioTotal: formatCurrency(
+            (v.cantidad ?? 0) * (v.precioUnitario ?? 0)
+          ),
+          iva: !!v.iva,
         })),
         currentUser: req.session.currentUser,
         menu: { ventas: true },
@@ -23,9 +26,7 @@
     );
   });
 
-  server.delete('/', (req, res) => {
-    console.log(req.query.id);
-  });
+  server.delete('/', async (req, res) => await remove(req.query.id));
 </script>
 
 <title id="title">La Corazón - Ventas</title>
