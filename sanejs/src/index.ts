@@ -119,6 +119,12 @@ if (process.env.SESSION_SECRET) {
         res.error404();
         return;
       }
+
+      console.log('app use error', JSON.stringify(error, null, 2));
+      console.log(
+        `|${process.env.NODE_ENV}|`,
+        process.env.NODE_ENV == 'development'
+      );
       // Is this a MongoDB castError?
       // Ex: /usersById/not-a-real-id causes Mongo to throw this error.
       if (error?.name == 'CastError') {
