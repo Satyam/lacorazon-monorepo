@@ -1,0 +1,43 @@
+<script>
+  addEventListener('DOMContentLoaded', () => {
+    htmx.on('htmx:responseError', function (evt) {
+      console.log('htmx:responseError', evt.detail);
+    });
+    htmx.on('htmx:sendError', function (evt) {
+      console.log('htmx:sendError', evt.detail);
+    });
+    htmx.on('htmx:beforeHistorySave', function (evt) {
+      console.log('Saving history : ', evt.detail);
+      console.log(
+        'History Cache Before:',
+        JSON.parse(localStorage.getItem('htmx-history-cache'))
+      );
+      setTimeout(function () {
+        console.log(
+          'History Cache After:',
+          JSON.parse(localStorage.getItem('htmx-history-cache'))
+        );
+      }, 10);
+    });
+
+    const invalidateCache = (url) => {
+      const historyCache =
+        JSON.parse(localStorage.getItem('htmx-history-cache')) || [];
+      for (let i = 0; i < historyCache.length; i++) {
+        if (historyCache[i].url === url) {
+          historyCache.splice(i, 1);
+          localStorage.setItem(
+            'htmx-history-cache',
+            JSON.stringify(historyCache)
+          );
+          return;
+        }
+      }
+    };
+    document.body.addEventListener('invalidateCache', (evt) => {
+      console.log(typeof evt.detail, evt.detail);
+      evt.detail.value.forEach(invalidateCache);
+    });
+  });
+  // htmx.logAll();
+</script>
