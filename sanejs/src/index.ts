@@ -147,8 +147,6 @@ if (process.env.SESSION_SECRET) {
   // Start the server.
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
-    console.log('\x1b[33m', `\n👍 Listening at localhost:${port}\n`, '\x1b[0m');
+    console.log(`Listening at http://localhost:${port}`);
   });
 })();
-
-// ============================================= //
