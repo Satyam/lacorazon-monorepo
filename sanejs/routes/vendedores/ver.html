@@ -65,37 +65,22 @@
   {> vendedores/__form}
   <div id="details" class="wide">
     {? details.ventas}
-    <details
-      open
-      hx-patch="/vendedores/ver?id={= item.id}"
-      hx-swap="none"
-      class="card"
-    >
+    <details open hx-patch="/vendedores/ver?id={= item.id}" class="card">
       <summary class="card-header">Ventas</summary>
       {> ventas/__table}
     </details>
     {: details.ventas}
-    <details
-      hx-patch="/vendedores/ver?id={= item.id}&tab=ventas"
-      hx-swap="none"
-      class="card"
-    >
+    <details hx-patch="/vendedores/ver?id={= item.id}&tab=ventas" class="card">
       <summary class="card-header">Ventas</summary>
     </details>
     {/? details.ventas} {? details.consigna}
-    <details
-      open
-      hx-patch="/vendedores/ver?id={= item.id}"
-      hx-swap="none"
-      class="card"
-    >
+    <details open hx-patch="/vendedores/ver?id={= item.id}" class="card">
       <summary class="card-header">Consigna</summary>
       <p class="card-body">Aquí va la consigna</p>
     </details>
     {: details.consigna}
     <details
       hx-patch="/vendedores/ver?id={= item.id}&tab=consigna"
-      hx-swap="none"
       class="card"
     >
       <summary class="card-header">Consigna</summary>

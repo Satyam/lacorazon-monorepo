@@ -40,16 +40,9 @@
         <th>Nombre</th>
         <th>E-mail</th>
         <th class="text-center">
-          <button
-            hx-get="/vendedores/edit"
-            hx-push-url="true"
-            hx-swap="none"
-            hx-indicator="#indicator"
-            class="btn btn-primary"
-            title="Agregar"
-          >
+          <a href="/vendedores/edit" class="btn btn-primary" title="Agregar">
             <i class="bi bi-person-plus"></i> Agregar
-          </button>
+          </a>
         </th>
       </tr>
     </thead>
@@ -60,33 +53,25 @@
         <td>{= item.email}</td>
         <td class="text-center">
           <div class="btn-group btn-group-sm">
-            <button
+            <a
+              href="/vendedores/ver?id={= item.id}&nombre={= item.nombre}"
               class="btn btn-outline-info"
               title="Mostrar detalle"
-              hx-get="/vendedores/ver?id={= item.id}&nombre={= item.nombre}"
-              hx-push-url="true"
-              hx-swap="none"
-              hx-indicator="#indicator"
             >
               <i class="bi bi-eye"></i>
-            </button>
-            <button
+            </a>
+            <a
+              href="/vendedores/edit?id={= item.id}&nombre={= item.nombre}"
               class="btn btn-outline-secondary"
               title="Modificar"
-              hx-get="/vendedores/edit?id={= item.id}&nombre={= item.nombre}"
-              hx-push-url="true"
-              hx-swap="none"
-              hx-indicator="#indicator"
             >
               <i class="bi bi-pencil"></i>
-            </button>
+            </a>
             <button
               class="btn btn-outline-danger"
               title="Borrar"
-              hx-swap="none"
               hx-delete="/vendedores?id={= item.id}"
               hx-confirm="Esta seguro que quiere borrar {= item.nombre}"
-              hx-indicator="#indicator"
             >
               <i class="bi bi-trash"></i>
             </button>
