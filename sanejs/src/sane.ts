@@ -58,6 +58,7 @@ declare global {
       ): void;
       render(view: string, vars?: object, swapIds?: string[]): void;
       retarget(path: string, opts: object, target: string): void;
+      invalidateCache(...urls: string[]): void;
     }
   }
 }
@@ -170,6 +171,10 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     } else {
       res.expressRedirect(url as number, status as string);
     }
+  };
+
+  res.invalidateCache = (...urls: string[]) => {
+    res.header('HX-Trigger', JSON.stringify({ invalidateCache: urls }));
   };
 
   req.isHtmx = Boolean(req.headers['hx-request']);
