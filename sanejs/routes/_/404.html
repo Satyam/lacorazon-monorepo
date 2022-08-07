@@ -1,0 +1,18 @@
+<div id="error" class="card m-3" role="alert" hx-swap-oob="true">
+  <div class="card-header text-dark bg-warning">
+    <span class="float-start">404 – Not Found</span>
+    <span class="float-end">
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        onclick="history.back()"
+      ></button>
+    </span>
+  </div>
+  <div class="card-body border border-warning">
+    <h5 class="card-title">Esta dirección no se encuentra.</h5>
+    <p class="card-text">{= method } {= path }</p>
+    <button class="btn btn-primary" onclick="history.back()">Cerrar</button>
+  </div>
+</div>
