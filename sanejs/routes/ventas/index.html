@@ -22,7 +22,7 @@
         currentUser: req.session.currentUser,
         menu: { ventas: true },
       },
-      req.isHtmx ? allSections : []
+      allSections
     );
   });
 

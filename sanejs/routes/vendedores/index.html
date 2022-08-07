@@ -11,7 +11,7 @@
         currentUser: req.session.currentUser,
         menu: { vendedores: true },
       },
-      req.isHtmx ? allSections : []
+      allSections
     );
   });
 

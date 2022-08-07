@@ -2,7 +2,7 @@
   const { allSections } = require('~/dist/utils.js');
 
   server.get('/', (req, res) => {
-    res.render(self, {}, req.isHtmx ? allSections : []);
+    res.render(self, {}, allSections);
   });
 
   server.post('/', async (req, res) => {

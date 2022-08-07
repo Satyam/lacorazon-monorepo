@@ -23,7 +23,7 @@
           vendedores,
           action: '/ventas/edit',
         },
-        req.isHtmx ? allSections : []
+        allSections
       );
     } else {
       res.render(
@@ -41,7 +41,7 @@
           vendedores,
           action: '/ventas/edit',
         },
-        req.isHtmx ? allSections : []
+        allSections
       );
     }
   });

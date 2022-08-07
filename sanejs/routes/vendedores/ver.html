@@ -13,7 +13,7 @@
       res.render(
         self,
         { vendedor, readonly: true, currentUser: req.session.currentUser },
-        req.isHtmx ? allSections : []
+        allSections
       );
     } else {
       res.render(
@@ -22,7 +22,7 @@
           title: 'No se encuentra ese vendedor',
           message: `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
         },
-        req.isHtmx ? 'error' : []
+        'error'
       );
     }
   });

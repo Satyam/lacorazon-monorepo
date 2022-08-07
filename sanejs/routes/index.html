@@ -6,7 +6,7 @@
       {
         currentUser: req.session.currentUser,
       },
-      req.isHtmx ? allSections : []
+      allSections
     );
   });
 </script>

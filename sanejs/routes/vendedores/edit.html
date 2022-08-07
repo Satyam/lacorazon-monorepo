@@ -13,7 +13,7 @@
           vendedor,
           action: '/vendedores/edit',
         },
-        req.isHtmx ? allSections : []
+        allSections
       );
     } else {
       const vendedor = { nombre: '', email: '' };
@@ -24,7 +24,7 @@
           vendedor,
           action: '/vendedores/edit',
         },
-        req.isHtmx ? allSections : []
+        allSections
       );
     }
   });

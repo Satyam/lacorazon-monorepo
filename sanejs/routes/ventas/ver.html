@@ -17,7 +17,7 @@
           readonly: true,
           currentUser: req.session.currentUser,
         },
-        req.isHtmx ? allSections : []
+        allSections
       );
     } else {
       res.render(
@@ -26,7 +26,7 @@
           title: 'No se encuentra esa venta',
           message: `La venta solicitada [${req.query.id}] no existe o ha sido borrada`
         },
-        req.isHtmx ? 'error': []
+        'error'
       );
     }
   });
