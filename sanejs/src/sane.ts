@@ -139,20 +139,22 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
   };
 
   res.error404 = () => {
-    res.set('HX-Retarget', 'body');
+    res.set('HX-Retarget', 'error');
     res.render('_/404', { method: req.method, path: req.url });
   };
 
   res.error500 = (error: Error) => {
-    res.set('HX-Retarget', 'body');
+    res.set('HX-Retarget', 'error');
     res.render('_/500', { error });
   };
 
-  res.error = (title: string, message: string) =>
+  res.error = (title: string, message: string) => {
+    res.set('HX-Retarget', 'error');
     res.render('_/error', {
       title,
       message,
     });
+  };
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
   res.retarget = (path, opts = {}, target = 'body') => {
