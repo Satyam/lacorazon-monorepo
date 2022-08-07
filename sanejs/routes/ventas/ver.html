@@ -4,25 +4,37 @@
 
   server.get('/', async (req, res) => {
     const venta = await get(req.query.id);
-    res.render(
-      self,
-      {
-        venta: {
-          ...venta,
-          fecha: formatDate(venta.fecha),
-          precioUnitario: formatCurrency(venta.precioUnitario),
-          precioTotal: formatCurrency((venta.cantidad ?? 0) * (venta.precioUnitario ?? 0)),
+    if (venta) {
+      res.render(
+        self,
+        {
+          venta: {
+            ...venta,
+            fecha: formatDate(venta.fecha),
+            precioUnitario: formatCurrency(venta.precioUnitario),
+            precioTotal: formatCurrency((venta.cantidad ?? 0) * (venta.precioUnitario ?? 0)),
+          },
+          readonly: true,
+          currentUser: req.session.currentUser,
         },
-        readonly: true,
-        currentUser: req.session.currentUser,
-      },
-      req.isHtmx ? allSections : []
-    );
+        req.isHtmx ? allSections : []
+      );
+    } else {
+      res.render(
+        '/error',
+        {
+          title: 'No se encuentra esa venta',
+          message: `La venta solicitada [${req.query.id}] no existe o ha sido borrada`
+        },
+        req.isHtmx ? 'error': []
+      );
+    }
   });
 </script>
 
 <title id="title">La Corazón - Venta: {= venta.fecha}</title>
 <h1 id="heading">Detalle venta</h1>
+<div id="error" class="d-none"></div>
 <main id="main"><form
   novalidate
   action="{= action}"

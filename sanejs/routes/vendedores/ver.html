@@ -9,11 +9,22 @@
 
   server.get('/', async (req, res) => {
     const vendedor = await get(req.query.id);
-    res.render(
-      self,
-      { vendedor, readonly: true, currentUser: req.session.currentUser },
-      req.isHtmx ? allSections : []
-    );
+    if (vendedor) {
+      res.render(
+        self,
+        { vendedor, readonly: true, currentUser: req.session.currentUser },
+        req.isHtmx ? allSections : []
+      );
+    } else {
+      res.render(
+        '/error',
+        {
+          title: 'No se encuentra ese vendedor',
+          message: `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
+        },
+        req.isHtmx ? 'error' : []
+      );
+    }
   });
 
   server.patch('/', async (req, res) => {
@@ -61,6 +72,7 @@
 
 <title id="title">La Corazón - Vendedor: {= vendedor.nombre}</title>
 <h1 id="heading">Detalle vendedor</h1>
+<div id="error" class="d-none"></div>
 <main id="main">
   {> vendedores/__form}
   <div id="details" class="wide">
