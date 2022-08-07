@@ -125,14 +125,9 @@ if (process.env.SESSION_SECRET) {
         `|${process.env.NODE_ENV}|`,
         process.env.NODE_ENV == 'development'
       );
-      // Is this a MongoDB castError?
-      // Ex: /usersById/not-a-real-id causes Mongo to throw this error.
-      if (error?.name == 'CastError') {
-        // Handle as a regular 404.
-        console.error('MongoDB CastError (invalid ObjectID)');
-        console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
 
-        res.error404();
+      if (error?.errno) {
+        res.error(`Sqlite database error ${error.errno}`, error);
         return;
       }
 
