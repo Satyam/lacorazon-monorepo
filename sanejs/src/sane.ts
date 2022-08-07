@@ -59,6 +59,7 @@ declare global {
       render(view: string, vars?: object, swapIds?: string[]): void;
       retarget(path: string, opts: object, target: string): void;
       invalidateCache(...urls: string[]): void;
+      error(title: string, message: string): void;
     }
   }
 }
@@ -146,6 +147,12 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     res.set('HX-Retarget', 'body');
     res.render('_/500', { error });
   };
+
+  res.error = (title: string, message: string) =>
+    res.render('_/error', {
+      title,
+      message,
+    });
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
   res.retarget = (path, opts = {}, target = 'body') => {

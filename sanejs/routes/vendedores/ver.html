@@ -16,13 +16,9 @@
         allSections
       );
     } else {
-      res.render(
-        '/error',
-        {
-          title: 'No se encuentra ese vendedor',
-          message: `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
-        },
-        'error'
+      res.error(
+        'No se encuentra ese vendedor',
+        `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`
       );
     }
   });
@@ -72,7 +68,7 @@
 
 <title id="title">La Corazón - Vendedor: {= vendedor.nombre}</title>
 <h1 id="heading">Detalle vendedor</h1>
-<div id="error" class="d-none"></div>
+
 <main id="main">
   {> vendedores/__form}
   <div id="details" class="wide">

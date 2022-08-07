@@ -20,13 +20,9 @@
         allSections
       );
     } else {
-      res.render(
-        '/error',
-        {
-          title: 'No se encuentra esa venta',
-          message: `La venta solicitada [${req.query.id}] no existe o ha sido borrada`
-        },
-        'error'
+      res.error( 
+        'No se encuentra esa venta', 
+        `La venta solicitada [${req.query.id}] no existe o ha sido borrada`
       );
     }
   });
@@ -34,7 +30,6 @@
 
 <title id="title">La Corazón - Venta: {= venta.fecha}</title>
 <h1 id="heading">Detalle venta</h1>
-<div id="error" class="d-none"></div>
 <main id="main"><form
   novalidate
   action="{= action}"
