@@ -42,7 +42,7 @@
       </li>
       {/? currentUser}
     </ul>
-    <span id="loginStatus" class="navbar-text ms-auto">
+    <span class="navbar-text ms-auto">
       {? currentUser}
       <i class="bi bi-person-check-fill">
         <span class="user-name">{= currentUser.nombre}</span></i
@@ -51,7 +51,7 @@
       <i class="bi bi-person-x"> Invitado</i>
       {/? currentUser}
     </span>
-    <ul id="loginActions" class="navbar-nav">
+    <ul class="navbar-nav">
       {? currentUser}
       <li class="nav-item">
         <a href="/#logout" hx-delete="/login" class="nav-link"> Logout</a>
