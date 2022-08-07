@@ -1,0 +1,17 @@
+<div id="error" class="card m-3" role="alert" hx-swap-oob="true">
+  <div class="card-header text-dark bg-info">
+    <span class="float-start">{= title}</span>
+    <span class="float-end">
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        onclick="history.back()"
+      ></button>
+    </span>
+  </div>
+  <div class="card-body border border-info">
+    <p class="card-text">{= message }</p>
+    <button class="btn btn-primary" onclick="history.back()">Cerrar</button>
+  </div>
+</div>
