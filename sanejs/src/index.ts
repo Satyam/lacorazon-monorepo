@@ -100,7 +100,12 @@ if (process.env.SESSION_SECRET) {
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.url == '/service-worker.js') return next();
     console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
-    res.error404();
+    res.showError(
+      '404 – Not Found',
+      `Operación: ${req.method} sobre ${req.url}`,
+      'warning',
+      'Esta dirección no se encuentra'
+    );
   });
 
   // Handle all other errors.
@@ -116,7 +121,12 @@ if (process.env.SESSION_SECRET) {
       if (error?.status == 404) {
         console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
 
-        res.error404();
+        res.showError(
+          '404 – Not Found',
+          `Operación: ${req.method} sobre ${req.url}`,
+          'warning',
+          'Esta dirección no se encuentra'
+        );
         return;
       }
 
@@ -127,7 +137,7 @@ if (process.env.SESSION_SECRET) {
       );
 
       if (error?.errno) {
-        res.error(`Sqlite database error ${error.errno}`, error);
+        res.showError(`Sqlite database error ${error.errno}`, 'info', error);
         return;
       }
 
@@ -135,7 +145,12 @@ if (process.env.SESSION_SECRET) {
       if (process.env.NODE_ENV == 'development') {
         console.error(error, error.stack);
       }
-      res.error500(error);
+      res.showError(
+        '500 – Internal Server Error',
+        error.stack,
+        'danger',
+        error.toString()
+      );
     }
   );
 

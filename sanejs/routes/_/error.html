@@ -5,8 +5,8 @@
   hx-swap-oob="true"
   hx-select-oob="#error"
 >
-  <div class="card-header text-dark bg-info">
-    <span class="float-start">{= title}</span>
+  <div class="card-header text-{= textColor} bg-{= color}">
+    <span class="float-start">{= header}</span>
     <span class="float-end">
       <button
         type="button"
@@ -16,8 +16,13 @@
       ></button>
     </span>
   </div>
-  <div class="card-body border border-info">
-    <p class="card-text">{= message }</p>
+  <div class="card-body border border-{= color}">
+    {? title}
+    <h5 class="card-title">{= title }</h5>
+    {/? title}
+    <pre class="card-text">{= message }</pre>
+  </div>
+  <div class="card-footer bg-{= color}">
     <button class="btn btn-primary" onclick="history.back()">Cerrar</button>
   </div>
 </div>

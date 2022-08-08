@@ -20,9 +20,10 @@
         allSections
       );
     } else {
-      res.error( 
+      res.showError( 
         'No se encuentra esa venta', 
-        `La venta solicitada [${req.query.id}] no existe o ha sido borrada`
+        `La venta solicitada [${req.query.id}] no existe o ha sido borrada`,
+        'info'
       );
     }
   });

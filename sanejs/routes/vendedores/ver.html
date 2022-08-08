@@ -16,9 +16,10 @@
         allSections
       );
     } else {
-      res.error(
+      res.showError(
         'No se encuentra ese vendedor',
-        `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`
+        `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
+        'info'
       );
     }
   });

@@ -15,16 +15,24 @@
     const vendedores = await list();
     if (id) {
       const venta = await get(id);
-      res.render(
-        self,
-        {
-          currentUser: req.session.currentUser,
-          venta: formatVenta(venta),
-          vendedores,
-          action: '/ventas/edit',
-        },
-        allSections
-      );
+      if (venta) {
+        res.render(
+          self,
+          {
+            currentUser: req.session.currentUser,
+            venta: formatVenta(venta),
+            vendedores,
+            action: '/ventas/edit',
+          },
+          allSections
+        );
+      } else{
+        res.showError( 
+          'No se encuentra esa venta', 
+          `La venta solicitada [${req.query.id}] no existe o ha sido borrada`,
+          'info'
+        );
+      }
     } else {
       res.render(
         self,

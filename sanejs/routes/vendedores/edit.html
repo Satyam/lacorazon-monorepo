@@ -6,15 +6,23 @@
     const { id, nombre } = req.query;
     if (id) {
       const vendedor = await get(id);
-      res.render(
-        self,
-        {
-          currentUser: req.session.currentUser,
-          vendedor,
-          action: '/vendedores/edit',
-        },
-        allSections
-      );
+      if (vendedor) {
+        res.render(
+          self,
+          {
+            currentUser: req.session.currentUser,
+            vendedor,
+            action: '/vendedores/edit',
+          },
+          allSections
+        );
+      } else {
+        res.showError(
+          'No se encuentra ese vendedor',
+          `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
+          'info'
+        );
+      }
     } else {
       const vendedor = { nombre: '', email: '' };
       res.render(

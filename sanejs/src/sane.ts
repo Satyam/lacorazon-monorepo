@@ -42,8 +42,12 @@ declare global {
     interface Response {
       trigger: (eventName: string) => Response;
       partial(route: string, vars: unknown): void;
-      error404(): void;
-      error500(error: Error): void;
+      showError(
+        header: string,
+        message: string,
+        color?: 'info' | 'warning' | 'danger',
+        title?: string
+      ): void;
       expressRedirect(url: string): void;
       expressRedirect(status: number, url: string): void;
       expressRedirect(url: string, status: number): void;
@@ -59,7 +63,6 @@ declare global {
       render(view: string, vars?: object, swapIds?: string[]): void;
       retarget(path: string, opts: object, target: string): void;
       invalidateCache(...urls: string[]): void;
-      error(title: string, message: string): void;
     }
   }
 }
@@ -138,19 +141,17 @@ const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
     return res;
   };
 
-  res.error404 = () => {
-    res.set('HX-Retarget', 'error');
-    res.render('_/404', { method: req.method, path: req.url });
-  };
-
-  res.error500 = (error: Error) => {
-    res.set('HX-Retarget', 'error');
-    res.render('_/500', { error });
-  };
-
-  res.error = (title: string, message: string) => {
+  res.showError = (
+    header: string,
+    message: string,
+    color: 'info' | 'warning' | 'danger' = 'info',
+    title?: string
+  ) => {
     res.set('HX-Retarget', 'error');
     res.render('_/error', {
+      color,
+      textColor: color === 'danger' ? 'text-white' : 'text-dark',
+      header,
       title,
       message,
     });
