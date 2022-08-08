@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 import type {
   Request,
   Response,
@@ -6,14 +6,13 @@ import type {
   Handler,
   Application,
 } from 'express';
-const fs = require('fs');
-const { parse } = require('node-html-parser-hyperscript');
-const { marked } = require('marked');
-const { join, normalize, dirname } = require('path');
+import fs from 'fs';
+import { parse } from 'node-html-parser-hyperscript';
+import { marked } from 'marked';
+import { join, normalize, dirname } from 'path';
+
 const rootDir = join(__dirname, '..');
 const routesDir = join(rootDir, 'routes');
-
-// const cache = { full: {}, partial: {} }
 
 type Template = { html: string; path: string; fm?: Record<string, any> };
 
@@ -66,7 +65,12 @@ declare global {
     }
   }
 }
-const saneMiddleware = (req: Request, res: Response, next: NextFunction) => {
+
+export const saneMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Require >= Node 16
   const nodeVersion = Number(process.versions.node.split('.')[0]);
   if (nodeVersion < 16) {
@@ -273,7 +277,7 @@ async function processExtends(template: Template): Promise<Template> {
   const extendsTag = reExtendsTagMatch[0];
   const wrapperRoute = reExtendsTagMatch[1];
 
-  // Remove this extends tag = require( template.html)
+  // Remove this extends tag from  template.html)
   template.html = template.html.replace(extendsTag, '');
 
   // Wrap template with extends template (and merge front-matter).
@@ -452,7 +456,10 @@ function relativeRequire(path: string) {
   return require(path.startsWith('~/') ? path.replace('~', rootDir) : path);
 }
 
-async function loadRoutes(dirPath: string, app: Application): Promise<void> {
+export async function loadRoutes(
+  dirPath: string,
+  app: Application
+): Promise<void> {
   await continueLoadingRoutes(dirPath);
   async function continueLoadingRoutes(thisDir: string) {
     const files = await fs.promises.readdir(thisDir);
@@ -507,6 +514,7 @@ async function loadRoutes(dirPath: string, app: Application): Promise<void> {
 }
 
 const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
+
 function useRoute(
   route: string,
   handler: Handler,
@@ -515,14 +523,9 @@ function useRoute(
 ) {
   // Avoid adding duplicate route.
   if (routes[route]) {
-    console.error(
-      'Duplicate routes defined for',
-      route,
-      'in:\n - ',
-      routes[route],
-      '\n - ',
-      absPath
-    );
+    console.error(`Duplicate routes defined for ${route} in:
+     - ${routes[route]} 
+     - ${absPath}`);
     return;
   }
   app.use(route, handler);
@@ -534,5 +537,3 @@ function useRoute(
     routes[route] = absPath;
   }
 }
-
-module.exports = { saneMiddleware, loadRoutes };

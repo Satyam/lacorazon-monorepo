@@ -1,19 +1,19 @@
-const express = require('express');
+import express from 'express';
 import type { NextFunction, Request, Response } from 'express';
-const helmet = require('helmet');
+import helmet from 'helmet';
 
-const compression = require('compression');
-const session = require('express-session');
-const { saneMiddleware, loadRoutes } = require('./sane.js');
-// const { protectAdminRoutes } = require( './lib/auth');
-const { join } = require('path');
-const livereload = require('livereload');
-const connectLivereload = require('connect-livereload');
-const dotenv = require('dotenv');
+import compression from 'compression';
+import session from 'express-session';
+import { saneMiddleware, loadRoutes } from './sane.js';
+import { join } from 'path';
+import livereload from 'livereload';
+import connectLivereload from 'connect-livereload';
+import dotenv from 'dotenv';
+
 dotenv.config();
 
 // Check for required .env values.
-const requiredEnvs = ['PORT', 'NAME', 'NODE_ENV'];
+const requiredEnvs = ['PORT', 'NAME', 'NODE_ENV', 'SESSION_SECRET'];
 const missingEnvs = requiredEnvs.filter((e) => !process.env[e]);
 if (missingEnvs.length) {
   console.log(
