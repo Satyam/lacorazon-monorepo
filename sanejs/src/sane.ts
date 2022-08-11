@@ -1,12 +1,13 @@
-import express from 'express';
-import type {
+import express, {
   Request,
   Response,
   NextFunction,
   Handler,
   Application,
 } from 'express';
-import fs from 'fs';
+
+import { statSync, promises } from 'fs';
+const { readdir, readFile, access } = promises;
 import { parse } from 'node-html-parser-hyperscript';
 import { marked } from 'marked';
 import { join, normalize, dirname } from 'path';
@@ -30,6 +31,8 @@ const reFrontMatterKeyVal = /^\$?([a-zA-Z_][\w]*)[ \t]*:[ \t]*([\s\S]+)/;
 const reTjsBlock =
   /(?<!\\)\{[ \t]*(([@!?]?)[ \t]*(.+?))[ \t]*\}(([\s\S]+?)(\{[ \t]*:[ \t]*\3[ \t]*\}([\s\S]+?))?)\{[ \t]*\/\1[ \t]*\}/g;
 const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
+const reValidPages = /([\w\-\/. ]+)\.(html|md)/;
+const reServerScript = /<script[\s]server>([\s\S]+?)<\/script>/m;
 
 declare global {
   namespace Express {
@@ -226,7 +229,7 @@ async function loadTemplate(route: string): Promise<void | Template> {
   for (let possiblePathSuffix of ['.html', '.md', 'index.html', 'index.md']) {
     try {
       const path = routePath + possiblePathSuffix;
-      const htmlWithServerBlock = await fs.promises.readFile(path, 'utf-8');
+      const htmlWithServerBlock = await readFile(path, 'utf-8');
       const html = htmlWithServerBlock.replace(reServerBlock, '');
       return { html, path };
     } catch (err) {} // Eat the error and try next possiblePathSuffix.
@@ -322,7 +325,7 @@ async function findLayoutRoute(path: string): Promise<false | string> {
   const parentDir = dirname(path);
   const pathToLayout = join(parentDir, '_layout.html');
   try {
-    await fs.promises.access(pathToLayout);
+    await access(pathToLayout);
     // Return only the route without the abs path to routesDir or extension.
     return pathToLayout.replace(routesDir, '').replace(/\.[^/.]+$/, '');
   } catch (error) {}
@@ -460,7 +463,7 @@ function relativeRequire(path: string) {
 export async function loadRoutes(app: Application): Promise<void> {
   await continueLoadingRoutes(routesDir);
   async function continueLoadingRoutes(thisDir: string) {
-    const files = await fs.promises.readdir(thisDir);
+    const files = await readdir(thisDir);
 
     for (const fileName of files) {
       // Ignore files starting with a double underscore.
@@ -468,19 +471,17 @@ export async function loadRoutes(app: Application): Promise<void> {
       // Set the full abs path to file.
       const absPath = join(thisDir, fileName);
       // Recurse into directories for nested routes.
-      if (fs.statSync(absPath).isDirectory()) {
+      if (statSync(absPath).isDirectory()) {
         await continueLoadingRoutes(absPath);
         continue;
       }
       // Set the route endpoint for .html or .md files only.
-      const matchRoute = absPath.match(/([\w\-\/. ]+)\.(html|md)/);
+      const matchRoute = absPath.match(reValidPages);
       if (!matchRoute || matchRoute.length < 2) continue;
       const route = matchRoute[1].replace(routesDir, '');
       // Read the file and look for <script server>
-      const template = await fs.promises.readFile(absPath, 'utf-8');
-      const matchScript = template.match(
-        /<script[\s]server>([\s\S]+?)<\/script>/m
-      );
+      const template = await readFile(absPath, 'utf-8');
+      const matchScript = template.match(reServerScript);
       let serverBlock = matchScript && matchScript[1] + '\nreturn server';
       if (serverBlock) {
         // Parse the serverBlock, passing in refs to
