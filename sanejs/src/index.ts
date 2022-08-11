@@ -36,7 +36,7 @@ app.use(
 );
 
 // Set path to static dir.
-const staticDirectory = join(__dirname, '../static');
+const staticDirectory = join(process.cwd(), 'static');
 
 // Connect to LiveReload for development: Watch static dir and nodemon refresh.
 if (app.get('env') === 'development') {
@@ -87,7 +87,7 @@ if (process.env.SESSION_SECRET) {
 // Need to use self-executing function for the rest so we can await dynamic routes.
 (async function () {
   // Dynamically add all routes found in routes/ dir excluding those prefixed with underscore.
-  await loadRoutes(join(__dirname, '../routes'), app);
+  await loadRoutes(app);
 
   // If route hasn't been handled yet, serve a plain .html template if present.
   app.use((req: Request, res: Response, next: NextFunction) => {

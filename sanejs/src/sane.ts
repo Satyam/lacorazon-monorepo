@@ -11,8 +11,7 @@ import { parse } from 'node-html-parser-hyperscript';
 import { marked } from 'marked';
 import { join, normalize, dirname } from 'path';
 
-const rootDir = join(__dirname, '..');
-const routesDir = join(rootDir, 'routes');
+const routesDir = join(process.cwd(), 'routes');
 
 type Template = { html: string; path: string; fm?: Record<string, any> };
 
@@ -453,14 +452,13 @@ function formatSlashes(route: string): string {
 }
 
 function relativeRequire(path: string) {
-  return require(path.startsWith('~/') ? path.replace('~', rootDir) : path);
+  return require(path.startsWith('~/')
+    ? path.replace('~', process.cwd())
+    : path);
 }
 
-export async function loadRoutes(
-  dirPath: string,
-  app: Application
-): Promise<void> {
-  await continueLoadingRoutes(dirPath);
+export async function loadRoutes(app: Application): Promise<void> {
+  await continueLoadingRoutes(routesDir);
   async function continueLoadingRoutes(thisDir: string) {
     const files = await fs.promises.readdir(thisDir);
 
@@ -477,7 +475,7 @@ export async function loadRoutes(
       // Set the route endpoint for .html or .md files only.
       const matchRoute = absPath.match(/([\w\-\/. ]+)\.(html|md)/);
       if (!matchRoute || matchRoute.length < 2) continue;
-      const route = matchRoute[1].replace(dirPath, '');
+      const route = matchRoute[1].replace(routesDir, '');
       // Read the file and look for <script server>
       const template = await fs.promises.readFile(absPath, 'utf-8');
       const matchScript = template.match(

@@ -18,7 +18,7 @@ let _db: Promise<Database>;
 const getDb = () =>
   _db ??
   (_db = open({
-    filename: join(__dirname, '../../data/db.sqlite'),
+    filename: join(process.cwd(), 'data/db.sqlite'),
     driver: sqlite3.Database,
   }));
 
