@@ -32,7 +32,7 @@ const reTjsBlock =
   /(?<!\\)\{[ \t]*(([@!?]?)[ \t]*(.+?))[ \t]*\}(([\s\S]+?)(\{[ \t]*:[ \t]*\3[ \t]*\}([\s\S]+?))?)\{[ \t]*\/\1[ \t]*\}/g;
 const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
 const reValidPages = /([\w\-\/. ]+)\.(html|md)/;
-const reServerScript = /<script[\s]server>([\s\S]+?)<\/script>/m;
+const reServerScript = /<script\s+server\s*>([\s\S]+?)<\/script\s*>/m;
 
 declare global {
   namespace Express {
