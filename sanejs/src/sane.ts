@@ -35,17 +35,6 @@ const routesDir = join(process.cwd(), 'routes');
 type Template = { html: string; path: string; fm?: Record<string, any> };
 
 /**
- * Cache of Templates of both pages and partials indexed by relative route
- * @property {object} cache
- * @property {object} cache.page - Templates of pages indexed by relative route
- * @property {object} cache.partial - Templates of partials indexed by relative route
- */
-const cache: {
-  page: Record<string, Template>;
-  partial: Record<string, Template>;
-} = { page: {}, partial: {} };
-
-/**
  * RegExp to detect the `{ nolayout }` template tag
  */
 const reNoLayout = /(?<!\\){[ \t]*nolayout[ \t]*}/;
@@ -168,11 +157,7 @@ export const saneMiddleware = (
       return res.expressRender(route, vars, swapIds);
     }
     // Build cache if not already set (null means we've cached this route as a 404)
-    let template: Template | undefined = cache.page[route];
-    if (!template) {
-      template = await buildTemplate(route, false);
-      if (template) cache.page[route] = template;
-    }
+    let template = await getTemplate(route, false);
     if (!template) return next();
 
     // Populate template vars
@@ -199,11 +184,7 @@ export const saneMiddleware = (
    */
   res.partial = async (route: string, vars?: object) => {
     // Build cache if not already set (null means we've cached this route as a 404)
-    let template: Template | undefined = cache.partial[route];
-    if (!template) {
-      template = await buildTemplate(route, true);
-      if (template) cache.partial[route] = template;
-    }
+    let template = await getTemplate(route, true);
     if (!template) return next();
 
     // Populate template vars
@@ -275,25 +256,52 @@ export const saneMiddleware = (
 
 /* ============================================= */
 
-async function buildTemplate(route: string, isPartial: boolean) {
-  let template = await loadTemplate(route); // Sets { html, path }
+/**
+ * Cache of Templates of both pages and partials indexed by relative route
+ * @property {object} cache
+ * @property {object} cache.page - Templates of pages indexed by relative route
+ * @property {object} cache.partial - Templates of partials indexed by relative route
+ */
+const cache: {
+  page: Record<string, Template>;
+  partial: Record<string, Template>;
+} = { page: {}, partial: {} };
+
+async function getTemplate(
+  route: string,
+  isPartial: boolean
+): Promise<Template | undefined> {
+  const whichCache = isPartial ? cache.partial : cache.page;
+  let template: Template | undefined = whichCache[route];
+  if (!template) {
+    template = await buildTemplate(route, isPartial);
+    if (template) whichCache[route] = template;
+  }
+  return template;
+}
+
+async function buildTemplate(
+  route: string,
+  isPartial: boolean
+): Promise<Template | undefined> {
+  const template = await loadTemplate(route); // Sets { html, path }
   if (!template) return undefined;
 
   // Process front-matter.
-  template = await processFrontMatter(template); // Sets { fm }
+  processFrontMatter(template); // Sets { fm }
 
   // Process Markdown.
-  template = processMarkdown(template); // If template is markdown, parse to html
+  processMarkdown(template); // If template is markdown, parse to html
 
   if (!isPartial) {
     // Process extends tags.
-    template = await processExtends(template);
+    await processExtends(template);
 
     // Process layout.
-    template = await processLayout(template);
+    await processLayout(template);
 
     // Process partials.
-    template = await processPartials(template);
+    await processPartials(template);
   }
   return template;
 }
@@ -312,7 +320,7 @@ async function loadTemplate(route: string): Promise<void | Template> {
   return undefined;
 }
 
-function processFrontMatter(template: Template): Template {
+function processFrontMatter(template: Template): void {
   function normalizeVal(val: string) {
     switch (val) {
       case 'false':
@@ -328,7 +336,7 @@ function processFrontMatter(template: Template): Template {
     }
   }
   const fmBlockMatch = template.html.match(reFrontMatterBlock);
-  if (!fmBlockMatch) return template;
+  if (!fmBlockMatch) return;
   const fmBlock = fmBlockMatch[0];
   const fmLines = fmBlockMatch[1].match(reFrontMatterLines) ?? [];
   const newFm: Record<string, any> = {};
@@ -341,19 +349,18 @@ function processFrontMatter(template: Template): Template {
   }
   template.fm = { ...template.fm, ...newFm };
   template.html = template.html.replace(fmBlock, '').trim();
-  return template;
 }
 
-function processMarkdown(template: Template): Template {
-  if (!template.path.endsWith('.md')) return template;
-  template.html = marked.parse(template.html);
-  return template;
+function processMarkdown(template: Template): void {
+  if (template.path.endsWith('.md')) {
+    template.html = marked.parse(template.html);
+  }
 }
 
-async function processExtends(template: Template): Promise<Template> {
+async function processExtends(template: Template): Promise<void> {
   // Look for tags like {^ some-template }
   const reExtendsTagMatch = template.html.match(reExtendsTag);
-  if (!reExtendsTagMatch) return template;
+  if (!reExtendsTagMatch) return;
 
   const [tag, route] = reExtendsTagMatch;
 
@@ -361,7 +368,7 @@ async function processExtends(template: Template): Promise<Template> {
   template.html = template.html.replace(tag, '');
 
   // Wrap template with extends template (and merge front-matter).
-  template = await wrapIntoSlot(template, route);
+  await wrapIntoSlot(template, route);
 
   // Recurse until no more extends tags are found.
   return processExtends(template);
@@ -370,11 +377,11 @@ async function processExtends(template: Template): Promise<Template> {
 async function wrapIntoSlot(
   template: Template,
   wrapperRoute: string
-): Promise<Template> {
+): Promise<void> {
   let wrapper = await loadTemplate(wrapperRoute);
-  if (!wrapper) return template;
-  wrapper = processFrontMatter(wrapper);
-  wrapper = processMarkdown(wrapper);
+  if (!wrapper) return;
+  processFrontMatter(wrapper);
+  processMarkdown(wrapper);
   const wrapperHtmlParts = wrapper.html.split(reSlotTag);
   if (wrapperHtmlParts?.length < 2)
     throw Error(`No slot tag found in ${wrapper.path}`);
@@ -384,19 +391,17 @@ async function wrapIntoSlot(
     template.html,
     wrapperHtmlParts[1],
   ].join('');
-  return template;
 }
 
-async function processLayout(template: Template): Promise<Template> {
+async function processLayout(template: Template): Promise<void> {
   // Template has a nolayout tag?
   const hasNoLayoutTag = reNoLayout.test(template.html);
   if (hasNoLayoutTag) {
     template.html = template.html.replace(reNoLayout, '');
-    return template;
+    return;
   }
   const layoutRoute = await findLayoutRoute(template.path);
-  if (layoutRoute) template = await wrapIntoSlot(template, layoutRoute);
-  return template;
+  if (layoutRoute) await wrapIntoSlot(template, layoutRoute);
 }
 
 async function findLayoutRoute(path: string): Promise<false | string> {
@@ -413,19 +418,18 @@ async function findLayoutRoute(path: string): Promise<false | string> {
   return reachedTop ? false : await findLayoutRoute(join(pathToLayout, '..'));
 }
 
-async function processPartials(template: Template): Promise<Template> {
+async function processPartials(template: Template): Promise<void> {
   const partialTags = [...template.html.matchAll(rePartialTag)];
   for (const [tag, route] of partialTags) {
     let partialTemplate = await loadTemplate(route);
     if (!partialTemplate)
       throw new Error(`Failed to process partial tag: ${tag}`);
-    partialTemplate = processFrontMatter(partialTemplate);
-    partialTemplate = processMarkdown(partialTemplate);
+    processFrontMatter(partialTemplate);
+    processMarkdown(partialTemplate);
     const currentFm = template.fm || {};
     template.fm = { ...currentFm, ...partialTemplate.fm };
     template.html = template.html.replace(tag, partialTemplate.html);
   }
-  return template;
 }
 
 function processVars(html: string, vars: object): string {
