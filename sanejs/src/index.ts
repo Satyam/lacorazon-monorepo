@@ -12,6 +12,19 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// The template uses Bootstrap Card component:
+// https://getbootstrap.com/docs/5.1/components/card/#header-and-footer
+// `header` and `title` correspond to elements styled
+// with `card-header` and `card-title` class names.
+// `color` refers to the standard background colors.
+
+type ErrorTemplateVals = {
+  header: string;
+  message: string;
+  color?: 'info' | 'warning' | 'danger';
+  title?: string;
+};
+
 // Check for required .env values.
 const requiredEnvs = ['PORT', 'NAME', 'NODE_ENV', 'SESSION_SECRET'];
 const missingEnvs = requiredEnvs.filter((e) => !process.env[e]);
@@ -100,12 +113,12 @@ if (process.env.SESSION_SECRET) {
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.url == '/service-worker.js') return next();
     console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
-    res.showError(
-      '404 – Not Found',
-      `Operación: ${req.method} sobre ${req.url}`,
-      'warning',
-      'Esta dirección no se encuentra'
-    );
+    res.showError<ErrorTemplateVals>({
+      header: '404 – Not Found',
+      message: `Operación: ${req.method} sobre ${req.url}`,
+      color: 'warning',
+      title: 'Esta dirección no se encuentra',
+    });
   });
 
   // Handle all other errors.
@@ -121,12 +134,12 @@ if (process.env.SESSION_SECRET) {
       if (error?.status == 404) {
         console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
 
-        res.showError(
-          '404 – Not Found',
-          `Operación: ${req.method} sobre ${req.url}`,
-          'warning',
-          'Esta dirección no se encuentra'
-        );
+        res.showError<ErrorTemplateVals>({
+          header: '404 – Not Found',
+          message: `Operación: ${req.method} sobre ${req.url}`,
+          color: 'warning',
+          title: 'Esta dirección no se encuentra',
+        });
         return;
       }
 
@@ -137,7 +150,11 @@ if (process.env.SESSION_SECRET) {
       );
 
       if (error?.errno) {
-        res.showError(`Sqlite database error ${error.errno}`, 'info', error);
+        res.showError<ErrorTemplateVals>({
+          header: `Sqlite database error ${error.errno}`,
+          color: 'info',
+          message: error,
+        });
         return;
       }
 
@@ -145,12 +162,12 @@ if (process.env.SESSION_SECRET) {
       if (process.env.NODE_ENV == 'development') {
         console.error(error, error.stack);
       }
-      res.showError(
-        '500 – Internal Server Error',
-        error.stack,
-        'danger',
-        error.toString()
-      );
+      res.showError<ErrorTemplateVals>({
+        header: '500 – Internal Server Error',
+        message: error.stack,
+        color: 'danger',
+        title: error.toString(),
+      });
     }
   );
 

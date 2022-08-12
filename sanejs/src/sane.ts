@@ -99,14 +99,9 @@ declare global {
       isHtmx: boolean;
     }
     interface Response {
-      trigger: (eventName: string) => Response;
+      trigger(eventName: string, vals?: any): Response;
       partial(route: string, vars: unknown): void;
-      showError(
-        header: string,
-        message: string,
-        color?: 'info' | 'warning' | 'danger',
-        title?: string
-      ): void;
+      showError<E extends object>(vals: E): void;
       expressRedirect(url: string): void;
       expressRedirect(status: number, url: string): void;
       expressRedirect(url: string, status: number): void;
@@ -121,7 +116,7 @@ declare global {
       ): void;
       render(view: string, vars?: object, swapIds?: string[]): void;
       retarget(path: string, opts: object, target: string): void;
-      invalidateCache(...urls: string[]): void;
+      invalidateCache(...urls: string[]): Response;
     }
   }
 }
@@ -157,7 +152,7 @@ export const saneMiddleware = (
    * If either the 2nd or 3rd param is a function, it calls the original one,
    * otherwise it calls the new one.
    * @param {string} route - Route of the template relative to the `routes` directory
-   * @param {object} vars - Object containing the values to be interpolated into the template
+   * @param {object} [vars] - Object containing the values to be interpolated into the template
    * @param {string | string[]} [swapIds] - `id` attribute of elements to be swapped out-of-band
    * @returns {undefined}
    */
@@ -195,15 +190,15 @@ export const saneMiddleware = (
     }
 
     // Render template.
-    res.send(html);
+    return res.send(html);
   };
   /**
    * Renders a *partial* ignoring layouts or sublayouts
    * @param {string} route - Route of the template relative to the `routes` directory
-   * @param {object} vars - Object containing the values to be interpolated into the template
+   * @param {object} [vars] - Object containing the values to be interpolated into the template
    * @returns {undefined}
    */
-  res.partial = async (route: string, vars: object) => {
+  res.partial = async (route: string, vars?: object) => {
     // Build cache if not already set (null means we've cached this route as a 404)
     let template: Template | undefined = cache.partial[route];
     if (!template) {
@@ -220,53 +215,40 @@ export const saneMiddleware = (
     html = html.replaceAll(/ \\server/gm, ' server');
 
     // Render template.
-    res.send(html);
+    return res.send(html);
   };
+
   /**
    * Sends an `HX-Trigger` header to the client, efectively triggering a client event.
    * @param {string} eventName - Name of the event to trigger
    * @returns {Response} Reference to the Response object to allow for chaining
    */
-  res.trigger = (eventName: string) => {
+  res.trigger = (eventName: string, details?: any) =>
     // Set an HTMX trigger header to trigger event on client.
-    res.set('HX-Trigger', eventName);
-    return res;
-  };
-
-  /**
-   * Sends a set of values to be displayed in a `<div id="error" style="display:none">` expected to be
-   * present in the default layout, using the partial template at `_/error.html`.
-   * The structure of the values sent is determined by this template.
-   * @param header
-   * @param message
-   * @param color
-   * @param title
-   */
-  res.showError = (
-    header: string,
-    message: string,
-    color: 'info' | 'warning' | 'danger' = 'info',
-    title?: string
-  ) => {
-    res.set('HX-Retarget', 'error');
-    res.render('_/error', {
-      color,
-      textColor: color === 'danger' ? 'text-white' : 'text-dark',
-      header,
-      title,
-      message,
-    });
-  };
+    res.set(
+      'HX-Trigger',
+      typeof details === undefined
+        ? eventName
+        : JSON.stringify({ [eventName]: details })
+    );
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
   res.retarget = (path, opts = {}, target = 'body') => {
     // The URI to push into history stack must be absolute: /foo/bar
     const normalized = normalize(path);
     const uri = normalized.startsWith('/') ? path : '/' + path;
-    res.set('HX-Retarget', target);
-    res.set('HX-Push', uri);
-    res.render(path, opts);
+    return res
+      .set({ 'HX-Retarget': target, 'HX-Push': uri })
+      .render(path, opts);
   };
+
+  /**
+   * Sends a set of values to be displayed in a `<div id="error" style="display:none">` expected to be
+   * present in the default layout, using the partial template at `_/error.html`.
+   * The structure of the values sent is determined by this template.
+   */
+  res.showError = <E extends object>(vals: E) =>
+    res.retarget('_/error', vals, '#error');
 
   res.expressRedirect = res.redirect;
 
@@ -274,19 +256,18 @@ export const saneMiddleware = (
     if (typeof url === 'string') {
       const route = formatSlashes(url);
       if (req.headers['hx-request']) {
-        res.set('HX-Redirect', route);
-        res.end();
+        res.set('HX-Redirect', route).end();
       } else {
         res.expressRedirect(route, status as number);
       }
     } else {
       res.expressRedirect(url as number, status as string);
     }
+    return res;
   };
 
-  res.invalidateCache = (...urls: string[]) => {
-    res.header('HX-Trigger', JSON.stringify({ invalidateCache: urls }));
-  };
+  res.invalidateCache = (...urls: string[]) =>
+    res.trigger('invalidateCache', urls);
 
   req.isHtmx = Boolean(req.headers['hx-request']);
 
