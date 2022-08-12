@@ -1,3 +1,6 @@
+/**
+ * @module sane
+ */
 import express, {
   Request,
   Response,
@@ -12,26 +15,81 @@ import { parse } from 'node-html-parser-hyperscript';
 import { marked } from 'marked';
 import { join, normalize, dirname } from 'path';
 
+/**
+ * Assumes pages are located in the `routes` folder under the current working directory.
+ */
 const routesDir = join(process.cwd(), 'routes');
 
+/**
+ * HTML string representing the page.
+ * It does not contain server scripts.
+ * FrontMatter variables are parsed.
+ * Markup is parsed into HTML.
+ * It contains template tags to be resolved on request.
+ * @typedef Template
+ * @type object
+ * @property {string} html - html string of the page with template tags
+ * @property {string} path - fully resolved path to this page
+ * @property {object} [fm] - parsed FrontMatter variables, if any.
+ */
 type Template = { html: string; path: string; fm?: Record<string, any> };
 
+/**
+ * Cache of Templates of both pages and partials indexed by relative route
+ * @property {object} cache
+ * @property {object} cache.page - Templates of pages indexed by relative route
+ * @property {object} cache.partial - Templates of partials indexed by relative route
+ */
 const cache: {
   page: Record<string, Template>;
   partial: Record<string, Template>;
 } = { page: {}, partial: {} };
 
+/**
+ * RegExp to detect the `{ nolayout }` template tag
+ */
 const reNoLayout = /(?<!\\){[ \t]*nolayout[ \t]*}/;
+/**
+ * RegExp to parse the path out of a  `{^ path/from/routes }` template tag to extend a page with
+ * a layout besides the implicit `__layout`
+ */
 const reExtendsTag = /(?<!\\){[ \t]*\^[ \t]*([\w\-\/]+)[ \t]*}/;
+/**
+ * RegExp to detect the `{slot}` template tag in layouts
+ */
 const reSlotTag = /(?<!\\){[ \t]*slot[ \t]*}/;
+/**
+ * RegExp to parse the path out of a `{> path/from/routes }` include partial tag.
+ */
 const rePartialTag = /(?<!\\){[ \t]*>[ \t]*([\w\-\/\.]+)[ \t]*}/g;
+/**
+ * Regexp to extract the FrontMatter block out of the header
+ */
 const reFrontMatterBlock = /^[\n]*---[ \t]*\n([\s\S]*?)\n---[ \t]*\n/;
+/**
+ * RegExp to extract all lines from the FrontMatter block
+ */
 const reFrontMatterLines = /^\$?[a-zA-Z_][\w]*[ \t]*:(?:[\S]| |\t|\n  )+/gm;
+/**
+ * RegExp to parse name and value from individual FrontMatter lines
+ */
 const reFrontMatterKeyVal = /^\$?([a-zA-Z_][\w]*)[ \t]*:[ \t]*([\s\S]+)/;
+/**
+ * RegExp to parse block template tags `{@ }`, `{! }` and `{? }` and their content and alternate content, if any
+ */
 const reTjsBlock =
   /(?<!\\)\{[ \t]*(([@!?]?)[ \t]*(.+?))[ \t]*\}(([\s\S]+?)(\{[ \t]*:[ \t]*\3[ \t]*\}([\s\S]+?))?)\{[ \t]*\/\1[ \t]*\}/g;
+/**
+ * RegExp to parse variable include tags `{= }` and `{% }`
+ */
 const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
+/**
+ * RegExp to filter valid pages (`.html and `.md`)
+ */
 const reValidPages = /([\w\-\/. ]+)\.(html|md)/;
+/**
+ * RegExp to detect server-side scripts and extract its content.
+ */
 const reServerScript = /<script\s+server\s*>([\s\S]+?)<\/script\s*>/m;
 
 declare global {
@@ -68,6 +126,13 @@ declare global {
   }
 }
 
+/**
+ * Express middleware to extend the native `Request` and `Response` arguments
+ * of an Express route handler with sanejs methods and properties
+ * @param req {Request} Standard Express Request object
+ * @param res {Response} Standard Express Response object
+ * @param next {NextFunction} Standard Express next() function.
+ */
 export const saneMiddleware = (
   req: Request,
   res: Response,
@@ -81,9 +146,21 @@ export const saneMiddleware = (
     );
     process.exit();
   }
-
+  /**
+   * Allows access to the original Express `res.render` method
+   */
   res.expressRender = res.render;
 
+  /**
+   * Override of `res.render` that allows to access both the original and
+   * the redefined `render` method.
+   * If either the 2nd or 3rd param is a function, it calls the original one,
+   * otherwise it calls the new one.
+   * @param {string} route - Route of the template relative to the `routes` directory
+   * @param {object} vars - Object containing the values to be interpolated into the template
+   * @param {string | string[]} [swapIds] - `id` attribute of elements to be swapped out-of-band
+   * @returns {undefined}
+   */
   res.render = async (
     route: string,
     vars?: object | ((err: Error, html: string) => void),
@@ -120,7 +197,12 @@ export const saneMiddleware = (
     // Render template.
     res.send(html);
   };
-
+  /**
+   * Renders a *partial* ignoring layouts or sublayouts
+   * @param {string} route - Route of the template relative to the `routes` directory
+   * @param {object} vars - Object containing the values to be interpolated into the template
+   * @returns {undefined}
+   */
   res.partial = async (route: string, vars: object) => {
     // Build cache if not already set (null means we've cached this route as a 404)
     let template: Template | undefined = cache.partial[route];
@@ -140,13 +222,26 @@ export const saneMiddleware = (
     // Render template.
     res.send(html);
   };
-
+  /**
+   * Sends an `HX-Trigger` header to the client, efectively triggering a client event.
+   * @param {string} eventName - Name of the event to trigger
+   * @returns {Response} Reference to the Response object to allow for chaining
+   */
   res.trigger = (eventName: string) => {
     // Set an HTMX trigger header to trigger event on client.
     res.set('HX-Trigger', eventName);
     return res;
   };
 
+  /**
+   * Sends a set of values to be displayed in a `<div id="error" style="display:none">` expected to be
+   * present in the default layout, using the partial template at `_/error.html`.
+   * The structure of the values sent is determined by this template.
+   * @param header
+   * @param message
+   * @param color
+   * @param title
+   */
   res.showError = (
     header: string,
     message: string,
