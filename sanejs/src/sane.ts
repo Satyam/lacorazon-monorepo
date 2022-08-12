@@ -177,11 +177,10 @@ export const saneMiddleware = (
 
     // Populate template vars
     const fmAndVars = { route, ...template.fm, ...vars };
-    let html = processVars(template.html, fmAndVars);
-
-    // Strip \ char for escaped blocks and vals.
-    html = html.replaceAll('\\{', '{');
-    html = html.replaceAll(/ \\server/gm, ' server');
+    let html = processVars(template.html, fmAndVars)
+      // Strip \ char for escaped blocks and vals.
+      .replaceAll('\\{', '{')
+      .replaceAll(/ \\server/gm, ' server');
 
     // Convert template response to HTMX out-of-band swaps?
     if (swapIds && req.isHtmx) {
@@ -208,11 +207,10 @@ export const saneMiddleware = (
     if (!template) return next();
 
     // Populate template vars
-    let html = vars ? processVars(template.html, vars) : template.html;
-
-    // Strip \ char for escaped blocks and vals.
-    html = html.replaceAll('\\{', '{');
-    html = html.replaceAll(/ \\server/gm, ' server');
+    let html = (vars ? processVars(template.html, vars) : template.html)
+      // Strip \ char for escaped blocks and vals.
+      .replaceAll('\\{', '{')
+      .replaceAll(/ \\server/gm, ' server');
 
     // Render template.
     return res.send(html);
@@ -221,6 +219,7 @@ export const saneMiddleware = (
   /**
    * Sends an `HX-Trigger` header to the client, efectively triggering a client event.
    * @param {string} eventName - Name of the event to trigger
+   * @param {any} [details] - Extra info available in the `evt.detail` property of `CustomEvent`
    * @returns {Response} Reference to the Response object to allow for chaining
    */
   res.trigger = (eventName: string, details?: any) =>
@@ -314,6 +313,20 @@ async function loadTemplate(route: string): Promise<void | Template> {
 }
 
 function processFrontMatter(template: Template): Template {
+  function normalizeVal(val: string) {
+    switch (val) {
+      case 'false':
+        return false;
+      case 'true':
+        return true;
+      case 'null':
+        return null;
+      case 'undefined':
+        return undefined;
+      default:
+        return !isNaN(Number(val)) ? Number(val) : val;
+    }
+  }
   const fmBlockMatch = template.html.match(reFrontMatterBlock);
   if (!fmBlockMatch) return template;
   const fmBlock = fmBlockMatch[0];
@@ -323,20 +336,10 @@ function processFrontMatter(template: Template): Template {
     const [_, key, val] = line.match(reFrontMatterKeyVal) ?? [];
     if (key) {
       const joinedVal = val.replace(/\n  [ \t]*/g, ' '); // Remove line breaks in val
-      const normalizedVal = normalizeVal(joinedVal);
-      newFm[key] = normalizedVal;
+      newFm[key] = normalizeVal(joinedVal);
     }
   }
-  function normalizeVal(val: string) {
-    if (val === 'false') return false;
-    if (val === 'true') return true;
-    if (val === 'null') return null;
-    if (val === 'undefined') return undefined;
-    if (!isNaN(Number(val))) return Number(val);
-    return val;
-  }
-  const currentFm = template.fm || {};
-  template.fm = { ...currentFm, ...newFm };
+  template.fm = { ...template.fm, ...newFm };
   template.html = template.html.replace(fmBlock, '').trim();
   return template;
 }
@@ -352,14 +355,13 @@ async function processExtends(template: Template): Promise<Template> {
   const reExtendsTagMatch = template.html.match(reExtendsTag);
   if (!reExtendsTagMatch) return template;
 
-  const extendsTag = reExtendsTagMatch[0];
-  const wrapperRoute = reExtendsTagMatch[1];
+  const [tag, route] = reExtendsTagMatch;
 
   // Remove this extends tag from  template.html)
-  template.html = template.html.replace(extendsTag, '');
+  template.html = template.html.replace(tag, '');
 
   // Wrap template with extends template (and merge front-matter).
-  template = await wrapIntoSlot(template, wrapperRoute);
+  template = await wrapIntoSlot(template, route);
 
   // Recurse until no more extends tags are found.
   return processExtends(template);
@@ -413,17 +415,15 @@ async function findLayoutRoute(path: string): Promise<false | string> {
 
 async function processPartials(template: Template): Promise<Template> {
   const partialTags = [...template.html.matchAll(rePartialTag)];
-  for (const tag of partialTags) {
-    const partialTag = tag[0];
-    const partialRoute = tag[1];
-    let partialTemplate = await loadTemplate(partialRoute);
+  for (const [tag, route] of partialTags) {
+    let partialTemplate = await loadTemplate(route);
     if (!partialTemplate)
-      throw new Error(`Failed to process partial tag: ${partialTag}`);
+      throw new Error(`Failed to process partial tag: ${tag}`);
     partialTemplate = processFrontMatter(partialTemplate);
     partialTemplate = processMarkdown(partialTemplate);
     const currentFm = template.fm || {};
     template.fm = { ...currentFm, ...partialTemplate.fm };
-    template.html = template.html.replace(partialTag, partialTemplate.html);
+    template.html = template.html.replace(tag, partialTemplate.html);
   }
   return template;
 }
