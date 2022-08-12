@@ -131,6 +131,11 @@ export const saneMiddleware = (
     process.exit();
   }
   /**
+   * Returns `true` of the request was originated from an HTMX method or attribute.
+   */
+  req.isHtmx = Boolean(req.headers['hx-request']);
+
+  /**
    * Allows access to the original Express `res.render` method
    */
   res.expressRender = res.render;
@@ -139,11 +144,12 @@ export const saneMiddleware = (
    * Override of `res.render` that allows to access both the original and
    * the redefined `render` method.
    * If either the 2nd or 3rd param is a function, it calls the original one,
-   * otherwise it calls the new one.
+   * otherwise it calls the new one, with the following arguments.
+   * It may render a full page or, if `swapIds` is provided and the request is an HTMX request
+   * it will only send out-of-band updates.
    * @param {string} route - Route of the template relative to the `routes` directory
    * @param {object} [vars] - Object containing the values to be interpolated into the template
    * @param {string | string[]} [swapIds] - `id` attribute of elements to be swapped out-of-band
-   * @returns {undefined}
    */
   res.render = async (
     route: string,
@@ -156,13 +162,10 @@ export const saneMiddleware = (
     if (typeof swapIds === 'function') {
       return res.expressRender(route, vars, swapIds);
     }
-    // Build cache if not already set (null means we've cached this route as a 404)
     let template = await getTemplate(route, false);
     if (!template) return next();
 
-    // Populate template vars
-    const fmAndVars = { route, ...template.fm, ...vars };
-    let html = processVars(template.html, fmAndVars)
+    let html = processVars(template.html, { route, ...template.fm, ...vars })
       // Strip \ char for escaped blocks and vals.
       .replaceAll('\\{', '{')
       .replaceAll(/ \\server/gm, ' server');
@@ -176,14 +179,13 @@ export const saneMiddleware = (
     // Render template.
     return res.send(html);
   };
+
   /**
    * Renders a *partial* ignoring layouts or sublayouts
    * @param {string} route - Route of the template relative to the `routes` directory
    * @param {object} [vars] - Object containing the values to be interpolated into the template
-   * @returns {undefined}
    */
   res.partial = async (route: string, vars?: object) => {
-    // Build cache if not already set (null means we've cached this route as a 404)
     let template = await getTemplate(route, true);
     if (!template) return next();
 
@@ -203,7 +205,7 @@ export const saneMiddleware = (
    * @param {any} [details] - Extra info available in the `evt.detail` property of `CustomEvent`
    * @returns {Response} Reference to the Response object to allow for chaining
    */
-  res.trigger = (eventName: string, details?: any) =>
+  res.trigger = (eventName: string, details?: any): Response =>
     // Set an HTMX trigger header to trigger event on client.
     res.set(
       'HX-Trigger',
@@ -225,17 +227,29 @@ export const saneMiddleware = (
   /**
    * Sends a set of values to be displayed in a `<div id="error" style="display:none">` expected to be
    * present in the default layout, using the partial template at `_/error.html`.
-   * The structure of the values sent is determined by this template.
+   * The structure of the values sent is determined by the error template.
    */
   res.showError = <E extends object>(vals: E) =>
     res.retarget('_/error', vals, '#error');
 
+  /**
+   * Allows access to the original Expresss `res.redirect`
+   */
   res.expressRedirect = res.redirect;
 
+  /**
+   * Override for the original Expresss `res.redirect`.
+   * If the request comes from HTMX, it will send back an `HX-Redirect`
+   * header with the corresponding route.
+   * Otherwise, it simply calls the original res.redirect.
+   * @param {string} url - URL or route to redirect to.
+   * @param {string | number} status - Status for the benefit of the original redirect.
+   * @returns {Response} Returns the same response, for chaining.
+   */
   res.redirect = (url: string | number, status?: string | number) => {
     if (typeof url === 'string') {
       const route = formatSlashes(url);
-      if (req.headers['hx-request']) {
+      if (req.isHtmx) {
         res.set('HX-Redirect', route).end();
       } else {
         res.expressRedirect(route, status as number);
@@ -246,10 +260,15 @@ export const saneMiddleware = (
     return res;
   };
 
-  res.invalidateCache = (...urls: string[]) =>
-    res.trigger('invalidateCache', urls);
-
-  req.isHtmx = Boolean(req.headers['hx-request']);
+  /**
+   * Triggers a client-side CustomEvent telling HTMX to invalidate the
+   * client-side cache entries for the given routes,
+   * so that the client requests a refreshed version of them.
+   * @param {string} routes - any number of routes to be invalidated.
+   * @returns {Response} Returns the same response, for chaining.
+   */
+  res.invalidateCache = (...routes: string[]) =>
+    res.trigger('invalidateCache', routes);
 
   next();
 };
@@ -267,6 +286,17 @@ const cache: {
   partial: Record<string, Template>;
 } = { page: {}, partial: {} };
 
+/**
+ * Returns the Template corresponding to the given route or
+ * `undefined` if not found.
+ * It will first check if the template is cached,
+ * otherwise it will build it on request and cache it for further requests.
+ * If the template is not a partial,
+ * it will have its layout, extensions and partials resolved
+ * @param {string} route - The route of the template to be loaded
+ * @param {boolean} isPartial - True if the route is a partial.
+ * @returns {Promise<Template | undefined>} The template found or undefined
+ */
 async function getTemplate(
   route: string,
   isPartial: boolean
@@ -280,6 +310,15 @@ async function getTemplate(
   return template;
 }
 
+/**
+ * Loads and pre-processes as much as possible of the template at
+ * the given route.
+ * If the template is not a partial,
+ * it will have its layout, extensions and partials resolved.
+ * @param {string} route - Route of the template to be build
+ * @param {boolean} isPartial - True if the route is a partial
+ * @returns {Promise<Template | undefined>} The template found or undefined
+ */
 async function buildTemplate(
   route: string,
   isPartial: boolean
@@ -305,7 +344,16 @@ async function buildTemplate(
   }
   return template;
 }
-
+/**
+ * It will try to load the template at the specified route,
+ * expanding the path with the usual extensions (`.html` or `.md`)
+ * or looking for an `index` file.
+ * It will separate the server-side script block from the HTML.
+ * @param {string} route - The route of the template to be loaded.
+ * @returns {Promise<Template | undefined>} The template found or undefined
+ * @todo Should it take the server-side block here or in a `processScript` method
+ * in `buildTemplate`?
+ */
 async function loadTemplate(route: string): Promise<void | Template> {
   const reServerBlock = /<script[\s]server>([\s\S]+?)<\/script>/m;
   const routePath = join(routesDir, route);
@@ -320,6 +368,12 @@ async function loadTemplate(route: string): Promise<void | Template> {
   return undefined;
 }
 
+/**
+ * Reads the FrontMatter information at the top of the template
+ * parses its values and stores it in `template.fm`.
+ * It deletes it from `template.html`.
+ * @param {Template} template - Template to be processed.
+ */
 function processFrontMatter(template: Template): void {
   function normalizeVal(val: string) {
     switch (val) {
@@ -351,14 +405,23 @@ function processFrontMatter(template: Template): void {
   template.html = template.html.replace(fmBlock, '').trim();
 }
 
+/**
+ * If the template contains Markdown, it converts it to HTML.
+ * @param {Template} template - Template to be processed.
+ */
 function processMarkdown(template: Template): void {
   if (template.path.endsWith('.md')) {
     template.html = marked.parse(template.html);
   }
 }
 
+/**
+ * Recursively looks for tags like {^ some-template }
+ * and inserts the given template into the `{slot}`
+ * in the extension.
+ * @param {Template} template - Template to be processed.
+ */
 async function processExtends(template: Template): Promise<void> {
-  // Look for tags like {^ some-template }
   const reExtendsTagMatch = template.html.match(reExtendsTag);
   if (!reExtendsTagMatch) return;
 
@@ -374,6 +437,15 @@ async function processExtends(template: Template): Promise<void> {
   return processExtends(template);
 }
 
+/**
+ * Wrapes the current template into the `{slot}` of the
+ * template located at `wrapperRoute`.
+ * It merges the FrontMatter variables of the wrapper
+ * into the current template.
+ * If the wrapper is in MarkDown it converts it to HTML.
+ * @param {Template} template - Template to be wrapped.
+ * @param {string} wrapperRoute - sub-layout with the wrapper for this template.
+ */
 async function wrapIntoSlot(
   template: Template,
   wrapperRoute: string
@@ -393,6 +465,12 @@ async function wrapIntoSlot(
   ].join('');
 }
 
+/**
+ * Unless the template has a `{nolayout}` tag,
+ * it will try to locate the closest `_layout.html` file
+ * and insert the template into the ´{slot}´ tag in it.
+ * @param {Template} template - Template to be wrapped.
+ */
 async function processLayout(template: Template): Promise<void> {
   // Template has a nolayout tag?
   const hasNoLayoutTag = reNoLayout.test(template.html);
@@ -404,6 +482,13 @@ async function processLayout(template: Template): Promise<void> {
   if (layoutRoute) await wrapIntoSlot(template, layoutRoute);
 }
 
+/**
+ * Tries to locate the closest `_layout.html` file going up
+ * until the root or the `routes` folder.
+ * It returns the path to that layout or false if not found.
+ * @param {string} path - Actual path to the template whose layout is being sought.
+ * @returns {string|false} Route to the closes layout found
+ */
 async function findLayoutRoute(path: string): Promise<false | string> {
   const parentDir = dirname(path);
   const pathToLayout = join(parentDir, '_layout.html');
@@ -418,6 +503,15 @@ async function findLayoutRoute(path: string): Promise<false | string> {
   return reachedTop ? false : await findLayoutRoute(join(pathToLayout, '..'));
 }
 
+/**
+ * Processes the partials included on a template.
+ * It will merge the FrontMatter values in the partial
+ * and will converted to HTML if it is in Markdown.
+ * @param {Template} template - Template to be processed.
+ * @throws Throws and error if the partial is  not found.
+ * @todo: shouldn't it use `getTemplate`?
+ *
+ */
 async function processPartials(template: Template): Promise<void> {
   const partialTags = [...template.html.matchAll(rePartialTag)];
   for (const [tag, route] of partialTags) {
