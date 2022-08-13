@@ -348,20 +348,17 @@ async function buildTemplate(
  * It will try to load the template at the specified route,
  * expanding the path with the usual extensions (`.html` or `.md`)
  * or looking for an `index` file.
- * It will separate the server-side script block from the HTML.
+ * It will strip out the server-side script block from the HTML.
  * @param {string} route - The route of the template to be loaded.
  * @returns {Promise<Template | undefined>} The template found or undefined
- * @todo Should it take the server-side block here or in a `processScript` method
- * in `buildTemplate`?
  */
 async function loadTemplate(route: string): Promise<void | Template> {
-  const reServerBlock = /<script[\s]server>([\s\S]+?)<\/script>/m;
   const routePath = join(routesDir, route);
   for (let possiblePathSuffix of ['.html', '.md', 'index.html', 'index.md']) {
     try {
       const path = routePath + possiblePathSuffix;
       const htmlWithServerBlock = await readFile(path, 'utf-8');
-      const html = htmlWithServerBlock.replace(reServerBlock, '');
+      const html = htmlWithServerBlock.replace(reServerScript, '');
       return { html, path };
     } catch (err) {} // Eat the error and try next possiblePathSuffix.
   }
@@ -450,19 +447,13 @@ async function wrapIntoSlot(
   template: Template,
   wrapperRoute: string
 ): Promise<void> {
-  let wrapper = await loadTemplate(wrapperRoute);
+  let wrapper = await getTemplate(wrapperRoute, true);
   if (!wrapper) return;
-  processFrontMatter(wrapper);
-  processMarkdown(wrapper);
   const wrapperHtmlParts = wrapper.html.split(reSlotTag);
   if (wrapperHtmlParts?.length < 2)
     throw Error(`No slot tag found in ${wrapper.path}`);
   template.fm = { ...wrapper.fm, ...template.fm };
-  template.html = [
-    wrapperHtmlParts[0],
-    template.html,
-    wrapperHtmlParts[1],
-  ].join('');
+  template.html = `${wrapperHtmlParts[0]}${template.html}${wrapperHtmlParts[1]}`;
 }
 
 /**
@@ -509,19 +500,14 @@ async function findLayoutRoute(path: string): Promise<false | string> {
  * and will converted to HTML if it is in Markdown.
  * @param {Template} template - Template to be processed.
  * @throws Throws and error if the partial is  not found.
- * @todo: shouldn't it use `getTemplate`?
- *
  */
 async function processPartials(template: Template): Promise<void> {
   const partialTags = [...template.html.matchAll(rePartialTag)];
   for (const [tag, route] of partialTags) {
-    let partialTemplate = await loadTemplate(route);
+    let partialTemplate = await getTemplate(route, true);
     if (!partialTemplate)
       throw new Error(`Failed to process partial tag: ${tag}`);
-    processFrontMatter(partialTemplate);
-    processMarkdown(partialTemplate);
-    const currentFm = template.fm || {};
-    template.fm = { ...currentFm, ...partialTemplate.fm };
+    template.fm = { ...template.fm, ...partialTemplate.fm };
     template.html = template.html.replace(tag, partialTemplate.html);
   }
 }
