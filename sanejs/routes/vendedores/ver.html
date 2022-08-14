@@ -76,8 +76,9 @@
     {? details.ventas}
     <details open hx-patch="/vendedores/ver?id={= vendedor.id}" class="card">
       <summary class="card-header">Ventas</summary>
-      {> ventas/__table}
     </details>
+    {> ventas/__table}
+    <!-- prettier-ignore -->
     {: details.ventas}
     <details
       hx-patch="/vendedores/ver?id={= vendedor.id}&tab=ventas"
@@ -85,7 +86,9 @@
     >
       <summary class="card-header">Ventas</summary>
     </details>
-    {/? details.ventas} {? details.consigna}
+    {/? details.ventas}
+    <!-- prettier-ignore -->
+    {? details.consigna}
     <details open hx-patch="/vendedores/ver?id={= vendedor.id}" class="card">
       <summary class="card-header">Consigna</summary>
       <p class="card-body">Aquí va la consigna</p>
