@@ -172,8 +172,7 @@ export const saneMiddleware = (
 
     // Convert template response to HTMX out-of-band swaps?
     if (swapIds && req.isHtmx) {
-      const triggerId = req.headers['hx-trigger'] as string;
-      html = processSwapIds(html, swapIds, triggerId);
+      html = processSwapIds(html, swapIds, req.get('hx-trigger'));
     }
 
     // Render template.
@@ -216,11 +215,8 @@ export const saneMiddleware = (
 
   // Render a view into a specified element. Defaults to <body> tag (similar to hx-boosted)
   res.retarget = (path, opts = {}, target = 'body') => {
-    // The URI to push into history stack must be absolute: /foo/bar
-    const normalized = normalize(path);
-    const uri = normalized.startsWith('/') ? path : '/' + path;
     return res
-      .set({ 'HX-Retarget': target, 'HX-Push': uri })
+      .set({ 'HX-Retarget': target, 'HX-Push': normalizeRoute(path) })
       .render(path, opts);
   };
 
@@ -248,7 +244,7 @@ export const saneMiddleware = (
    */
   res.redirect = (url: string | number, status?: string | number) => {
     if (typeof url === 'string') {
-      const route = formatSlashes(url);
+      const route = normalizeRoute(url);
       if (req.isHtmx) {
         res.set('HX-Redirect', route).end();
       } else {
@@ -301,6 +297,7 @@ async function getTemplate(
   route: string,
   isPartial: boolean
 ): Promise<Template | undefined> {
+  route = normalizeRoute(route);
   const whichCache = isPartial ? cache.partial : cache.page;
   let template: Template | undefined = whichCache[route];
   if (!template) {
@@ -512,8 +509,38 @@ async function processPartials(template: Template): Promise<void> {
   }
 }
 
+/**
+ * Interpolates the variables into the html part of a template
+ * @param {string} html - The html part of a template
+ * @param {object} vars - An object with the variables to be interpolated into the html
+ * @returns {string} The resulting html
+ */
 function processVars(html: string, vars: object): string {
   // This is a customized version of t.js -> https://github.com/jasonmoo/t.js
+  /**
+   * HTML-encodes values containing <, &, > and " characters.
+   * @param val - Value to be HTML-encoded
+   * @returns {string} HTML-encoded string
+   */
+  const scrub = (val: string | object): string =>
+    (typeof val === 'string' ? val : JSON.stringify(val))
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+  /**
+   * Gets the value requested in various tags, resolving nested values.
+   * @param {object} vars - Object containing the values
+   * @param {string} key - Name of the property to be found
+   * @returns {any} Value of the property, or undefined if not found.
+   */
+  const getValue = (vars: object, key: string) =>
+    key.split('.').reduce<any>((acc, part) => {
+      if (typeof acc === 'object' && part in acc) return acc[part];
+      return undefined;
+    }, vars);
+
   return (
     html
       .replace(
@@ -557,69 +584,75 @@ function processVars(html: string, vars: object): string {
         return '';
       })
   );
-
-  function scrub(val: string | object): string {
-    val = typeof val === 'string' ? val : JSON.stringify(val);
-    return val
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  function getValue(vars: object, key: string) {
-    return key.split('.').reduce<any>((acc, part) => {
-      if (typeof acc === 'object' && part in acc) return acc[part];
-      return undefined;
-    }, vars);
-  }
 }
 
-function processSwapIds(html: string, swapIds: string[], triggerId: string) {
+/**
+ *
+ * @param {string} html - HTML to be processed
+ * @param {string | string[]} swapIds - `id` or array of `id`s of elements to be extracted
+ * @param {string} [triggerId] - The `id` of the element that triggered the request
+ * @returns {string} HTML for the elements with the given `swapIds`
+ */
+function processSwapIds(
+  html: string,
+  swapIds: string | string[],
+  triggerId?: string
+): string {
   const swapIdsArray = [swapIds].flat(); // Convert single string to array.
-  const oobSwapElements: string[] = []; // oob is HTMX "out of band" https://htmx.org/docs
   const dom = parse(html);
 
   // Is the element that triggered this event also being swapped?
-  const triggerIndex = swapIdsArray.indexOf(triggerId);
-  const includePrimaryResponse = triggerIndex !== -1;
-  if (includePrimaryResponse) swapIdsArray.splice(triggerIndex, 1);
-
+  if (triggerId) {
+    if (!swapIdsArray.includes(triggerId)) swapIdsArray.push(triggerId);
+  }
   // Append elements specified by id to oobSwapElements.
-  swapIdsArray.forEach((id) => {
-    const el = dom.getElementById(id);
-    if (!el) {
-      console.error(
-        `res.render failed: No DOM element with id="${id}" found in template.`
-      );
-      return;
-    }
-    el.setAttribute('hx-swap-oob', 'true');
-    oobSwapElements.push(el.toString());
-  });
-
-  // Set the primary response for the swap that matches the trigger id instead of using OOB (this is how HTMX works).
-  const primaryResponse = includePrimaryResponse
-    ? dom.getElementById(triggerId)
-    : null;
-  const oobResponse = oobSwapElements.join('\n\n');
-  return primaryResponse ? primaryResponse + '\n\n' + oobResponse : oobResponse;
+  return swapIdsArray
+    .map((id) => {
+      const el = dom.getElementById(id);
+      if (!el) {
+        console.error(
+          `res.render failed: No DOM element with id="${id}" found in template.`
+        );
+        return '';
+      }
+      if (id !== triggerId) el.setAttribute('hx-swap-oob', 'true');
+      return el.toString();
+    })
+    .join('\n');
 }
 
-function formatSlashes(route: string): string {
-  // Always use leading slash, never use trailing slash.
+/**
+ * Ensure route always starts with a slash and never ends with one,
+ * except for the root. Cleans it up with `path.normalize`
+ * @param {string} route - the route to normalize
+ * @returns {string} The normalized route
+ */
+function normalizeRoute(route: string): string {
+  route = normalize(route);
   if (route === '/') return route;
   route = route.startsWith('/') ? route : '/' + route;
   route = route.endsWith('/') ? route.slice(0, -1) : route;
   return route;
 }
 
+/**
+ * Custom `require` that expands an initial `~` to the app working directory
+ * @param {string} path - Path to the module to be required
+ * @returns {any} Required module
+ */
 function relativeRequire(path: string) {
   return require(path.startsWith('~/')
     ? path.replace('~', process.cwd())
     : path);
 }
 
+/**
+ * Scans the `./routes` folder for pages to render.
+ * It reads the `<script server>` block of each and
+ * adds a route to the express Application (`app.use()`)
+ * for the scripts on that page to handle it.
+ * @param {express.Application} app - Express Application object to add the handlers to.
+ */
 export async function loadRoutes(app: Application): Promise<void> {
   await continueLoadingRoutes(routesDir);
   async function continueLoadingRoutes(thisDir: string) {
@@ -644,6 +677,12 @@ export async function loadRoutes(app: Application): Promise<void> {
       const matchScript = template.match(reServerScript);
       let serverBlock = matchScript && matchScript[1] + '\nreturn server';
       if (serverBlock) {
+        /**
+         * Route handler created from the server-block in the page.
+         * @param {Router} server - Express router to attach more specific handlers to.
+         * @param {funcion} require - Customized version of `require`, {@see relativeRequire}
+         * @param {string} self - Route for this page
+         */
         // Parse the serverBlock, passing in refs to
         // * Express router `server`,
         // * Node `require`, and `self` route reference.
@@ -674,6 +713,14 @@ export async function loadRoutes(app: Application): Promise<void> {
 
 const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
 
+/**
+ * Adds an individual route to Application to handle each page.
+ * Ensures there are no duplicates
+ * @param {string} route - Route to the page
+ * @param {Handler} handler - Handler for this route
+ * @param {string} absPath - Absolute path for this route, to ensure there are no duplicates
+ * @param {Application} app - Express Application to add the route to.
+ */
 function useRoute(
   route: string,
   handler: Handler,
