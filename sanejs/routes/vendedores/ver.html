@@ -29,7 +29,7 @@
     switch (tab) {
       case 'ventas':
         {
-          const ventas = await list();
+          const ventas = await list({ idVendedor: id });
           res.render(
             self,
             {
@@ -74,22 +74,25 @@
   {> vendedores/__form}
   <div id="details" class="wide">
     {? details.ventas}
-    <details open hx-patch="/vendedores/ver?id={= item.id}" class="card">
+    <details open hx-patch="/vendedores/ver?id={= vendedor.id}" class="card">
       <summary class="card-header">Ventas</summary>
       {> ventas/__table}
     </details>
     {: details.ventas}
-    <details hx-patch="/vendedores/ver?id={= item.id}&tab=ventas" class="card">
+    <details
+      hx-patch="/vendedores/ver?id={= vendedor.id}&tab=ventas"
+      class="card"
+    >
       <summary class="card-header">Ventas</summary>
     </details>
     {/? details.ventas} {? details.consigna}
-    <details open hx-patch="/vendedores/ver?id={= item.id}" class="card">
+    <details open hx-patch="/vendedores/ver?id={= vendedor.id}" class="card">
       <summary class="card-header">Consigna</summary>
       <p class="card-body">Aquí va la consigna</p>
     </details>
     {: details.consigna}
     <details
-      hx-patch="/vendedores/ver?id={= item.id}&tab=consigna"
+      hx-patch="/vendedores/ver?id={= vendedor.id}&tab=consigna"
       class="card"
     >
       <summary class="card-header">Consigna</summary>
