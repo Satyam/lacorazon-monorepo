@@ -40,6 +40,9 @@ if (missingEnvs.length) {
 // Create Express app.
 const app = express();
 
+// Setup the template engine, template location and default extension.
+app.set('views', join(process.cwd(), 'routes'));
+
 // Use gzip compression.
 app.use(compression());
 

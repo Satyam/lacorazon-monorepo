@@ -13,12 +13,13 @@ import { statSync, promises } from 'fs';
 const { readdir, readFile, access } = promises;
 import { parse } from 'node-html-parser-hyperscript';
 import { marked } from 'marked';
-import { join, normalize, dirname } from 'path';
+import { join, normalize, dirname, extname } from 'path';
 
 /**
  * Assumes pages are located in the `routes` folder under the current working directory.
+ * It is reset when `loadRoutes` is called.
  */
-const routesDir = join(process.cwd(), 'routes');
+let routesDir = join(process.cwd(), 'routes');
 
 /**
  * HTML string representing the page.
@@ -75,7 +76,7 @@ const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
 /**
  * RegExp to filter valid pages (`.html and `.md`)
  */
-const reValidPages = /([\w\-\/. ]+)\.(html|md)/;
+const reValidPages = /[\w\-\/. ]+\.(html|md)$/;
 /**
  * RegExp to detect server-side scripts and extract its content.
  */
@@ -109,6 +110,9 @@ declare global {
     }
   }
 }
+
+const absPathToRoute = (filePath: string) =>
+  filePath.replace(routesDir, '').replace(extname(filePath), '');
 
 /**
  * Express middleware to extend the native `Request` and `Response` arguments
@@ -654,6 +658,7 @@ function relativeRequire(path: string) {
  * @param {express.Application} app - Express Application object to add the handlers to.
  */
 export async function loadRoutes(app: Application): Promise<void> {
+  routesDir = app.get('views');
   await continueLoadingRoutes(routesDir);
   async function continueLoadingRoutes(thisDir: string) {
     const files = await readdir(thisDir);
@@ -669,9 +674,8 @@ export async function loadRoutes(app: Application): Promise<void> {
         continue;
       }
       // Set the route endpoint for .html or .md files only.
-      const matchRoute = absPath.match(reValidPages);
-      if (!matchRoute || matchRoute.length < 2) continue;
-      const route = matchRoute[1].replace(routesDir, '');
+      if (!reValidPages.test(absPath)) continue;
+      const route = absPathToRoute(absPath);
       // Read the file and look for <script server>
       const template = await readFile(absPath, 'utf-8');
       const matchScript = template.match(reServerScript);
