@@ -1,13 +1,7 @@
 /**
  * @module sane
  */
-import express, {
-  Request,
-  Response,
-  NextFunction,
-  Handler,
-  Application,
-} from 'express';
+import { Request, Response, NextFunction, Application } from 'express';
 
 import { statSync, promises } from 'fs';
 const { readdir, readFile, access } = promises;
@@ -112,7 +106,11 @@ declare global {
 }
 
 const absPathToRoute = (filePath: string) =>
-  filePath.replace(routesDir, '').replace(extname(filePath), '');
+  filePath
+    .replace(routesDir, '')
+    .replace(extname(filePath), '')
+    .replace('/;', '/:')
+    .replace(/\/index$/, '');
 
 /**
  * Express middleware to extend the native `Request` and `Response` arguments
@@ -650,6 +648,8 @@ function relativeRequire(path: string) {
     : path);
 }
 
+const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
+
 /**
  * Scans the `./routes` folder for pages to render.
  * It reads the `<script server>` block of each and
@@ -659,7 +659,7 @@ function relativeRequire(path: string) {
  */
 export async function loadRoutes(app: Application): Promise<void> {
   routesDir = app.get('views');
-  await continueLoadingRoutes(routesDir);
+
   async function continueLoadingRoutes(thisDir: string) {
     const files = await readdir(thisDir);
 
@@ -676,6 +676,14 @@ export async function loadRoutes(app: Application): Promise<void> {
       // Set the route endpoint for .html or .md files only.
       if (!reValidPages.test(absPath)) continue;
       const route = absPathToRoute(absPath);
+      if (routes[route]) {
+        console.error(`Duplicate routes defined for ${route} in:
+         - ${routes[route]} 
+         - ${absPath}`);
+        continue;
+      }
+      routes[route] = absPath;
+
       // Read the file and look for <script server>
       const template = await readFile(absPath, 'utf-8');
       const matchScript = template.match(reServerScript);
@@ -684,12 +692,13 @@ export async function loadRoutes(app: Application): Promise<void> {
         /**
          * Route handler created from the server-block in the page.
          * @param {Router} server - Express router to attach more specific handlers to.
-         * @param {funcion} require - Customized version of `require`, {@see relativeRequire}
+         * @param {funcion} require - Customized version of `require`, @see relativeRequire
          * @param {string} self - Route for this page
          */
         // Parse the serverBlock, passing in refs to
         // * Express router `server`,
         // * Node `require`, and `self` route reference.
+
         try {
           const routeHandler = new Function(
             'server',
@@ -697,12 +706,7 @@ export async function loadRoutes(app: Application): Promise<void> {
             'self',
             serverBlock
           );
-          useRoute(
-            route,
-            routeHandler(express.Router(), relativeRequire, route),
-            absPath,
-            app
-          );
+          routeHandler(app.route(route), relativeRequire, route);
         } catch (err) {
           console.error(
             `Unable to parse server block in: ${absPath}\n\n${
@@ -713,37 +717,53 @@ export async function loadRoutes(app: Application): Promise<void> {
       }
     }
   }
+  await continueLoadingRoutes(routesDir);
+  console.log(JSON.stringify(routes, null, 2));
 }
 
-const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
+// /**
+//  * Adds an individual route to Application to handle each page.
+//  * Ensures there are no duplicates
+//  * @param {string} route - Route to the page
+//  * @param {Handler} handler - Handler for this route
+//  * @param {string} absPath - Absolute path for this route, to ensure there are no duplicates
+//  * @param {Application} app - Express Application to add the route to.
+//  */
+// function useRoute(
+//   route: string,
+//   handler: Handler,
+//   absPath: string,
+//   app: Application
+// ) {
+//   // Avoid adding duplicate route.
+//   if (routes[route]) {
+//     console.error(`Duplicate routes defined for ${route} in:
+//      - ${routes[route]}
+//      - ${absPath}`);
+//     return;
+//   }
+//   app.use(route, (req, res, next) => {
+//     console.log(
+//       JSON.stringify(
+//         Object.keys(req)
+//           // @ts-ignore
+//           .filter((p) => typeof req[p] === 'string')
+//           // @ts-ignore
+//           .map((p) => `${p}=${req[p]}`),
+//         null,
+//         2
+//       ),
+//       JSON.stringify(req.params, null, 2),
+//       req.path
+//     );
+//     handler(req, res, next);
+//   });
 
-/**
- * Adds an individual route to Application to handle each page.
- * Ensures there are no duplicates
- * @param {string} route - Route to the page
- * @param {Handler} handler - Handler for this route
- * @param {string} absPath - Absolute path for this route, to ensure there are no duplicates
- * @param {Application} app - Express Application to add the route to.
- */
-function useRoute(
-  route: string,
-  handler: Handler,
-  absPath: string,
-  app: Application
-) {
-  // Avoid adding duplicate route.
-  if (routes[route]) {
-    console.error(`Duplicate routes defined for ${route} in:
-     - ${routes[route]} 
-     - ${absPath}`);
-    return;
-  }
-  app.use(route, handler);
-  routes[route] = absPath;
-  // Also add special route for index file?
-  if (route.endsWith('/index')) {
-    const indexRoute = route.slice(0, -5);
-    app.use(indexRoute, handler);
-    routes[route] = absPath;
-  }
-}
+//   routes[route] = absPath;
+//   // Also add special route for index file?
+//   if (route.endsWith('/index')) {
+//     const indexRoute = route.slice(0, -5);
+//     app.use(indexRoute, handler);
+//     routes[route] = absPath;
+//   }
+// }

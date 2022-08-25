@@ -5,7 +5,7 @@
     formatDate,
     allSections,
   } = require('~/dist/utils.js');
-  server.get('/', async (req, res) => {
+  server.get(async (req, res) => {
     const ventas = await list();
     res.render(
       self,
@@ -26,7 +26,7 @@
     );
   });
 
-  server.delete('/', async (req, res) => await remove(req.query.id));
+  server.delete(async (req, res) => await remove(req.query.id));
 </script>
 
 <title id="title">La Corazón - Ventas</title>

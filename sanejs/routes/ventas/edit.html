@@ -10,7 +10,7 @@
     iva: !!venta.iva
   });
 
-  server.get('/', async (req, res) => {
+  server.get( async (req, res) => {
     const { id } = req.query;
     const vendedores = await list();
     if (id) {
@@ -54,7 +54,7 @@
     }
   });
 
-  server.post('/', async (req, res, next) => {
+  server.post(async (req, res, next) => {
     let venta = req.body;
     const { id, ...rest } = venta;
     const invalid = {};

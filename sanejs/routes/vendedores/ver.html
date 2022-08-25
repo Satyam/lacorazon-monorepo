@@ -7,7 +7,7 @@
     allSections,
   } = require('~/dist/utils.js');
 
-  server.get('/', async (req, res) => {
+  server.get(async (req, res) => {
     const vendedor = await get(req.query.id);
     if (vendedor) {
       res.render(
@@ -24,7 +24,7 @@
     }
   });
 
-  server.patch('/', async (req, res) => {
+  server.patch(async (req, res) => {
     const { id, tab } = req.query;
     switch (tab) {
       case 'ventas':

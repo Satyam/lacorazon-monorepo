@@ -1,6 +1,6 @@
 <script server>
   const { allSections } = require('~/dist/utils.js');
-  server.get('/', (req, res) => {
+  server.get((req, res) => {
     res.render(
       self,
       {

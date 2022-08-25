@@ -2,7 +2,7 @@
   const { get } = require('~/dist/data/ventas.js');
   const { allSections, formatDate, formatCurrency } = require('~/dist/utils.js');
 
-  server.get('/', async (req, res) => {
+  server.get( async (req, res) => {
     const venta = await get(req.query.id);
     if (venta) {
       res.render(

@@ -1,11 +1,11 @@
 <script server>
   const { allSections } = require('~/dist/utils.js');
 
-  server.get('/', (req, res) => {
+  server.get((req, res) => {
     res.render(self, {}, allSections);
   });
 
-  server.post('/', async (req, res) => {
+  server.post(async (req, res) => {
     const { checkValidUser } = require('~/dist/data/user.js');
     const { email, password } = req.body;
     const user = await checkValidUser(email, password);
@@ -16,7 +16,7 @@
       res.render(self, { form: req.body, authFailed: true }, 'main');
     }
   });
-  server.delete('/', (req, res) => {
+  server.delete((req, res) => {
     req.session.destroy();
     res.redirect('/');
   });

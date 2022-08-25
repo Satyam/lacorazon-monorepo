@@ -2,7 +2,7 @@
   const { get, create, update } = require('~/dist/data/vendedores.js');
   const { allSections } = require('~/dist/utils.js');
 
-  server.get('/', async (req, res) => {
+  server.get(async (req, res) => {
     const { id, nombre } = req.query;
     if (id) {
       const vendedor = await get(id);
@@ -37,7 +37,7 @@
     }
   });
 
-  server.post('/', async (req, res, next) => {
+  server.post(async (req, res, next) => {
     let vendedor = req.body;
     const { id, ...rest } = vendedor;
     const invalid = {};

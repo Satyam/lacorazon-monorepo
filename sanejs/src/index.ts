@@ -106,74 +106,75 @@ if (process.env.SESSION_SECRET) {
   await loadRoutes(app);
 
   // If route hasn't been handled yet, serve a plain .html template if present.
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.method != 'GET') return next();
-    if (req.path.indexOf('.') !== -1) return next(); // Don't waste cpu on .css and favicons
-    res.render(req.path, {});
-  });
+  // app.use((req: Request, res: Response, next: NextFunction) => {
+  //   if (req.method != 'GET') return next();
+  //   if (req.path.indexOf('.') !== -1) return next(); // Don't waste cpu on .css and favicons
+  //   res.render(req.path, {});
+  // });
 
-  // Handle simple 404.
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (req.url == '/service-worker.js') return next();
-    console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
+  // // Handle simple 404.
+  // app.use((req: Request, res: Response, next: NextFunction) => {
+  //   if (req.url == '/service-worker.js') return next();
+  //   console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
+  //   res.showError<ErrorTemplateVals>({
+  //     header: '404 – Not Found',
+  //     message: `Operación: ${req.method} sobre ${req.url}`,
+  //     color: 'warning',
+  //     title: 'Esta dirección no se encuentra',
+  //   });
+  // });
+  console.log('??????????????????????');
+
+  app.use(function logError(
+    err: any,
+    _req: Request,
+    _res: Response,
+    next: NextFunction
+  ) {
+    console.error(err, err.stack);
+    next(err);
+  });
+  // Handle all other errors.
+  app.use(function logError2(
+    error: any,
+    _req: Request,
+    res: Response,
+    _next: NextFunction // Express recognizes error middleware by accepting 4 arguments
+  ) {
+    console.log('app use error', JSON.stringify(error, null, 2));
+    console.log(
+      `|${process.env.NODE_ENV}|`,
+      process.env.NODE_ENV == 'development'
+    );
+
+    if (error?.errno) {
+      res.showError<ErrorTemplateVals>({
+        header: `Sqlite database error ${error.errno}`,
+        color: 'info',
+        message: error,
+      });
+      return;
+    }
+
+    // Show debug info for dev?
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(error, error.stack);
+    }
     res.showError<ErrorTemplateVals>({
-      header: '404 – Not Found',
-      message: `Operación: ${req.method} sobre ${req.url}`,
-      color: 'warning',
-      title: 'Esta dirección no se encuentra',
+      header: '500 – Internal Server Error',
+      message: error.stack,
+      color: 'danger',
+      title: error.toString(),
     });
   });
 
-  // Handle all other errors.
-  app.use(
-    (
-      error: any,
-      req: Request,
-      res: Response,
-      // @ts-ignore
-      next: NextFunction // Express recognizes error middleware by accepting 4 arguments
-    ) => {
-      // Is this a regular 404 raised by `res.error(404)`?
-      if (error?.status == 404) {
-        console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
-
-        res.showError<ErrorTemplateVals>({
-          header: '404 – Not Found',
-          message: `Operación: ${req.method} sobre ${req.url}`,
-          color: 'warning',
-          title: 'Esta dirección no se encuentra',
-        });
-        return;
-      }
-
-      console.log('app use error', JSON.stringify(error, null, 2));
-      console.log(
-        `|${process.env.NODE_ENV}|`,
-        process.env.NODE_ENV == 'development'
-      );
-
-      if (error?.errno) {
-        res.showError<ErrorTemplateVals>({
-          header: `Sqlite database error ${error.errno}`,
-          color: 'info',
-          message: error,
-        });
-        return;
-      }
-
-      // Show debug info for dev?
-      if (process.env.NODE_ENV == 'development') {
-        console.error(error, error.stack);
-      }
-      res.showError<ErrorTemplateVals>({
-        header: '500 – Internal Server Error',
-        message: error.stack,
-        color: 'danger',
-        title: error.toString(),
-      });
-    }
-  );
-
+  console.log('end awaiting');
+  // @ts-ignore
+  app._router.stack.forEach(function (r) {
+    // if (r.route) {
+    console.log(r);
+    // }
+  });
   // Start the server.
   const port = process.env.PORT || 3000;
   app.listen(port, () => {

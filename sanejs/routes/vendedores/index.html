@@ -2,7 +2,7 @@
   const { list, remove } = require('~/dist/data/vendedores.js');
   const { allSections } = require('~/dist/utils.js');
 
-  server.get('/', async (req, res) => {
+  server.get(async (req, res) => {
     const vendedores = await list();
     res.render(
       self,
@@ -15,7 +15,7 @@
     );
   });
 
-  server.delete('/', async (req, res) => {
+  server.delete(async (req, res) => {
     const vendedores = await list();
     res.render(
       self,
