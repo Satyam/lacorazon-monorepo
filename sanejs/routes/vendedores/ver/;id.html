@@ -8,7 +8,8 @@
   } = require('~/dist/utils.js');
 
   server.get(async (req, res) => {
-    const vendedor = await get(req.query.id);
+    const { id } = req.params;
+    const vendedor = await get(id);
     if (vendedor) {
       res.render(
         self,
@@ -18,14 +19,15 @@
     } else {
       res.showError(
         'No se encuentra ese vendedor',
-        `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
+        `El vendedor solicitado [${id}] no existe o ha sido borrado`,
         'info'
       );
     }
   });
 
   server.patch(async (req, res) => {
-    const { id, tab } = req.query;
+    const { id } = req.params;
+    const { tab } = req.query;
     switch (tab) {
       case 'ventas':
         {
@@ -74,28 +76,25 @@
   {> vendedores/__form}
   <div id="details" class="wide">
     {? details.ventas}
-    <details open hx-patch="/vendedores/ver?id={= vendedor.id}" class="card">
+    <details open hx-patch="/vendedores/ver/{= vendedor.id}" class="card">
       <summary class="card-header">Ventas</summary>
     </details>
     {> ventas/__table}
     <!-- prettier-ignore -->
     {: details.ventas}
-    <details
-      hx-patch="/vendedores/ver?id={= vendedor.id}&tab=ventas"
-      class="card"
-    >
+    <details hx-patch="/vendedores/ver/{= vendedor.id}?tab=ventas" class="card">
       <summary class="card-header">Ventas</summary>
     </details>
     {/? details.ventas}
     <!-- prettier-ignore -->
     {? details.consigna}
-    <details open hx-patch="/vendedores/ver?id={= vendedor.id}" class="card">
+    <details open hx-patch="/vendedores/ver/{= vendedor.id}" class="card">
       <summary class="card-header">Consigna</summary>
       <p class="card-body">Aquí va la consigna</p>
     </details>
     {: details.consigna}
     <details
-      hx-patch="/vendedores/ver?id={= vendedor.id}&tab=consigna"
+      hx-patch="/vendedores/ver/{= vendedor.id}?tab=consigna"
       class="card"
     >
       <summary class="card-header">Consigna</summary>

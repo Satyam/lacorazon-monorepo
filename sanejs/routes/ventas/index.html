@@ -26,7 +26,7 @@
     );
   });
 
-  server.delete(async (req, res) => await remove(req.query.id));
+  server.delete(async (req, res) => await remove(req.params.id));
 </script>
 
 <title id="title">La Corazón - Ventas</title>

@@ -3,7 +3,7 @@
   const { allSections } = require('~/dist/utils.js');
 
   server.get(async (req, res) => {
-    const { id, nombre } = req.query;
+    const { id } = req.param;
     if (id) {
       const vendedor = await get(id);
       if (vendedor) {
@@ -19,7 +19,7 @@
       } else {
         res.showError(
           'No se encuentra ese vendedor',
-          `El vendedor solicitado [${req.query.id}] no existe o ha sido borrado`,
+          `El vendedor solicitado [${id}] no existe o ha sido borrado`,
           'info'
         );
       }

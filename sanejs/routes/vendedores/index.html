@@ -54,14 +54,14 @@
         <td class="text-center">
           <div class="btn-group btn-group-sm">
             <a
-              href="/vendedores/ver?id={= item.id}&nombre={= item.nombre}"
+              href="/vendedores/ver/{= item.id}"
               class="btn btn-outline-info"
               title="Mostrar detalle"
             >
               <i class="bi bi-eye"></i>
             </a>
             <a
-              href="/vendedores/edit?id={= item.id}&nombre={= item.nombre}"
+              href="/vendedores/edit/{= item.id}"
               class="btn btn-outline-secondary"
               title="Modificar"
             >
@@ -70,7 +70,7 @@
             <button
               class="btn btn-outline-danger"
               title="Borrar"
-              hx-delete="/vendedores?id={= item.id}"
+              hx-delete="/vendedores/{= item.id}"
               hx-confirm="Esta seguro que quiere borrar {= item.nombre}"
             >
               <i class="bi bi-trash"></i>
