@@ -105,77 +105,63 @@ if (process.env.SESSION_SECRET) {
   // Dynamically add all routes found in routes/ dir excluding those prefixed with underscore.
   await loadRoutes(app);
 
-  // If route hasn't been handled yet, serve a plain .html template if present.
-  // app.use((req: Request, res: Response, next: NextFunction) => {
-  //   if (req.method != 'GET') return next();
-  //   if (req.path.indexOf('.') !== -1) return next(); // Don't waste cpu on .css and favicons
-  //   res.render(req.path, {});
-  // });
+  /**
+   * If route hasn't been handled yet, the page does not exist.
+   * Send a 404 error.
+   * This is not an error handler, it doesn't take the error argument,
+   * it is simply at the bottom of the chain.
+   */
 
-  // // Handle simple 404.
-  // app.use((req: Request, res: Response, next: NextFunction) => {
-  //   if (req.url == '/service-worker.js') return next();
-  //   console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
-  //   res.showError<ErrorTemplateVals>({
-  //     header: '404 – Not Found',
-  //     message: `Operación: ${req.method} sobre ${req.url}`,
-  //     color: 'warning',
-  //     title: 'Esta dirección no se encuentra',
-  //   });
-  // });
-  console.log('??????????????????????');
-
-  app.use(function logError(
-    err: any,
-    _req: Request,
-    _res: Response,
-    next: NextFunction
-  ) {
-    console.error(err, err.stack);
-    next(err);
-  });
-  // Handle all other errors.
-  app.use(function logError2(
-    error: any,
-    _req: Request,
-    res: Response,
-    _next: NextFunction // Express recognizes error middleware by accepting 4 arguments
-  ) {
-    console.log('app use error', JSON.stringify(error, null, 2));
-    console.log(
-      `|${process.env.NODE_ENV}|`,
-      process.env.NODE_ENV == 'development'
-    );
-
-    if (error?.errno) {
-      res.showError<ErrorTemplateVals>({
-        header: `Sqlite database error ${error.errno}`,
-        color: 'info',
-        message: error,
-      });
-      return;
-    }
-
-    // Show debug info for dev?
-    if (process.env.NODE_ENV !== 'production') {
-      console.error(error, error.stack);
-    }
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.url == '/service-worker.js') return next();
+    console.error(`404 NOT FOUND: ${req.method} ${req.url}`);
     res.showError<ErrorTemplateVals>({
-      header: '500 – Internal Server Error',
-      message: error.stack,
-      color: 'danger',
-      title: error.toString(),
+      header: '404 – Not Found',
+      message: `Operación: ${req.method} sobre ${req.url}`,
+      color: 'warning',
+      title: 'Esta dirección no se encuentra',
     });
   });
 
-  console.log('end awaiting');
-  // @ts-ignore
-  app._router.stack.forEach(function (r) {
-    // if (r.route) {
-    console.log(r);
-    // }
-  });
-  // Start the server.
+  /**
+   * Customized Express error handler (has 4 arguments)
+   * Detects SQLite errors or just sends a 500 Internal Server error
+   */
+  app.use(
+    (
+      error: any,
+      _req: Request,
+      res: Response,
+      _next: NextFunction // Express recognizes error middleware by accepting 4 arguments
+    ) => {
+      console.log('app use error', JSON.stringify(error, null, 2));
+      console.log(
+        `|${process.env.NODE_ENV}|`,
+        process.env.NODE_ENV !== 'production'
+      );
+
+      if (error?.errno) {
+        res.showError<ErrorTemplateVals>({
+          header: `Sqlite database error ${error.errno}`,
+          color: 'info',
+          message: error,
+        });
+        return;
+      }
+
+      // Show debug info for dev?
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(error, error.stack);
+      }
+      res.showError<ErrorTemplateVals>({
+        header: '500 – Internal Server Error',
+        message: error.stack,
+        color: 'danger',
+        title: error.toString(),
+      });
+    }
+  );
+
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);

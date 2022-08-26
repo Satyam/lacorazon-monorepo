@@ -306,6 +306,9 @@ async function getTemplate(
     template = await buildTemplate(route, isPartial);
     if (template) whichCache[route] = template;
   }
+  if (!template) {
+    console.error(`Template for ${route} [isPartial=${isPartial}] not found`);
+  }
   return template;
 }
 
@@ -344,6 +347,12 @@ async function buildTemplate(
   return template;
 }
 /**
+ * Keeps track of the actual absolute path to templates
+ * and also ensures no duplicate routes
+ */
+const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
+
+/**
  * It will try to load the template at the specified route,
  * expanding the path with the usual extensions (`.html` or `.md`)
  * or looking for an `index` file.
@@ -352,6 +361,13 @@ async function buildTemplate(
  * @returns {Promise<Template | undefined>} The template found or undefined
  */
 async function loadTemplate(route: string): Promise<void | Template> {
+  // First try with well-known routes:
+  try {
+    const path = routes[route];
+    const htmlWithServerBlock = await readFile(path, 'utf-8');
+    const html = htmlWithServerBlock.replace(reServerScript, '');
+    return { html, path };
+  } catch (err) {} // Eat the error and try to figure the route out
   const routePath = join(routesDir, route);
   for (let possiblePathSuffix of ['.html', '.md', 'index.html', 'index.md']) {
     try {
@@ -648,8 +664,6 @@ function relativeRequire(path: string) {
     : path);
 }
 
-const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
-
 /**
  * Scans the `./routes` folder for pages to render.
  * It reads the `<script server>` block of each and
@@ -718,52 +732,4 @@ export async function loadRoutes(app: Application): Promise<void> {
     }
   }
   await continueLoadingRoutes(routesDir);
-  console.log(JSON.stringify(routes, null, 2));
 }
-
-// /**
-//  * Adds an individual route to Application to handle each page.
-//  * Ensures there are no duplicates
-//  * @param {string} route - Route to the page
-//  * @param {Handler} handler - Handler for this route
-//  * @param {string} absPath - Absolute path for this route, to ensure there are no duplicates
-//  * @param {Application} app - Express Application to add the route to.
-//  */
-// function useRoute(
-//   route: string,
-//   handler: Handler,
-//   absPath: string,
-//   app: Application
-// ) {
-//   // Avoid adding duplicate route.
-//   if (routes[route]) {
-//     console.error(`Duplicate routes defined for ${route} in:
-//      - ${routes[route]}
-//      - ${absPath}`);
-//     return;
-//   }
-//   app.use(route, (req, res, next) => {
-//     console.log(
-//       JSON.stringify(
-//         Object.keys(req)
-//           // @ts-ignore
-//           .filter((p) => typeof req[p] === 'string')
-//           // @ts-ignore
-//           .map((p) => `${p}=${req[p]}`),
-//         null,
-//         2
-//       ),
-//       JSON.stringify(req.params, null, 2),
-//       req.path
-//     );
-//     handler(req, res, next);
-//   });
-
-//   routes[route] = absPath;
-//   // Also add special route for index file?
-//   if (route.endsWith('/index')) {
-//     const indexRoute = route.slice(0, -5);
-//     app.use(indexRoute, handler);
-//     routes[route] = absPath;
-//   }
-// }
