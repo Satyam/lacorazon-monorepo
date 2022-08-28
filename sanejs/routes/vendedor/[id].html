@@ -46,6 +46,7 @@
                   v.cantidad ?? 0 * v.precioUnitario ?? 0
                 ),
               })),
+              vendedor: { id },
             },
             'details'
           );
@@ -59,6 +60,7 @@
             details: {
               consigna: true,
             },
+            vendedor: { id },
           },
           'details'
         );
@@ -73,7 +75,7 @@
 <h1 id="heading">Detalle vendedor</h1>
 
 <main id="main">
-  {> vendedores/__form}
+  {> vendedor/__form}
   <div id="details" class="wide">
     {? details.ventas}
     <details open hx-patch="/vendedores/ver/{= vendedor.id}" class="card">
