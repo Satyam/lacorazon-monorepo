@@ -7,7 +7,7 @@ import { statSync, promises } from 'fs';
 const { readdir, readFile, access } = promises;
 import { parse } from 'node-html-parser-hyperscript';
 import { marked } from 'marked';
-import { join, normalize, dirname, extname } from 'path';
+import { join, normalize, dirname } from 'path';
 
 /**
  * Assumes pages are located in the `routes` folder under the current working directory.
@@ -70,7 +70,9 @@ const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
 /**
  * RegExp to filter valid pages (`.html and `.md`)
  */
-const reValidPages = /[\w\-\/. ]+\.(html|md)$/;
+const reValidPages = /\.(html|md)$/;
+
+const rePathToRoute = /\/(?<part>\w+)|\[(?<opt>_?)(?<param>\w+)]|(?<rest>%)/gm;
 /**
  * RegExp to detect server-side scripts and extract its content.
  */
@@ -104,13 +106,6 @@ declare global {
     }
   }
 }
-
-const absPathToRoute = (filePath: string) =>
-  filePath
-    .replace(routesDir, '')
-    .replace(extname(filePath), '')
-    .replace('/;', '/:')
-    .replace(/\/index$/, '');
 
 /**
  * Express middleware to extend the native `Request` and `Response` arguments
@@ -674,7 +669,15 @@ function relativeRequire(path: string) {
 export async function loadRoutes(app: Application): Promise<void> {
   routesDir = app.get('views');
 
-  async function continueLoadingRoutes(thisDir: string) {
+  const absPathToRoute = (filePath: string) =>
+    normalizeRoute(
+      filePath
+        .replace(routesDir, '')
+        .replace(reValidPages, '')
+        .replace(/\/index$/, '')
+    );
+
+  const continueLoadingRoutes = async (thisDir: string) => {
     const files = await readdir(thisDir);
 
     for (const fileName of files) {
@@ -688,8 +691,33 @@ export async function loadRoutes(app: Application): Promise<void> {
         continue;
       }
       // Set the route endpoint for .html or .md files only.
+
       if (!reValidPages.test(absPath)) continue;
-      const route = absPathToRoute(absPath);
+
+      let r1 = [''];
+      for (const match of absPathToRoute(absPath).matchAll(rePathToRoute)) {
+        const g = match.groups as {
+          part?: string;
+          opt?: '_';
+          param?: string;
+          rest?: string;
+        };
+        if (g.part) {
+          r1.push(g.part);
+        } else if (g.param) {
+          r1.push(`:${g.param}${g.opt ? '?' : ''}`);
+        } else if (g.rest) {
+          r1.push('*');
+        } else {
+          console.error(`
+            Path to route failed:  
+            ${absPath},
+            ${g}
+          `);
+        }
+      }
+      const route = r1.join('/') || '/';
+
       if (routes[route]) {
         console.error(`Duplicate routes defined for ${route} in:
          - ${routes[route]} 
@@ -730,6 +758,6 @@ export async function loadRoutes(app: Application): Promise<void> {
         }
       }
     }
-  }
+  };
   await continueLoadingRoutes(routesDir);
 }
