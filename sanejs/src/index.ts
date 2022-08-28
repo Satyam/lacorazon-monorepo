@@ -161,6 +161,12 @@ if (process.env.SESSION_SECRET) {
       });
     }
   );
+  // // @ts-ignore
+  // app._router.stack.forEach(function (r) {
+  //   if (r.route) {
+  //     console.log(r);
+  //   }
+  // });
 
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
