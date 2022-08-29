@@ -13,7 +13,7 @@
       <th>IVA</th>
       <th>Precio Total</th>
       <th class="text-center">
-        <a href="/ventas/edit" class="btn btn-primary" title="Agregar">
+        <a href="/venta/edit" class="btn btn-primary" title="Agregar">
           <i class="bi bi-cart-plus"></i>
         </a>
       </th>
@@ -26,7 +26,7 @@
       <td>{= item.concepto}</td>
       {! hide.idVendedor}
       <td title="Ver detalle del vendedor">
-        <a href="/vendedores/ver/{= item.idVendedor}">{= item.vendedor}</a>
+        <a href="/vendedor/{= item.idVendedor}">{= item.vendedor}</a>
       </td>
       {/! hide.idVendedor}
       <td class="text-end">{= item.cantidad}</td>
@@ -44,14 +44,14 @@
       <td class="text-center">
         <div class="btn-group btn-group-sm">
           <a
-            href="/ventas/ver/{= item.id}"
+            href="/venta/{= item.id}"
             class="btn btn-outline-info"
             title="Mostrar detalle"
           >
             <i class="bi bi-eye"></i>
           </a>
           <a
-            href="/ventas/edit/{= item.id}"
+            href="/venta/edit/{= item.id}"
             class="btn btn-outline-secondary"
             title="Modificar"
           >
