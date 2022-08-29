@@ -12,16 +12,15 @@
           {
             currentUser: req.session.currentUser,
             vendedor,
-            action: '/vendedores/edit',
           },
           allSections
         );
       } else {
-        res.showError(
-          'No se encuentra ese vendedor',
-          `El vendedor solicitado [${id}] no existe o ha sido borrado`,
-          'info'
-        );
+        res.showError({
+          header: 'No se encuentra ese vendedor',
+          message: `El vendedor solicitado [${id}] no existe o ha sido borrado`,
+          color: 'info',
+        });
       }
     } else {
       const vendedor = { nombre: '', email: '' };
@@ -30,7 +29,6 @@
         {
           currentUser: req.session.currentUser,
           vendedor,
-          action: '/vendedores/edit',
         },
         allSections
       );

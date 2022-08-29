@@ -20,11 +20,11 @@
         allSections
       );
     } else {
-      res.showError( 
-        'No se encuentra esa venta', 
-        `La venta solicitada [${req.params.id}] no existe o ha sido borrada`,
-        'info'
-      );
+      res.showError( {
+        header: 'No se encuentra esa venta', 
+        message: `La venta solicitada [${req.params.id}] no existe o ha sido borrada`,
+        color: 'info'
+      });
     }
   });
 </script>

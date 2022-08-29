@@ -12,8 +12,10 @@
 
   server.get( async (req, res) => {
     const { id } = req.params;
+    console.log('GET: venta/edit', id, req.params)
     const vendedores = await list();
     if (id) {
+      console.log('render por si', id)
       const venta = await get(id);
       if (venta) {
         res.render(
@@ -22,18 +24,29 @@
             currentUser: req.session.currentUser,
             venta: formatVenta(venta),
             vendedores,
-            action: '/ventas/edit',
           },
           allSections
         );
       } else{
-        res.showError( 
-          'No se encuentra esa venta', 
-          `La venta solicitada [${id}] no existe o ha sido borrada`,
-          'info'
-        );
+        res.showError( {
+        header: 'No se encuentra esa venta', 
+        message: `La venta solicitada [${id}] no existe o ha sido borrada`,
+        color: 'info'
+      });
       }
     } else {
+      console.log('sale por no:',{
+          currentUser: req.session.currentUser,
+          venta: formatVenta({
+            fecha: new Date(),
+            concepto: '',
+            cantidad: 1,
+            precioUnitario: 10,
+            iva: false,
+
+          }),
+          vendedores,
+        })
       res.render(
         self,
         {
@@ -47,7 +60,6 @@
 
           }),
           vendedores,
-          action: '/ventas/edit',
         },
         allSections
       );
@@ -85,7 +97,6 @@
 <main id="main">
   <form
     novalidate
-    action="{= action}"
     method="post"
   >
     <input type="hidden" name="id" value="{= venta.id}" />
