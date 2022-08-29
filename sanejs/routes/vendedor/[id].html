@@ -28,6 +28,10 @@
   server.patch(async (req, res) => {
     const { id } = req.params;
     const { tab } = req.query;
+    const commonParams = {
+      currentUser: req.session.currentUser,
+      vendedor: { id },
+    };
     switch (tab) {
       case 'ventas':
         {
@@ -35,7 +39,7 @@
           res.render(
             self,
             {
-              currentUser: req.session.currentUser,
+              ...commonParams,
               details: { ventas: true },
               hide: { idVendedor: true },
               ventas: (ventas ?? []).map((v) => ({
@@ -46,7 +50,6 @@
                   v.cantidad ?? 0 * v.precioUnitario ?? 0
                 ),
               })),
-              vendedor: { id },
             },
             'details'
           );
@@ -56,17 +59,15 @@
         res.render(
           self,
           {
-            currentUser: req.session.currentUser,
             details: {
               consigna: true,
             },
-            vendedor: { id },
           },
           'details'
         );
         break;
       default:
-        res.render(self, { currentUser: req.session.currentUser }, 'details');
+        res.render(self, commonParams, 'details');
     }
   });
 </script>
@@ -78,27 +79,24 @@
   {> vendedor/__form}
   <div id="details" class="wide">
     {? details.ventas}
-    <details open hx-patch="/vendedores/ver/{= vendedor.id}" class="card">
+    <details open hx-patch="/vendedor/{= vendedor.id}" class="card">
       <summary class="card-header">Ventas</summary>
     </details>
     {> ventas/__table}
     <!-- prettier-ignore -->
     {: details.ventas}
-    <details hx-patch="/vendedores/ver/{= vendedor.id}?tab=ventas" class="card">
+    <details hx-patch="/vendedor/{= vendedor.id}?tab=ventas" class="card">
       <summary class="card-header">Ventas</summary>
     </details>
     {/? details.ventas}
     <!-- prettier-ignore -->
     {? details.consigna}
-    <details open hx-patch="/vendedores/ver/{= vendedor.id}" class="card">
+    <details open hx-patch="/vendedor/{= vendedor.id}" class="card">
       <summary class="card-header">Consigna</summary>
       <p class="card-body">Aquí va la consigna</p>
     </details>
     {: details.consigna}
-    <details
-      hx-patch="/vendedores/ver/{= vendedor.id}?tab=consigna"
-      class="card"
-    >
+    <details hx-patch="/vendedor/{= vendedor.id}?tab=consigna" class="card">
       <summary class="card-header">Consigna</summary>
     </details>
     {/? details.consigna}
