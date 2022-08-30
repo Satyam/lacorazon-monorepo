@@ -72,7 +72,8 @@ const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
  */
 const reValidPages = /\.(html|md)$/;
 
-const rePathToRoute = /\/(?<part>\w+)|\[(?<opt>_?)(?<param>\w+)]|(?<rest>%)/gm;
+const rePathToRoute =
+  /\/(?<part>[\w-]+)|\[(?<opt>_?)(?<param>\w+)]|(?<rest>%)/gm;
 /**
  * RegExp to detect server-side scripts and extract its content.
  */
@@ -725,39 +726,49 @@ export async function loadRoutes(app: Application): Promise<void> {
         continue;
       }
       routes[route] = absPath;
-
-      // Read the file and look for <script server>
-      const template = await readFile(absPath, 'utf-8');
-      const matchScript = template.match(reServerScript);
-      let serverBlock = matchScript && matchScript[1] + '\nreturn server';
-      if (serverBlock) {
-        /**
-         * Route handler created from the server-block in the page.
-         * @param {Router} server - Express router to attach more specific handlers to.
-         * @param {funcion} require - Customized version of `require`, @see relativeRequire
-         * @param {string} self - Route for this page
-         */
-        // Parse the serverBlock, passing in refs to
-        // * Express router `server`,
-        // * Node `require`, and `self` route reference.
-
-        try {
-          const routeHandler = new Function(
-            'server',
-            'require',
-            'self',
-            serverBlock
-          );
-          routeHandler(app.route(route), relativeRequire, route);
-        } catch (err) {
-          console.error(
-            `Unable to parse server block in: ${absPath}\n\n${
-              (err as Error).stack
-            }`
-          );
-        }
-      }
     }
   };
   await continueLoadingRoutes(routesDir);
+  const reSlashes = /[^\/]/g;
+  const rs = Object.keys(routes).sort((a, b) => {
+    const a1 = a.replaceAll(reSlashes, '');
+    const b1: string = b.replaceAll(reSlashes, '');
+    return b1.length - a1.length || b.length - a.length;
+  });
+
+  for (const route of rs) {
+    const absPath = routes[route];
+
+    // Read the file and look for <script server>
+    const template = await readFile(absPath, 'utf-8');
+    const matchScript = template.match(reServerScript);
+    let serverBlock = matchScript && matchScript[1] + '\nreturn server';
+    if (serverBlock) {
+      /**
+       * Route handler created from the server-block in the page.
+       * @param {Router} server - Express router to attach more specific handlers to.
+       * @param {funcion} require - Customized version of `require`, @see relativeRequire
+       * @param {string} self - Route for this page
+       */
+      // Parse the serverBlock, passing in refs to
+      // * Express router `server`,
+      // * Node `require`, and `self` route reference.
+
+      try {
+        const routeHandler = new Function(
+          'server',
+          'require',
+          'self',
+          serverBlock
+        );
+        routeHandler(app.route(route), relativeRequire, route);
+      } catch (err) {
+        console.error(
+          `Unable to parse server block in: ${absPath}\n\n${
+            (err as Error).stack
+          }`
+        );
+      }
+    }
+  }
 }
