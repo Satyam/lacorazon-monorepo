@@ -12,10 +12,8 @@
 
   server.get( async (req, res) => {
     const { id } = req.params;
-    console.log('GET: venta/edit', id, req.params)
     const vendedores = await list();
     if (id) {
-      console.log('render por si', id)
       const venta = await get(id);
       if (venta) {
         res.render(
@@ -35,18 +33,6 @@
       });
       }
     } else {
-      console.log('sale por no:',{
-          currentUser: req.session.currentUser,
-          venta: formatVenta({
-            fecha: new Date(),
-            concepto: '',
-            cantidad: 1,
-            precioUnitario: 10,
-            iva: false,
-
-          }),
-          vendedores,
-        })
       res.render(
         self,
         {
