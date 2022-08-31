@@ -13,7 +13,7 @@ import { join, normalize, dirname } from 'path';
  * Assumes pages are located in the `routes` folder under the current working directory.
  * It is reset when `loadRoutes` is called.
  */
-let routesDir = join(process.cwd(), 'routes');
+let routesDir: string;
 
 /**
  * HTML string representing the page.
@@ -661,74 +661,90 @@ function relativeRequire(path: string) {
 }
 
 /**
- * Scans the `./routes` folder for pages to render.
- * It reads the `<script server>` block of each and
- * adds a route to the express Application (`app.use()`)
- * for the scripts on that page to handle it.
- * @param {express.Application} app - Express Application object to add the handlers to.
+ * Turns an absolute file path to a relative URL
+ * @param {string} filePath Absolute file path to turn into an relative URL
+ * @returns {string} relative URL
  */
-export async function loadRoutes(app: Application): Promise<void> {
-  routesDir = app.get('views');
+const absPathToRoute = (filePath: string) =>
+  normalizeRoute(
+    filePath
+      // Turns the path relative to `routesDir`
+      .replace(routesDir, '')
+      // strips off the valid extensions
+      .replace(reValidPages, '')
+      // strips off the default `index` page
+      .replace(/\/index$/, '')
+  );
 
-  const absPathToRoute = (filePath: string) =>
-    normalizeRoute(
-      filePath
-        .replace(routesDir, '')
-        .replace(reValidPages, '')
-        .replace(/\/index$/, '')
-    );
+/**
+ * Scans a folder recursively searching for valid
+ * `.md` or `.html` files
+ * converting the file paths into valid Express
+ * routes and assembling them into the `routes` object.
+ * @param {string} thisDir Absolute path to the folder to be scanned
+ */
+const loadRoutesFromFolder = async (thisDir: string) => {
+  const files = await readdir(thisDir);
 
-  const continueLoadingRoutes = async (thisDir: string) => {
-    const files = await readdir(thisDir);
+  for (const fileName of files) {
+    // Ignore files starting with a double underscore.
+    if (fileName.startsWith('__')) continue;
+    // Set the full abs path to file.
+    const absPath = join(thisDir, fileName);
+    // Recurse into directories for nested routes.
+    if (statSync(absPath).isDirectory()) {
+      await loadRoutesFromFolder(absPath);
+      continue;
+    }
+    // Set the route endpoint for .html or .md files only.
 
-    for (const fileName of files) {
-      // Ignore files starting with a double underscore.
-      if (fileName.startsWith('__')) continue;
-      // Set the full abs path to file.
-      const absPath = join(thisDir, fileName);
-      // Recurse into directories for nested routes.
-      if (statSync(absPath).isDirectory()) {
-        await continueLoadingRoutes(absPath);
-        continue;
-      }
-      // Set the route endpoint for .html or .md files only.
+    if (!reValidPages.test(absPath)) continue;
 
-      if (!reValidPages.test(absPath)) continue;
-
-      let r1 = [''];
-      for (const match of absPathToRoute(absPath).matchAll(rePathToRoute)) {
-        const g = match.groups as {
-          part?: string;
-          opt?: '_';
-          param?: string;
-          rest?: string;
-        };
-        if (g.part) {
-          r1.push(g.part);
-        } else if (g.param) {
-          r1.push(`:${g.param}${g.opt ? '?' : ''}`);
-        } else if (g.rest) {
-          r1.push('*');
-        } else {
-          console.error(`
+    let r1 = [''];
+    for (const match of absPathToRoute(absPath).matchAll(rePathToRoute)) {
+      const g = match.groups as {
+        part?: string;
+        opt?: '_';
+        param?: string;
+        rest?: string;
+      };
+      if (g.part) {
+        r1.push(g.part);
+      } else if (g.param) {
+        r1.push(`:${g.param}${g.opt ? '?' : ''}`);
+      } else if (g.rest) {
+        r1.push('*');
+      } else {
+        console.error(`
             Path to route failed:  
             ${absPath},
             ${g}
           `);
-        }
       }
-      const route = r1.join('/') || '/';
+    }
+    const route = r1.join('/') || '/';
 
-      if (routes[route]) {
-        console.error(`Duplicate routes defined for ${route} in:
+    if (routes[route]) {
+      console.error(`Duplicate routes defined for ${route} in:
          - ${routes[route]} 
          - ${absPath}`);
-        continue;
-      }
-      routes[route] = absPath;
+      continue;
     }
-  };
-  await continueLoadingRoutes(routesDir);
+    routes[route] = absPath;
+  }
+};
+
+/**
+ * Reads the `routes` object with all the paths scanned
+ * by `loadRoutesFromFolder` and reads the content of the
+ * `<script server>` section on each page
+ * and adds it as an Express handler.
+ * It sorts the routes to give priority to the most specific routes.
+ * It assumes the routes with more slashes are more specific.
+ * That being equal, the longest wins.
+ * @param {Application} app Express application instance
+ */
+const addHandlersToPaths = async (app: Application) => {
   const reSlashes = /[^\/]/g;
   const rs = Object.keys(routes).sort((a, b) => {
     const a1 = a.replaceAll(reSlashes, '');
@@ -771,4 +787,20 @@ export async function loadRoutes(app: Application): Promise<void> {
       }
     }
   }
+};
+
+/**
+ * Scans the folder set in `app.get('views')` defaulting
+ * to `./routes` folder for pages to render.
+ * It reads the `<script server>` block of each and
+ * adds a route to the express Application (`app.use()`)
+ * for the scripts on that page to handle it.
+ * @param {express.Application} app - Express Application object to add the handlers to.
+ */
+export async function loadRoutes(app: Application): Promise<void> {
+  routesDir = app.get('views') ?? join(process.cwd(), 'routes');
+
+  await loadRoutesFromFolder(routesDir);
+
+  await addHandlersToPaths(app);
 }
