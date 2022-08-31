@@ -29,56 +29,6 @@ let routesDir: string;
  */
 type Template = { html: string; path: string; fm?: Record<string, any> };
 
-/**
- * RegExp to detect the `{ nolayout }` template tag
- */
-const reNoLayout = /(?<!\\){[ \t]*nolayout[ \t]*}/;
-/**
- * RegExp to parse the path out of a  `{^ path/from/routes }` template tag to extend a page with
- * a layout besides the implicit `__layout`
- */
-const reExtendsTag = /(?<!\\){[ \t]*\^[ \t]*([\w\-\/]+)[ \t]*}/;
-/**
- * RegExp to detect the `{slot}` template tag in layouts
- */
-const reSlotTag = /(?<!\\){[ \t]*slot[ \t]*}/;
-/**
- * RegExp to parse the path out of a `{> path/from/routes }` include partial tag.
- */
-const rePartialTag = /(?<!\\){[ \t]*>[ \t]*([\w\-\/\.]+)[ \t]*}/g;
-/**
- * Regexp to extract the FrontMatter block out of the header
- */
-const reFrontMatterBlock = /^[\n]*---[ \t]*\n([\s\S]*?)\n---[ \t]*\n/;
-/**
- * RegExp to extract all lines from the FrontMatter block
- */
-const reFrontMatterLines = /^\$?[a-zA-Z_][\w]*[ \t]*:(?:[\S]| |\t|\n  )+/gm;
-/**
- * RegExp to parse name and value from individual FrontMatter lines
- */
-const reFrontMatterKeyVal = /^\$?([a-zA-Z_][\w]*)[ \t]*:[ \t]*([\s\S]+)/;
-/**
- * RegExp to parse block template tags `{@ }`, `{! }` and `{? }` and their content and alternate content, if any
- */
-const reTjsBlock =
-  /(?<!\\)\{[ \t]*(([@!?]?)[ \t]*(.+?))[ \t]*\}(([\s\S]+?)(\{[ \t]*:[ \t]*\3[ \t]*\}([\s\S]+?))?)\{[ \t]*\/\1[ \t]*\}/g;
-/**
- * RegExp to parse variable include tags `{= }` and `{% }`
- */
-const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
-/**
- * RegExp to filter valid pages (`.html and `.md`)
- */
-const reValidPages = /\.(html|md)$/;
-
-const rePathToRoute =
-  /\/(?<part>[\w-]+)|\[(?<opt>_?)(?<param>\w+)]|(?<rest>%)/gm;
-/**
- * RegExp to detect server-side scripts and extract its content.
- */
-const reServerScript = /<script\s+server\s*>([\s\S]+?)<\/script\s*>/m;
-
 declare global {
   namespace Express {
     interface Request {
@@ -349,6 +299,11 @@ async function buildTemplate(
 const routes: Record<string, string> = {}; // Keep track so we can check for duplicates.
 
 /**
+ * RegExp to detect server-side scripts and extract its content.
+ */
+const reServerScript = /<script\s+server\s*>([\s\S]+?)<\/script\s*>/m;
+
+/**
  * It will try to load the template at the specified route,
  * expanding the path with the usual extensions (`.html` or `.md`)
  * or looking for an `index` file.
@@ -375,6 +330,21 @@ async function loadTemplate(route: string): Promise<void | Template> {
   }
   return undefined;
 }
+
+/**
+ * Regexp to extract the FrontMatter block out of the header
+ */
+const reFrontMatterBlock = /^[\n]*---[ \t]*\n([\s\S]*?)\n---[ \t]*\n/;
+
+/**
+ * RegExp to extract all lines from the FrontMatter block
+ */
+const reFrontMatterLines = /^\$?[a-zA-Z_][\w]*[ \t]*:(?:[\S]| |\t|\n  )+/gm;
+
+/**
+ * RegExp to parse name and value from individual FrontMatter lines
+ */
+const reFrontMatterKeyVal = /^\$?([a-zA-Z_][\w]*)[ \t]*:[ \t]*([\s\S]+)/;
 
 /**
  * Reads the FrontMatter information at the top of the template
@@ -424,6 +394,11 @@ function processMarkdown(template: Template): void {
 }
 
 /**
+ * RegExp to parse the path out of a  `{^ path/from/routes }` template tag to extend a page with
+ * a layout besides the implicit `__layout`
+ */
+const reExtendsTag = /(?<!\\){[ \t]*\^[ \t]*([\w\-\/]+)[ \t]*}/;
+/**
  * Recursively looks for tags like {^ some-template }
  * and inserts the given template into the `{slot}`
  * in the extension.
@@ -446,6 +421,10 @@ async function processExtends(template: Template): Promise<void> {
 }
 
 /**
+ * RegExp to detect the `{slot}` template tag in layouts
+ */
+const reSlotTag = /(?<!\\){[ \t]*slot[ \t]*}/;
+/**
  * Wrapes the current template into the `{slot}` of the
  * template located at `wrapperRoute`.
  * It merges the FrontMatter variables of the wrapper
@@ -467,6 +446,10 @@ async function wrapIntoSlot(
   template.html = `${wrapperHtmlParts[0]}${template.html}${wrapperHtmlParts[1]}`;
 }
 
+/**
+ * RegExp to detect the `{ nolayout }` template tag
+ */
+const reNoLayout = /(?<!\\){[ \t]*nolayout[ \t]*}/;
 /**
  * Unless the template has a `{nolayout}` tag,
  * it will try to locate the closest `_layout.html` file
@@ -506,6 +489,10 @@ async function findLayoutRoute(path: string): Promise<false | string> {
 }
 
 /**
+ * RegExp to parse the path out of a `{> path/from/routes }` include partial tag.
+ */
+const rePartialTag = /(?<!\\){[ \t]*>[ \t]*([\w\-\/\.]+)[ \t]*}/g;
+/**
  * Processes the partials included on a template.
  * It will merge the FrontMatter values in the partial
  * and will converted to HTML if it is in Markdown.
@@ -522,6 +509,17 @@ async function processPartials(template: Template): Promise<void> {
     template.html = template.html.replace(tag, partialTemplate.html);
   }
 }
+
+/**
+ * RegExp to parse block template tags `{@ }`, `{! }` and `{? }` and their content and alternate content, if any
+ */
+const reTjsBlock =
+  /(?<!\\)\{[ \t]*(([@!?]?)[ \t]*(.+?))[ \t]*\}(([\s\S]+?)(\{[ \t]*:[ \t]*\3[ \t]*\}([\s\S]+?))?)\{[ \t]*\/\1[ \t]*\}/g;
+
+/**
+ * RegExp to parse variable include tags `{= }` and `{% }`
+ */
+const reTjsVal = /(?<!\\)\{[ \t]*([=%])[ \t]*(.+?)[ \t]*\}/g;
 
 /**
  * Interpolates the variables into the html part of a template
@@ -661,6 +659,11 @@ function relativeRequire(path: string) {
 }
 
 /**
+ * RegExp to filter valid pages (`.html and `.md`)
+ */
+const reValidPages = /\.(html|md)$/;
+
+/**
  * Turns an absolute file path to a relative URL
  * @param {string} filePath Absolute file path to turn into an relative URL
  * @returns {string} relative URL
@@ -675,6 +678,17 @@ const absPathToRoute = (filePath: string) =>
       // strips off the default `index` page
       .replace(/\/index$/, '')
   );
+
+/**
+ * Regexp to parse the three possible file path patterns:
+ * - Simple file/folder names, id: `/folder`
+ * - Parts enclosed in square brakets representing parameters, ie: `/[param]`
+ *   possibly optional if preceeded by an underscore: `/[_optionalParam]`
+ * - Catch all parameters, to pick whatever is left: `/%`
+ * All characters with special meaning are valid in all OSs.
+ */
+const rePathToRoute =
+  /\/(?<part>[\w-]+)|\[(?<opt>_?)(?<param>\w+)]|(?<rest>%)/gm;
 
 /**
  * Scans a folder recursively searching for valid
@@ -735,6 +749,11 @@ const loadRoutesFromFolder = async (thisDir: string) => {
 };
 
 /**
+ * Finds occurrences of slashes in a filename.
+ */
+const reSlashes = /\//g;
+
+/**
  * Reads the `routes` object with all the paths scanned
  * by `loadRoutesFromFolder` and reads the content of the
  * `<script server>` section on each page
@@ -745,11 +764,10 @@ const loadRoutesFromFolder = async (thisDir: string) => {
  * @param {Application} app Express application instance
  */
 const addHandlersToPaths = async (app: Application) => {
-  const reSlashes = /[^\/]/g;
   const rs = Object.keys(routes).sort((a, b) => {
-    const a1 = a.replaceAll(reSlashes, '');
-    const b1: string = b.replaceAll(reSlashes, '');
-    return b1.length - a1.length || b.length - a.length;
+    const aSlashes = (a.match(reSlashes) ?? []).length;
+    const bSlashes = (b.match(reSlashes) ?? []).length;
+    return bSlashes - aSlashes || b.length - a.length;
   });
 
   for (const route of rs) {
