@@ -16,7 +16,7 @@ import type { DbFunctions } from './utils';
 const hash = (data: string): string => {
   const hmac = createHmac(
     'sha256',
-    process.env.SESSION_PASSWORD || 'alguna tontera'
+    process.env.DATABASE_PASSWORD || 'alguna tontera'
   );
   hmac.update(data);
   return hmac.digest('hex');

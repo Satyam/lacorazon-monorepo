@@ -7,7 +7,7 @@ declare global {
       SESSION_COOKIE: string;
       JWT_SECRET: string;
       SESSION_DURATION: string;
-      SESSION_PASSWORD: string;
+      DATABASE_PASSWORD: string;
       [key: string]: string | undefined;
     }
   }

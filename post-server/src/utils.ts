@@ -19,7 +19,7 @@ export function getDb() {
   return (
     _db ??
     (_db = open({
-      filename: 'data/db.sqlite',
+      filename: process.env.DATABASE || ':memory:',
       driver: sqlite3.Database,
     }))
   );

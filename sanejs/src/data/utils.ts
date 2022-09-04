@@ -3,7 +3,6 @@
 const cuid = require('cuid');
 const { open } = require('sqlite');
 const sqlite3 = require('sqlite3');
-const { join } = require('path');
 import type { Database, ISqlite } from 'sqlite';
 export type DbFunctions<Data, Opts = unknown> = {
   list: (options: Opts) => Promise<Data>;
@@ -18,7 +17,7 @@ let _db: Promise<Database>;
 const getDb = () =>
   _db ??
   (_db = open({
-    filename: join(process.cwd(), 'data/db.sqlite'),
+    filename: process.env.DATABASE || ':memory:',
     driver: sqlite3.Database,
   }));
 
