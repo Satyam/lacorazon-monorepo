@@ -22,7 +22,8 @@
     "mongo-server",
     "react-client-swr",
     "lit-react-integration",
-    "sanejs"
+    "sanejs",
+    "post-middleware"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
@@ -33,6 +34,7 @@
     "build:react": "npm run build -w react-client",
     "build:swr": "npm run build -w react-client-swr",
     "build:sane": "npm run build -w sanejs",
+    "build:postmw": "npm run build -w post-middleware",
     "buildAll": "npm run build --workspaces --if-present",
     "w:vainilla": "npm run watch -w vainilla-client",
     "w:lit": "npm run watch -w lit-client",
