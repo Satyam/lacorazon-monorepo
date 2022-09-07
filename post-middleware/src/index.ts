@@ -1,42 +1,55 @@
 import { Request, Response, NextFunction } from 'express';
 
+type ID = string | number;
+type VALUE = string | number | boolean | Date;
+type AnyRow = Record<string, VALUE>;
+
 export type ApiReply<Data> = Promise<
   { data: Data } | { error: number; data: string }
 >;
 
-type Options = Record<string, number | string | boolean>;
+type DefaultId = ID | undefined;
+type DefaultIn = AnyRow | undefined;
+type DefaultOut = AnyRow[] | (AnyRow | undefined);
+type DefaultOpts = Options | undefined;
+type Options = AnyRow;
 
-export type RequestParams<Id = number | string, In = void, Ops = Options> = {
+export type RequestParams<
+  Id extends DefaultId,
+  In extends DefaultIn,
+  Opts = DefaultOpts
+> = {
   id: Id;
   data: In;
-  options?: Ops;
+  options?: Opts;
 };
 
-export type ApiRequest<Id = number | string, In = void, Ops = Options> = {
+export type ApiRequest<
+  Id extends DefaultId = undefined,
+  In extends DefaultIn = undefined,
+  Opts extends DefaultOpts = undefined
+> = {
   service: string;
   op: string;
-} & RequestParams<Id, In, Ops>;
+} & RequestParams<Id, In, Opts>;
 
-export type CurrentUser = { id: string; name: string };
+export type CurrentUser = { id: ID; nombre: string };
 
 export type Handler<
-  Id = number | string,
-  In = void,
-  Out = null,
-  Ops = Options
+  Id extends DefaultId,
+  In extends DefaultIn,
+  Out extends DefaultOut,
+  Opts extends DefaultOpts = undefined
 > = (
-  params: RequestParams<Id, In, Ops>,
+  params: RequestParams<Id, In, Opts>,
   currentUser: CurrentUser
-) => Promise<Out | null>;
-export type Handlers = Record<string, Handler>;
+) => Promise<Out>;
+
+export type Handlers = Record<string, Handler<any, any, any, any>>;
 
 declare global {
   namespace Express {
-    interface Response {
-      reply<Data>(data: Promise<Data | undefined>): void;
-    }
     interface Request {
-      request: ApiRequest;
       currentUser: CurrentUser;
     }
   }
@@ -52,26 +65,30 @@ export const postMiddleware =
       res: Response
     ) => Promise<CurrentUser | undefined>
   ) =>
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
-      const body = JSON.parse(req.body) as ApiRequest;
-      req.body = body;
+      console.log({ handlers, body: req.body });
+      const body = req.body as ApiRequest;
+      console.log({ body });
 
-      checkSession(req, res).then((user) => {
-        if (user) req.currentUser = user;
-        else {
-          res.json({
-            error: UNAUTHORIZED,
-            data: 'Unauthorized',
-          });
-          return;
-        }
-      });
+      const user = await checkSession(req, res);
+      if (user) req.currentUser = user;
+      else {
+        res.json({
+          error: UNAUTHORIZED,
+          data: 'Unauthorized',
+        });
+        return;
+      }
+
+      console.log({ user });
       const { service, op } = body;
+      console.log({ service, op });
       const handler = handlers[op];
       if (handler) {
         try {
-          res.json(handler(body, req.currentUser));
+          const reply = await handler(body, req.currentUser);
+          res.json(reply);
         } catch (err) {
           res.json({
             // @ts-ignore
@@ -86,6 +103,7 @@ export const postMiddleware =
         });
       }
     } catch (err) {
+      console.log('catch json stringify', err);
       res.json({
         error: INVALID_OP,
         data: `Request: ${JSON.stringify(req.body, null, 2)} cannot be decoded`,
