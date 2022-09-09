@@ -23,7 +23,8 @@
     "react-client-swr",
     "lit-react-integration",
     "sanejs",
-    "post-middleware"
+    "post-middleware",
+    "rest-server"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
