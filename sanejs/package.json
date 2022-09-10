@@ -6,7 +6,8 @@
   "scripts": {
     "prestart": "tsc",
     "start": "node dist/index.js",
-    "nodemon": "nodemon -w .env -w ./src -w ./routes -e env,ts,html",
+    "watch1": "fuser -k 3000/tcp ; tsc  && node dist/index.js 2>/dev/null",
+    "watch": "chokidar ./src/**/*.ts --initial -c \"npm run watch1 \"",
     "build": "tsc",
     "test": "node --inspect-brk dist/index.js"
   },
@@ -25,7 +26,6 @@
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^2.6.7",
     "node-html-parser-hyperscript": "^5.4.3",
-    "nodemon": "^2.0.15",
     "sqlite": "^4.0.23",
     "sqlite3": "^5.0.3"
   },
