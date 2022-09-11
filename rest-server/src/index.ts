@@ -19,6 +19,15 @@ import {
   deleteVendedor,
 } from './vendedores.js';
 
+import {
+  checkValidUser,
+  listUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+} from './users.js';
+
 const app = express();
 const port = 3000;
 
@@ -72,9 +81,36 @@ vendedores.delete('/:id'),
     res.json(await deleteVendedor(db, req.params.id));
   };
 
+const users = express.Router();
+
+users.get('/', async (_req: Request, res: Response) =>
+  res.json(await listUsers(db))
+);
+users.get('/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  res.json(await getUser(db, id));
+});
+
+users.post('/check', async (req: Request, res: Response) => {
+  res.json(await checkValidUser(db, req.body));
+});
+users.post('/', async (req: Request, res: Response) => {
+  res.json(await createUser(db, req.body));
+});
+
+users.put('/:id', async (req: Request, res: Response) => {
+  res.json(await updateUser(db, req.params.id, req.body));
+});
+
+users.delete('/:id'),
+  async (req: Request, res: Response) => {
+    res.json(await deleteUser(db, req.params.id));
+  };
+
 const router = express.Router();
 router.use('/ventas', ventas);
 router.use('/vendedores', vendedores);
+router.use('/users', users);
 
 app.use('/api', express.json(), router);
 
