@@ -5,7 +5,7 @@
   "type": "module",
   "module": "dist/index.js",
   "scripts": {
-    "watch1": "fuser -k 3000/tcp ; tsc  && node dist/index.js 2>/dev/null",
+    "watch1": "fuser -k 3000/tcp ; tsc  && node dist/index.js",
     "watch": "chokidar ./src/**/*.ts --initial -c \"npm run watch1 \"",
     "start": "node dist/index.js",
     "build": "tsc",

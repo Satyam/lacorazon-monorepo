@@ -6,8 +6,8 @@
   "scripts": {
     "prestart": "tsc",
     "start": "node dist/index.js",
-    "watch1": "fuser -k 3000/tcp ; tsc  && node dist/index.js 2>/dev/null",
-    "watch": "chokidar ./src/**/*.ts --initial -c \"npm run watch1 \"",
+    "watch1": "fuser -k 3000/tcp ; tsc  && node dist/index.js",
+    "watch": "chokidar ./src/**/*.ts ./routes/**/*.html --initial -c \"npm run watch1 \"",
     "build": "tsc",
     "test": "node --inspect-brk dist/index.js"
   },
