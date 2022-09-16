@@ -24,7 +24,8 @@
     "lit-react-integration",
     "sanejs",
     "post-middleware",
-    "rest-server"
+    "rest-server",
+    "rest-client"
   ],
   "scripts": {
     "build:vainilla": "npm run build -w vainilla-client",
