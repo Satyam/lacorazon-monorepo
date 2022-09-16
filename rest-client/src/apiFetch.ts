@@ -1,3 +1,8 @@
+export const apiFetch = <Out>(serviceUrl: string, options?: RequestInit) =>
+  fetch(`/api/${serviceUrl}`, options)
+    .then((response) => response.json())
+    .then((data) => data as Out);
+
 export const apiList = <Out>(service: string, idVendedor?: ID): Promise<Out> =>
   fetch(`/api/${service}`, {
     body: { idVendedor } as unknown as BodyInit,
@@ -37,3 +42,5 @@ export const apiDelete = (service: string, id: ID): Promise<undefined> =>
   fetch(`/api/${service}/${id}`, {
     method: 'DELETE',
   }).then(() => undefined);
+
+export default apiFetch;
