@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotEnv from 'dotenv';
 import { initDb } from './utils.js';
 
+import { login, logout, initAuth, checkAuthenticated } from './auth';
 import {
   listVentas,
   getVenta,
@@ -36,6 +37,14 @@ dotEnv.config();
 const db = await initDb(process.env.DATABASE);
 
 app.use(cookieParser());
+
+initAuth(app, db);
+
+const auth = express.Router();
+
+auth.get('/login', login);
+auth.get('/logout', logout);
+auth.get('/isLoggedIn', checkAuthenticated);
 
 const ventas = express.Router();
 ventas.get('/', async (_req: Request, res: Response) =>
@@ -108,6 +117,7 @@ users.delete('/:id'),
   };
 
 const router = express.Router();
+router.use('/auth', auth);
 router.use('/ventas', ventas);
 router.use('/vendedores', vendedores);
 router.use('/users', users);

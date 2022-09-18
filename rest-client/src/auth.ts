@@ -6,24 +6,11 @@ export type LoginInfo = Pick<User, 'email' | 'password'>;
 
 export const AUTH_SERVICE = 'auth';
 
-export const apiLogin = (data: LoginInfo, options?: OptionsType) =>
-  apiFetch<undefined, LoginInfo, CurrentUser>({
-    service: AUTH_SERVICE,
-    op: 'login',
-    data,
-    options,
-  });
+export const apiLogin = (loginInfo: LoginInfo) =>
+  apiFetch<User>(`/api/${AUTH_SERVICE}/login`, { body: loginInfo as BodyInit });
 
-export const apiLogout = (options?: OptionsType) =>
-  apiFetch<undefined, undefined, null>({
-    service: AUTH_SERVICE,
-    op: 'logout',
-    options,
-  });
+export const apiLogout = () =>
+  apiFetch<undefined>(`/api/${AUTH_SERVICE}/logout`);
 
-export const apiIsLoggedIn = (options?: OptionsType) =>
-  apiFetch<undefined, undefined, CurrentUser>({
-    service: AUTH_SERVICE,
-    op: 'isLoggedIn',
-    options,
-  });
+export const apiIsLoggedIn = () =>
+  apiFetch<boolean>(`/api/${AUTH_SERVICE}/isLoggedInlogin`);

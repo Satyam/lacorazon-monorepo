@@ -1,18 +1,8 @@
 import { Database } from 'sqlite';
 import { deleteById, TABLE_USERS } from './utils.js';
+import { hashPassword } from './auth.js';
 
-import { createHmac } from 'crypto';
 import cuid from 'cuid';
-
-function hashPassword(password?: string) {
-  if (!password) return password;
-  const hmac = createHmac(
-    'sha256',
-    process.env.DATABASE_PASSWORD || 'alguna tontera'
-  );
-  hmac.update(password.toLowerCase());
-  return hmac.digest('hex');
-}
 
 const hashPasswordInRow = (data: Partial<User>) =>
   data.password
