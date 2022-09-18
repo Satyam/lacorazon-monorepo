@@ -5,16 +5,16 @@ import {
   createWithCuid,
   updateById,
   deleteById,
-  TABLE_VENTAS,
+  TABLE_VENDEDORES,
 } from './utils.js';
 
 export const listVendedores = (db: Database) =>
-  listAll<Vendedor[]>(db, TABLE_VENTAS);
+  listAll<Vendedor[]>(db, TABLE_VENDEDORES);
 export const getVendedor = (db: Database, id: ID) =>
-  getById<Vendedor>(db, TABLE_VENTAS, id);
+  getById<Vendedor>(db, TABLE_VENDEDORES, id);
 export const createVendedor = (db: Database, vendedor: Vendedor) =>
-  createWithCuid<Vendedor>(db, TABLE_VENTAS, vendedor);
+  createWithCuid<Vendedor>(db, TABLE_VENDEDORES, vendedor);
 export const updateVendedor = (db: Database, id: ID, vendedor: Vendedor) =>
-  updateById<Vendedor>(db, TABLE_VENTAS, id, vendedor);
+  updateById<Vendedor>(db, TABLE_VENDEDORES, id, vendedor);
 export const deleteVendedor = (db: Database, id: ID) =>
-  deleteById(db, TABLE_VENTAS, id);
+  deleteById(db, TABLE_VENDEDORES, id);
