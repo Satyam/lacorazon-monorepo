@@ -4,7 +4,7 @@ import passport from 'passport';
 import session from 'express-session';
 import { Strategy as LocalStrategy, VerifyFunction } from 'passport-local';
 import { createHmac } from 'crypto';
-import { TABLE_USERS } from './utils';
+import { TABLE_USERS } from './utils.js';
 
 declare global {
   namespace Express {

@@ -2,9 +2,9 @@
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import dotEnv from 'dotenv';
-import { initDb } from './utils.js';
 
-import { login, logout, initAuth, checkAuthenticated } from './auth';
+import { initDb } from './utils.js';
+import { login, logout, initAuth, checkAuthenticated } from './auth.js';
 import {
   listVentas,
   getVenta,
