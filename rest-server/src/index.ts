@@ -36,6 +36,11 @@ dotEnv.config();
 
 const db = await initDb(process.env.DATABASE);
 
+if (!db) {
+  console.error('No database filename in .env file');
+  process.exit(1);
+}
+
 app.use(cookieParser());
 
 initAuth(app, db);
@@ -47,74 +52,73 @@ auth.get('/logout', logout);
 auth.get('/isLoggedIn', checkAuthenticated);
 
 const ventas = express.Router();
-ventas.get('/', async (_req: Request, res: Response) =>
-  res.json(await listVentas(db))
+
+ventas.get('/', async (req: Request, res: Response) =>
+  res.json(await listVentas(db, req.query.idVendedor as ID))
 );
-ventas.get('/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json(await getVenta(db, id));
-});
+ventas.get('/:id', async (req: Request, res: Response) =>
+  res.json(await getVenta(db, req.params.id))
+);
 
-ventas.post('/', async (req: Request, res: Response) => {
-  res.json(await createVenta(db, req.body));
-});
+ventas.post('/', async (req: Request, res: Response) =>
+  res.json(await createVenta(db, req.body))
+);
 
-ventas.put('/:id', async (req: Request, res: Response) => {
-  res.json(await updateVenta(db, req.params.id, req.body));
-});
+ventas.put('/:id', async (req: Request, res: Response) =>
+  res.json(await updateVenta(db, req.params.id, req.body))
+);
 
-ventas.delete('/:id'),
-  async (req: Request, res: Response) => {
-    res.json(await deleteVenta(db, req.params.id));
-  };
+ventas.delete('/:id', async (req: Request, res: Response) =>
+  res.json(await deleteVenta(db, req.params.id))
+);
 
 const vendedores = express.Router();
+
 vendedores.get('/', async (_req: Request, res: Response) =>
   res.json(await listVendedores(db))
 );
-vendedores.get('/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json(await getVendedor(db, id));
-});
 
-vendedores.post('/', async (req: Request, res: Response) => {
-  res.json(await createVendedor(db, req.body));
-});
+vendedores.get('/:id', async (req: Request, res: Response) =>
+  res.json(await getVendedor(db, req.params.id))
+);
 
-vendedores.put('/:id', async (req: Request, res: Response) => {
-  res.json(await updateVendedor(db, req.params.id, req.body));
-});
+vendedores.post('/', async (req: Request, res: Response) =>
+  res.json(await createVendedor(db, req.body))
+);
 
-vendedores.delete('/:id'),
-  async (req: Request, res: Response) => {
-    res.json(await deleteVendedor(db, req.params.id));
-  };
+vendedores.put('/:id', async (req: Request, res: Response) =>
+  res.json(await updateVendedor(db, req.params.id, req.body))
+);
+
+vendedores.delete('/:id', async (req: Request, res: Response) =>
+  res.json(await deleteVendedor(db, req.params.id))
+);
 
 const users = express.Router();
 
 users.get('/', async (_req: Request, res: Response) =>
   res.json(await listUsers(db))
 );
-users.get('/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json(await getUser(db, id));
-});
 
-users.post('/check', async (req: Request, res: Response) => {
-  res.json(await checkValidUser(db, req.body));
-});
-users.post('/', async (req: Request, res: Response) => {
-  res.json(await createUser(db, req.body));
-});
+users.get('/:id', async (req: Request, res: Response) =>
+  res.json(await getUser(db, req.params.id))
+);
 
-users.put('/:id', async (req: Request, res: Response) => {
-  res.json(await updateUser(db, req.params.id, req.body));
-});
+users.post('/check', async (req: Request, res: Response) =>
+  res.json(await checkValidUser(db, req.body))
+);
 
-users.delete('/:id'),
-  async (req: Request, res: Response) => {
-    res.json(await deleteUser(db, req.params.id));
-  };
+users.post('/', async (req: Request, res: Response) =>
+  res.json(await createUser(db, req.body))
+);
+
+users.put('/:id', async (req: Request, res: Response) =>
+  res.json(await updateUser(db, req.params.id, req.body))
+);
+
+users.delete('/:id', async (req: Request, res: Response) =>
+  res.json(await deleteUser(db, req.params.id))
+);
 
 const router = express.Router();
 router.use('/auth', auth);
