@@ -1,6 +1,7 @@
 import cuid from 'cuid';
 import { open, Database } from 'sqlite';
 import sqlite3 from 'sqlite3';
+import { readFile } from 'node:fs/promises';
 
 export const TABLE_VENTAS = 'Ventas';
 export const TABLE_VENDEDORES = 'Vendedores';
@@ -11,12 +12,26 @@ export const TABLE_CONSIGNA = 'Consigna';
 
 sqlite3.verbose();
 
-export const initDb = (filename: string = ':memory:') =>
-  open({
-    filename,
-    driver: sqlite3.Database,
-  });
-
+export const initDb = async (
+  filename?: string
+): Promise<Database | undefined> => {
+  if (filename) {
+    const db = await open({
+      filename,
+      driver: sqlite3.Database,
+    });
+    if (filename === ':memory:') {
+      db.on('trace', console.log);
+      const sql = await readFile(
+        '/home/satyam/lacorazon-monorepo/database/db.schema.sql',
+        'utf-8'
+      );
+      await await db.exec(sql, []);
+    }
+    return db;
+  }
+  return undefined;
+};
 export function getById<T>(db: Database, nombreTabla: string, id: ID) {
   return db.get<T>(`select * from ${nombreTabla} where id = ?`, [id]);
 }
