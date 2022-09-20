@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "prestart": "tsc",
-    "test": "node --inspect-brk dist/index.js",
+    "test": "./test/index.mjs",
     "start": "node dist/index.js &",
     "watch1": "fuser -k 3000/tcp ; tsc  && node dist/index.js",
     "watch": "chokidar ./src/**/*.ts --initial -c \"npm run watch1 \"",
