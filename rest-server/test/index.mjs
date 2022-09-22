@@ -7,15 +7,14 @@ $.verbose = false;
 
 const vendedores = [
   {
-    nombre: 'pepecito',
-    email: 'acme@correo.com',
+    nombre: 'pepe',
+    email: 'pepe@correo.com',
   },
   {
-    nombre: 's1',
-    email: 'satyam@satyam.com.ar',
+    nombre: 'cacho',
+    email: 'cacho@correo.com',
   },
 ];
-const xVendedores = {};
 
 const ventas = [
   {
@@ -48,7 +47,7 @@ const ventas = [
 
 const users = [
   { nombre: 'Pepe', email: 'pepe@correo.com' },
-  { nombre: 'Satyam', email: 'satyam@satyam.com.ar' },
+  { nombre: 'cacho', email: 'cacho@correo.com' },
 ];
 
 const f = (url, method = 'GET', body) => {
@@ -117,15 +116,64 @@ try {
           'in vendedores, id should be a string'
         );
         assert(id.length > 0, 'in vendedores, id should be a non-empty string');
-        xVendedores[id] = {
-          id,
-          ...rest,
-        };
+        v.id = id;
       } else assert.fail('create returned null');
     })
   );
   console.log('There should be two records now');
   await listVendedores(2);
+  console.log('Updating vendedores');
+  await Promise.all(
+    vendedores.map(async (v) => {
+      v.nombre += '1';
+      v.email += '.ar';
+      const { id, ...rest } = v;
+      const updatedV = await f(
+        `http://localhost:3000/api/vendedores/${id}`,
+        'PUT',
+        rest
+      );
+      if (updatedV) {
+        const { id: uId, ...uRest } = updatedV;
+
+        assert.deepEqual(
+          uRest,
+          rest,
+          `returned vendedor doesn't match what was sent`
+        );
+        assert.equal(
+          uId,
+          id,
+          'in update of vendedores, id should remain the same'
+        );
+      }
+    })
+  );
+  console.log('There should still be two records');
+  await listVendedores(2);
+  console.log('Delete them');
+  await Promise.all(
+    vendedores.map(async (v) => {
+      const { id } = v;
+      assert(
+        await f(`http://localhost:3000/api/vendedores/${id}`, 'DELETE'),
+        'deleting existing records should return true'
+      );
+    })
+  );
+  console.log('There should none now');
+  await listVendedores(0);
+} catch (err) {
+  if (err.code === 'ERR_ASSERTION') {
+    console.log('-----------------------');
+    console.log(
+      err
+        .toString()
+        .replace('AssertionError [ERR_ASSERTION]', chalk.yellow(err.operator))
+    );
+    console.log(chalk.red(JSON.stringify(err.actual, null, 2)));
+    console.log(chalk.green(JSON.stringify(err.expected, null, 2)));
+  } else console.error(err);
 } finally {
   console.log();
   console.log('------------------------------');
