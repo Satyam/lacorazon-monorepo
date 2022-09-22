@@ -66,7 +66,8 @@ export async function createWithCuid<T>(
   const { id: _, ...rest } = fila;
   const fields = Object.keys(rest);
   const values = Object.values(rest);
-  const { lastID } = await db.run(
+
+  const { changes } = await db.run(
     `insert into ${nombreTabla} (id, ${fields.join(',')}) values (${Array(
       fields.length + 1
     )
@@ -74,7 +75,7 @@ export async function createWithCuid<T>(
       .join(',')})`,
     [id, ...values]
   );
-  return lastID ? getById<T>(db, nombreTabla, lastID) : undefined;
+  return changes === 1 ? getById<T>(db, nombreTabla, id) : undefined;
 }
 
 export async function updateById<T>(

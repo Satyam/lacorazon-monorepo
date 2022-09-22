@@ -32,7 +32,7 @@ export const createUser = async (db: Database, user: User) => {
   const { id: _, ...rest } = user;
   const fields = Object.keys(rest);
   const values = Object.values(hashPasswordInRow(rest));
-  const { lastID } = await db.run(
+  const { changes } = await db.run(
     `insert into ${TABLE_USERS} (id, ${fields.join(',')}) values (${Array(
       fields.length + 1
     )
@@ -40,7 +40,7 @@ export const createUser = async (db: Database, user: User) => {
       .join(',')})`,
     [id, ...values]
   );
-  return lastID ? getUser(db, lastID) : undefined;
+  return changes === 1 ? getUser(db, id) : undefined;
 };
 
 export const updateUser = async (db: Database, id: ID, user: User) => {
