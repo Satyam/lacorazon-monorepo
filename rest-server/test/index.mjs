@@ -1,6 +1,5 @@
 #!/usr/bin/env zx
 import { strict as assert } from 'node:assert';
-import { text } from 'stream/consumers';
 
 process.env.DATABASE = ':memory:';
 
@@ -60,25 +59,22 @@ const f = (url, method = 'GET', body) => {
         headers: { 'Content-Type': 'application/json' },
       }
     : { method };
-  console.log({ options });
   return fetch(url, options)
-    .then((resp) =>
-      resp
-        .text()
-        .then((text) => console.log('¡¡¡¡', text))
-        .then(() => resp)
-    )
     .then((resp) => {
-      if (resp.ok) return resp.json();
+      if (resp.ok) {
+        try {
+          return resp.json();
+        } catch (err) {
+          console.error(err);
+          resp.text().then(console.error);
+        }
+      }
       resp.text().then(console.error);
       throw new Error(`?? ${resp.status}: ${resp.statusText}`);
     })
-    .then((out) => {
-      console.log({ url, method, body, out });
-      return out;
-    })
     .catch((err) => console.error('!!!', body, typeof body, err));
 };
+
 try {
   await $`fuser -k 3000/tcp`;
   console.log('previous server stopped');
@@ -92,22 +88,26 @@ console.log();
 
 await sleep(1000);
 try {
-  {
+  const listVendedores = async (cant) => {
     const listVendedores = await f('http://localhost:3000/api/vendedores');
-    console.log(listVendedores);
-    assert.equal(listVendedores.length, 0, 'vendedores list should be empty');
-  }
+    assert.equal(
+      listVendedores.length,
+      cant,
+      `vendedores list should contain ${cant} records`
+    );
+  };
+  console.info('Vendedores');
+  console.info('Initially empty');
+  await listVendedores(0);
+  console.log('inserting two records');
   await Promise.all(
     vendedores.map(async (v) => {
-      console.log('--', v, JSON.stringify(v));
       const newV = await f('http://localhost:3000/api/vendedores', 'POST', v);
-      console.log('===', newV);
       if (newV) {
-        const { id, v1 } = newV;
+        const { id, ...rest } = newV;
 
-        console.log('+++', id, v1);
         assert.deepEqual(
-          v1,
+          rest,
           v,
           `returned vendedor doesn't match what was sent`
         );
@@ -119,20 +119,13 @@ try {
         assert(id.length > 0, 'in vendedores, id should be a non-empty string');
         xVendedores[id] = {
           id,
-          ...v1,
+          ...rest,
         };
       } else assert.fail('create returned null');
     })
   );
-  {
-    const listVendedores = await f('http://localhost:3000/api/vendedores');
-    assert.equal(
-      listVendedores.length,
-      vendedores.length,
-      'vendedores list should not be empty'
-    );
-  }
-  console.log(xVendedores);
+  console.log('There should be two records now');
+  await listVendedores(2);
 } finally {
   console.log();
   console.log('------------------------------');
