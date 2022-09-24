@@ -47,6 +47,9 @@ export async function createWithAutoId<T>(
 ) {
   const fields = Object.keys(fila);
   const values = Object.values(fila);
+  if (fields.length === 0) {
+    Promise.reject(new Error('No data to insert'));
+  }
 
   const { lastID } = await db.run(
     `insert into ${nombreTabla} (${fields}) values (${Array(fields.length)
@@ -66,6 +69,9 @@ export async function createWithCuid<T>(
   const { id: _, ...rest } = fila;
   const fields = Object.keys(rest);
   const values = Object.values(rest);
+  if (fields.length === 0) {
+    throw new Error('No data to insert');
+  }
 
   const { changes } = await db.run(
     `insert into ${nombreTabla} (id, ${fields.join(',')}) values (${Array(
@@ -86,6 +92,9 @@ export async function updateById<T>(
 ) {
   const fields = Object.keys(fila);
   const values = Object.values(fila);
+  if (fields.length === 0) {
+    throw new Error('No data to update');
+  }
   const { changes } = await db.run(
     `update ${nombreTabla}  set (${fields.join(',')}) = (${Array(fields.length)
       .fill('?')
