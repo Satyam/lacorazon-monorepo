@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 import { AssertionError, strict as assert } from 'node:assert';
 
-process.env.DATABASE = ':memory:';
+process.env.NODE_ENV = 'test';
 
 $.verbose = false;
 

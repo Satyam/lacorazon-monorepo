@@ -15,12 +15,13 @@ sqlite3.verbose();
 export const initDb = async (
   filename?: string
 ): Promise<Database | undefined> => {
+  const test = process.env.NODE_ENV === 'test';
   if (filename) {
     const db = await open({
-      filename,
+      filename: test ? ':memory:' : filename,
       driver: sqlite3.Database,
     });
-    if (filename === ':memory:') {
+    if (test) {
       db.on('trace', console.log);
       const sql = await readFile(
         '/home/satyam/lacorazon-monorepo/database/db.schema.sql',
