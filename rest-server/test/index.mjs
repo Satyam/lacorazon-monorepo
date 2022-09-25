@@ -1,5 +1,5 @@
 #!/usr/bin/env zx
-import { strict as assert } from 'node:assert';
+import { AssertionError, strict as assert } from 'node:assert';
 
 process.env.DATABASE = ':memory:';
 
@@ -50,7 +50,23 @@ const users = [
   { nombre: 'cacho', email: 'cacho@correo.com' },
 ];
 
-const f = (url, method = 'GET', body) => {
+//const rxBody = /<body>\s*<pre>([\s\S]+)<\/pre>\s*<\/body>/i;
+const rxError = /<body>\s*<pre>([\s\S]+?)<br>/i;
+class ServerError extends Error {
+  constructor(response, body) {
+    if (body) {
+      const m = rxError.exec(body);
+      if (m.length === 2) {
+        const b = m[1].replaceAll('&nbsp;', ' ');
+        super(b);
+      }
+    } else {
+      super(response.statusText);
+    }
+    this.code = response.status;
+  }
+}
+const f = async (url, method = 'GET', body) => {
   const options = body
     ? {
         method,
@@ -58,20 +74,17 @@ const f = (url, method = 'GET', body) => {
         headers: { 'Content-Type': 'application/json' },
       }
     : { method };
-  return fetch(url, options)
-    .then((resp) => {
-      if (resp.ok) {
-        try {
-          return resp.json();
-        } catch (err) {
-          console.error(err);
-          resp.text().then(console.error);
-        }
-      }
-      resp.text().then(console.error);
-      throw new Error(`?? ${resp.status}: ${resp.statusText}`);
-    })
-    .catch((err) => console.error('!!!', body, typeof body, err));
+  const resp = await fetch(url, options);
+  if (resp.ok) {
+    try {
+      return await resp.json();
+    } catch (err) {
+      const b = await resp.text();
+      throw new ServerError(resp, b);
+    }
+  }
+  const b = await resp.text();
+  throw new ServerError(resp, b);
 };
 
 try {
@@ -120,6 +133,18 @@ try {
       } else assert.fail('create returned null');
     })
   );
+
+  console.info('attempting insert with no `nombre`');
+  await assert.rejects(
+    f('http://localhost:3000/api/vendedores', 'POST', {}),
+    {
+      code: 500,
+      // message: 'dddd',
+      // name: 'ServerError',
+    },
+    'no salto'
+  );
+
   console.log('There should be two records now');
   await listVendedores(2);
   console.log('Updating vendedores');
@@ -164,7 +189,7 @@ try {
   console.log('There should none now');
   await listVendedores(0);
 } catch (err) {
-  if (err.code === 'ERR_ASSERTION') {
+  if (err instanceof AssertionError) {
     console.log('-----------------------');
     console.log(
       err
