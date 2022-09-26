@@ -30,11 +30,11 @@ import {
 } from './users.js';
 
 const app = express();
-const port = 3000;
 
 dotEnv.config();
 
 const db = await initDb(process.env.DATABASE);
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 if (!db) {
   console.error('No database filename in .env file');
