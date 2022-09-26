@@ -1,10 +1,10 @@
-import { apiFetch, describe, test, assert, report } from './testUtils.mjs';
+import { apiFetch, describe, test, assert } from './testUtils.mjs';
 import { vendedores } from './data.mjs';
 
 const url = (id) => (id ? `vendedores/${id}` : 'vendedores');
 
 const v = async () =>
-  await describe('Vendedores', async (t) => {
+  await describe('Vendedores', async () => {
     const listVendedores = async (cant) => {
       const listVendedores = await apiFetch(url());
       assert.equal(
