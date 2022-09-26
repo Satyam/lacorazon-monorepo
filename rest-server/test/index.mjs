@@ -1,10 +1,12 @@
 #!/usr/bin/env zx
 import { AssertionError, strict as assert } from 'node:assert';
+import dotEnv from 'dotenv';
 
+dotEnv.config();
 process.env.NODE_ENV = 'test';
 
 $.verbose = false;
-
+const port = process.env.PORT;
 const vendedores = [
   {
     nombre: 'pepe',
@@ -66,7 +68,8 @@ class ServerError extends Error {
     this.code = response.status;
   }
 }
-const f = async (url, method = 'GET', body) => {
+
+const apiFetch = async (partialUrl, method = 'GET', body) => {
   const options = body
     ? {
         method,
@@ -74,17 +77,23 @@ const f = async (url, method = 'GET', body) => {
         headers: { 'Content-Type': 'application/json' },
       }
     : { method };
-  const resp = await fetch(url, options);
+  const resp = await fetch(
+    `http://localhost:${port}/api/${partialUrl}`,
+    options
+  );
   if (resp.ok) {
     try {
       return await resp.json();
     } catch (err) {
-      const b = await resp.text();
-      throw new ServerError(resp, b);
+      const error = new Error('Unable to decode response');
+      error.body = await resp.text();
+      throw error;
     }
   }
-  const b = await resp.text();
-  throw new ServerError(resp, b);
+  const err = new Error(resp.statusText);
+  err.code = resp.status;
+  err.msg = resp.statusText.replace('Error:', '').trim();
+  throw err;
 };
 
 try {
@@ -101,7 +110,7 @@ console.log();
 await sleep(1000);
 try {
   const listVendedores = async (cant) => {
-    const listVendedores = await f('http://localhost:3000/api/vendedores');
+    const listVendedores = await apiFetch('vendedores');
     assert.equal(
       listVendedores.length,
       cant,
@@ -114,7 +123,7 @@ try {
   console.log('inserting two records');
   await Promise.all(
     vendedores.map(async (v) => {
-      const newV = await f('http://localhost:3000/api/vendedores', 'POST', v);
+      const newV = await apiFetch('vendedores', 'POST', v);
       if (newV) {
         const { id, ...rest } = newV;
 
@@ -134,15 +143,14 @@ try {
     })
   );
 
-  console.info('attempting insert with no `nombre`');
+  console.info('Attempting insert with no record');
   await assert.rejects(
-    f('http://localhost:3000/api/vendedores', 'POST', {}),
+    apiFetch('vendedores', 'POST', {}),
     {
-      code: 500,
-      // message: 'dddd',
-      // name: 'ServerError',
+      code: 400,
+      msg: 'No data to insert',
     },
-    'no salto'
+    'no rechazó el pedido incompleto'
   );
 
   console.log('There should be two records now');
@@ -153,11 +161,7 @@ try {
       v.nombre += '1';
       v.email += '.ar';
       const { id, ...rest } = v;
-      const updatedV = await f(
-        `http://localhost:3000/api/vendedores/${id}`,
-        'PUT',
-        rest
-      );
+      const updatedV = await apiFetch(`vendedores/${id}`, 'PUT', rest);
       if (updatedV) {
         const { id: uId, ...uRest } = updatedV;
 
@@ -174,6 +178,17 @@ try {
       }
     })
   );
+
+  console.info('Attempting update with no data');
+  await assert.rejects(
+    apiFetch(`vendedores/${vendedores[0].id}`, 'PUT', {}),
+    {
+      code: 400,
+      msg: 'No data to update',
+    },
+    'no rechazó el pedido incompleto'
+  );
+
   console.log('There should still be two records');
   await listVendedores(2);
   console.log('Delete them');
@@ -181,7 +196,7 @@ try {
     vendedores.map(async (v) => {
       const { id } = v;
       assert(
-        await f(`http://localhost:3000/api/vendedores/${id}`, 'DELETE'),
+        await apiFetch(`vendedores/${id}`, 'DELETE'),
         'deleting existing records should return true'
       );
     })
