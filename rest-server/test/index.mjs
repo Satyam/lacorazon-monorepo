@@ -52,23 +52,6 @@ const users = [
   { nombre: 'cacho', email: 'cacho@correo.com' },
 ];
 
-//const rxBody = /<body>\s*<pre>([\s\S]+)<\/pre>\s*<\/body>/i;
-const rxError = /<body>\s*<pre>([\s\S]+?)<br>/i;
-class ServerError extends Error {
-  constructor(response, body) {
-    if (body) {
-      const m = rxError.exec(body);
-      if (m.length === 2) {
-        const b = m[1].replaceAll('&nbsp;', ' ');
-        super(b);
-      }
-    } else {
-      super(response.statusText);
-    }
-    this.code = response.status;
-  }
-}
-
 const apiFetch = async (partialUrl, method = 'GET', body) => {
   const options = body
     ? {
