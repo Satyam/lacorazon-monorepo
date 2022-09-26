@@ -39,6 +39,6 @@ export const ventas = [
 ];
 
 export const users = [
-  { nombre: 'Pepe', email: 'pepe@correo.com' },
-  { nombre: 'cacho', email: 'cacho@correo.com' },
+  { nombre: 'Pepe', email: 'pepe@correo.com', password: 'pepecito' },
+  { nombre: 'cacho', email: 'cacho@correo.com', password: 'cachito' },
 ];

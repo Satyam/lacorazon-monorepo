@@ -1,6 +1,7 @@
 import { Database } from 'sqlite';
 import { deleteById, TABLE_USERS } from './utils.js';
 import { hashPassword } from './auth.js';
+import { ServerError, ERRORS } from './serverError.js';
 
 import cuid from 'cuid';
 
@@ -32,27 +33,63 @@ export const createUser = async (db: Database, user: User) => {
   const { id: _, ...rest } = user;
   const fields = Object.keys(rest);
   const values = Object.values(hashPasswordInRow(rest));
-  const { changes } = await db.run(
-    `insert into ${TABLE_USERS} (id, ${fields.join(',')}) values (${Array(
-      fields.length + 1
-    )
-      .fill('?')
-      .join(',')})`,
-    [id, ...values]
-  );
-  return changes === 1 ? getUser(db, id) : undefined;
+  if (fields.length === 0) {
+    throw new ServerError(ERRORS.BAD_REQUEST, 'No data to insert');
+  }
+
+  try {
+    const { changes } = await db.run(
+      `insert into ${TABLE_USERS} (id, ${fields.join(',')}) values (${Array(
+        fields.length + 1
+      )
+        .fill('?')
+        .join(',')})`,
+      [id, ...values]
+    );
+    return changes === 1 ? getUser(db, id) : undefined;
+  } catch (err) {
+    console.log(err);
+    // @ts-ignore
+    if (err.errno === 19) {
+      throw new ServerError(
+        ERRORS.CONFLICT,
+        // @ts-ignore
+        err.toString().replace('Error: SQLITE_CONSTRAINT: ', '')
+      );
+    }
+    throw err;
+  }
 };
 
 export const updateUser = async (db: Database, id: ID, user: User) => {
   const fields = Object.keys(user);
   const values = Object.values(hashPasswordInRow(user));
-  const { changes } = await db.run(
-    `update ${TABLE_USERS}  set (${fields.join(',')}) = (${Array(fields.length)
-      .fill('?')
-      .join(',')})  where id = ?`,
-    [...values, id]
-  );
-  return changes ? getUser(db, id) : undefined;
+  if (fields.length === 0) {
+    throw new ServerError(ERRORS.BAD_REQUEST, 'No data to update');
+  }
+
+  try {
+    const { changes } = await db.run(
+      `update ${TABLE_USERS}  set (${fields.join(',')}) = (${Array(
+        fields.length
+      )
+        .fill('?')
+        .join(',')})  where id = ?`,
+      [...values, id]
+    );
+    return changes ? getUser(db, id) : undefined;
+  } catch (err) {
+    console.log(err);
+    // @ts-ignore
+    if (err.errno === 19) {
+      throw new ServerError(
+        ERRORS.CONFLICT,
+        // @ts-ignore
+        err.toString().replace('Error: SQLITE_CONSTRAINT: ', '')
+      );
+    }
+    throw err;
+  }
 };
 
 export const deleteUser = (db: Database, id: ID) =>
