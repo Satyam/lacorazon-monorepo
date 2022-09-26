@@ -103,6 +103,14 @@ await describe('Vendedores', async (t) => {
       })
     ));
 
+  await test('checking the inserted data', async () =>
+    await Promise.all(
+      vendedores.map(async (v) => {
+        const inserted = await apiFetch(`vendedores/${v.id}`, 'GET');
+        assert.deepEqual(inserted, v, 'no match');
+      })
+    ));
+
   await test('Attempting insert with no record', async () =>
     await assert.rejects(
       apiFetch('vendedores', 'POST', {}),
@@ -147,6 +155,14 @@ await describe('Vendedores', async (t) => {
             'in update of vendedores, id should remain the same'
           );
         }
+      })
+    ));
+
+  await test('checking the updated data', async () =>
+    await Promise.all(
+      vendedores.map(async (v) => {
+        const updated = await apiFetch(`vendedores/${v.id}`, 'GET');
+        assert.deepEqual(updated, v, 'no match');
       })
     ));
 
