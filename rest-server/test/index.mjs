@@ -125,6 +125,7 @@ const server = $`node ./dist/index.js`;
 console.log();
 
 await sleep(1000);
+
 await describe('Vendedores', async (t) => {
   const listVendedores = async (cant) => {
     const listVendedores = await apiFetch('vendedores');
@@ -134,7 +135,9 @@ await describe('Vendedores', async (t) => {
       `vendedores list should contain ${cant} records`
     );
   };
+
   await test('Initially empty', async () => await listVendedores(0));
+
   await test('inserting two records', async () =>
     await Promise.all(
       vendedores.map(async (v) => {
@@ -171,8 +174,19 @@ await describe('Vendedores', async (t) => {
       'no rechazó el pedido incompleto'
     ));
 
+  await test('Attempting insert with duplicate nombre', async () =>
+    await assert.rejects(
+      apiFetch('vendedores', 'POST', vendedores[0]),
+      {
+        code: 409,
+        msg: 'UNIQUE constraint failed: Vendedores.nombre',
+      },
+      'no rechazó el pedido incompleto'
+    ));
+
   await test('There should be two records now', async () =>
     await listVendedores(2));
+
   await test('Updating vendedores', async () =>
     await Promise.all(
       vendedores.map(async (v) => {
@@ -204,11 +218,24 @@ await describe('Vendedores', async (t) => {
         code: 400,
         msg: 'No data to update',
       },
-      'no rechazó el pedido incompleto'
+      'no rechazó el alta sin datos'
+    ));
+
+  await test('Attempting update with duplicate field value nombre', async () =>
+    await assert.rejects(
+      apiFetch(`vendedores/${vendedores[0].id}`, 'PUT', {
+        nombre: vendedores[1].nombre,
+      }),
+      {
+        code: 409,
+        msg: 'UNIQUE constraint failed: Vendedores.nombre',
+      },
+      'no rechazó el nombre duplicado'
     ));
 
   await test('There should still be two records', async () =>
     await listVendedores(2));
+
   await test('Delete them', async () =>
     await Promise.all(
       vendedores.map(async (v) => {
@@ -219,6 +246,7 @@ await describe('Vendedores', async (t) => {
         );
       })
     ));
+
   await test('There should none now', async () => await listVendedores(0));
 });
 console.log(`

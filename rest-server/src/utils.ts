@@ -54,13 +54,25 @@ export async function createWithAutoId<T>(
     throw new ServerError(ERRORS.BAD_REQUEST, 'No data to insert');
   }
 
-  const { lastID } = await db.run(
-    `insert into ${nombreTabla} (${fields}) values (${Array(fields.length)
-      .fill('?')
-      .join(',')})`,
-    values
-  );
-  return lastID ? getById<T>(db, nombreTabla, lastID) : undefined;
+  try {
+    const { lastID } = await db.run(
+      `insert into ${nombreTabla} (${fields}) values (${Array(fields.length)
+        .fill('?')
+        .join(',')})`,
+      values
+    );
+    return lastID ? getById<T>(db, nombreTabla, lastID) : undefined;
+  } catch (err) {
+    // @ts-ignore
+    if (err.errno === 19) {
+      throw new ServerError(
+        ERRORS.CONFLICT,
+        // @ts-ignore
+        err.toString().replace('Error: SQLITE_CONSTRAINT: ', '')
+      );
+    }
+    throw err;
+  }
 }
 
 export async function createWithCuid<T>(
@@ -75,16 +87,27 @@ export async function createWithCuid<T>(
   if (fields.length === 0) {
     throw new ServerError(ERRORS.BAD_REQUEST, 'No data to insert');
   }
-
-  const { changes } = await db.run(
-    `insert into ${nombreTabla} (id, ${fields.join(',')}) values (${Array(
-      fields.length + 1
-    )
-      .fill('?')
-      .join(',')})`,
-    [id, ...values]
-  );
-  return changes === 1 ? getById<T>(db, nombreTabla, id) : undefined;
+  try {
+    const { changes } = await db.run(
+      `insert into ${nombreTabla} (id, ${fields.join(',')}) values (${Array(
+        fields.length + 1
+      )
+        .fill('?')
+        .join(',')})`,
+      [id, ...values]
+    );
+    return changes === 1 ? getById<T>(db, nombreTabla, id) : undefined;
+  } catch (err) {
+    // @ts-ignore
+    if (err.errno === 19) {
+      throw new ServerError(
+        ERRORS.CONFLICT,
+        // @ts-ignore
+        err.toString().replace('Error: SQLITE_CONSTRAINT: ', '')
+      );
+    }
+    throw err;
+  }
 }
 
 export async function updateById<T>(
@@ -98,13 +121,28 @@ export async function updateById<T>(
   if (fields.length === 0) {
     throw new ServerError(ERRORS.BAD_REQUEST, 'No data to update');
   }
-  const { changes } = await db.run(
-    `update ${nombreTabla}  set (${fields.join(',')}) = (${Array(fields.length)
-      .fill('?')
-      .join(',')})  where id = ?`,
-    [...values, id]
-  );
-  return changes ? getById<T>(db, nombreTabla, id) : undefined;
+  console.log('=========', id, fila);
+  try {
+    const { changes } = await db.run(
+      `update ${nombreTabla}  set (${fields.join(',')}) = (${Array(
+        fields.length
+      )
+        .fill('?')
+        .join(',')})  where id = ?`,
+      [...values, id]
+    );
+    return changes ? getById<T>(db, nombreTabla, id) : undefined;
+  } catch (err) {
+    // @ts-ignore
+    if (err.errno === 19) {
+      throw new ServerError(
+        ERRORS.CONFLICT,
+        // @ts-ignore
+        err.toString().replace('Error: SQLITE_CONSTRAINT: ', '')
+      );
+    }
+    throw err;
+  }
 }
 
 export async function deleteById(db: Database, nombreTabla: string, id: ID) {
