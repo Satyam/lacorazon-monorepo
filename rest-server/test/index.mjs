@@ -52,6 +52,40 @@ const users = [
   { nombre: 'cacho', email: 'cacho@correo.com' },
 ];
 
+const describe = async (descr, fn) => {
+  console.log(chalk.bold(descr));
+  await fn();
+};
+let pass = 0;
+let fail = 0;
+let unknowns = 0;
+const test = async (descr, fn) => {
+  try {
+    await fn();
+    console.log(chalk.cyan(descr));
+    pass++;
+  } catch (err) {
+    if (err instanceof AssertionError) {
+      fail++;
+      console.log('-----------------------');
+      console.log(chalk.red(descr));
+      console.log(
+        err
+          .toString()
+          .replace('AssertionError [ERR_ASSERTION]', chalk.yellow(err.operator))
+      );
+      console.log('actual');
+      console.log(chalk.red(JSON.stringify(err.actual, null, 2)));
+      console.log('expected');
+      console.log(chalk.green(JSON.stringify(err.expected, null, 2)));
+      console.log('-----------------------');
+    } else {
+      unknowns++;
+      console.log(chalk.magenta(err));
+    }
+  }
+};
+
 const apiFetch = async (partialUrl, method = 'GET', body) => {
   const options = body
     ? {
@@ -91,7 +125,7 @@ const server = $`node ./dist/index.js`;
 console.log();
 
 await sleep(1000);
-try {
+await describe('Vendedores', async (t) => {
   const listVendedores = async (cant) => {
     const listVendedores = await apiFetch('vendedores');
     assert.equal(
@@ -100,108 +134,101 @@ try {
       `vendedores list should contain ${cant} records`
     );
   };
-  console.info('Vendedores');
-  console.info('Initially empty');
-  await listVendedores(0);
-  console.log('inserting two records');
-  await Promise.all(
-    vendedores.map(async (v) => {
-      const newV = await apiFetch('vendedores', 'POST', v);
-      if (newV) {
-        const { id, ...rest } = newV;
+  await test('Initially empty', async () => await listVendedores(0));
+  await test('inserting two records', async () =>
+    await Promise.all(
+      vendedores.map(async (v) => {
+        const newV = await apiFetch('vendedores', 'POST', v);
+        if (newV) {
+          const { id, ...rest } = newV;
 
-        assert.deepEqual(
-          rest,
-          v,
-          `returned vendedor doesn't match what was sent`
+          assert.deepEqual(
+            rest,
+            v,
+            `returned vendedor doesn't match what was sent`
+          );
+          assert.equal(
+            typeof id,
+            'string',
+            'in vendedores, id should be a string'
+          );
+          assert(
+            id.length > 0,
+            'in vendedores, id should be a non-empty string'
+          );
+          v.id = id;
+        } else assert.fail('create returned null');
+      })
+    ));
+
+  await test('Attempting insert with no record', async () =>
+    await assert.rejects(
+      apiFetch('vendedores', 'POST', {}),
+      {
+        code: 400,
+        msg: 'No data to insert',
+      },
+      'no rechazó el pedido incompleto'
+    ));
+
+  await test('There should be two records now', async () =>
+    await listVendedores(2));
+  await test('Updating vendedores', async () =>
+    await Promise.all(
+      vendedores.map(async (v) => {
+        v.nombre += '1';
+        v.email += '.ar';
+        const { id, ...rest } = v;
+        const updatedV = await apiFetch(`vendedores/${id}`, 'PUT', rest);
+        if (updatedV) {
+          const { id: uId, ...uRest } = updatedV;
+
+          assert.deepEqual(
+            uRest,
+            rest,
+            `returned vendedor doesn't match what was sent`
+          );
+          assert.equal(
+            uId,
+            id,
+            'in update of vendedores, id should remain the same'
+          );
+        }
+      })
+    ));
+
+  await test('Attempting update with no data', async () =>
+    await assert.rejects(
+      apiFetch(`vendedores/${vendedores[0].id}`, 'PUT', {}),
+      {
+        code: 400,
+        msg: 'No data to update',
+      },
+      'no rechazó el pedido incompleto'
+    ));
+
+  await test('There should still be two records', async () =>
+    await listVendedores(2));
+  await test('Delete them', async () =>
+    await Promise.all(
+      vendedores.map(async (v) => {
+        const { id } = v;
+        assert(
+          await apiFetch(`vendedores/${id}`, 'DELETE'),
+          'deleting existing records should return true'
         );
-        assert.equal(
-          typeof id,
-          'string',
-          'in vendedores, id should be a string'
-        );
-        assert(id.length > 0, 'in vendedores, id should be a non-empty string');
-        v.id = id;
-      } else assert.fail('create returned null');
-    })
-  );
+      })
+    ));
+  await test('There should none now', async () => await listVendedores(0));
+});
+console.log(`
+--------------
+pass:     ${pass}
+fail:     ${fail}
+unknowns: ${unknowns}
+--------------
 
-  console.info('Attempting insert with no record');
-  await assert.rejects(
-    apiFetch('vendedores', 'POST', {}),
-    {
-      code: 400,
-      msg: 'No data to insert',
-    },
-    'no rechazó el pedido incompleto'
-  );
 
-  console.log('There should be two records now');
-  await listVendedores(2);
-  console.log('Updating vendedores');
-  await Promise.all(
-    vendedores.map(async (v) => {
-      v.nombre += '1';
-      v.email += '.ar';
-      const { id, ...rest } = v;
-      const updatedV = await apiFetch(`vendedores/${id}`, 'PUT', rest);
-      if (updatedV) {
-        const { id: uId, ...uRest } = updatedV;
-
-        assert.deepEqual(
-          uRest,
-          rest,
-          `returned vendedor doesn't match what was sent`
-        );
-        assert.equal(
-          uId,
-          id,
-          'in update of vendedores, id should remain the same'
-        );
-      }
-    })
-  );
-
-  console.info('Attempting update with no data');
-  await assert.rejects(
-    apiFetch(`vendedores/${vendedores[0].id}`, 'PUT', {}),
-    {
-      code: 400,
-      msg: 'No data to update',
-    },
-    'no rechazó el pedido incompleto'
-  );
-
-  console.log('There should still be two records');
-  await listVendedores(2);
-  console.log('Delete them');
-  await Promise.all(
-    vendedores.map(async (v) => {
-      const { id } = v;
-      assert(
-        await apiFetch(`vendedores/${id}`, 'DELETE'),
-        'deleting existing records should return true'
-      );
-    })
-  );
-  console.log('There should none now');
-  await listVendedores(0);
-} catch (err) {
-  if (err instanceof AssertionError) {
-    console.log('-----------------------');
-    console.log(
-      err
-        .toString()
-        .replace('AssertionError [ERR_ASSERTION]', chalk.yellow(err.operator))
-    );
-    console.log(chalk.red(JSON.stringify(err.actual, null, 2)));
-    console.log(chalk.green(JSON.stringify(err.expected, null, 2)));
-  } else console.error(err);
-} finally {
-  console.log();
-  console.log('------------------------------');
-  console.log();
-  console.log();
-  server.kill();
-  await server;
-}
+`);
+server.kill();
+await server;
