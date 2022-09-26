@@ -3,6 +3,8 @@ import { open, Database } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { readFile } from 'node:fs/promises';
 
+import { ServerError, ERRORS } from './serverError.js';
+
 export const TABLE_VENTAS = 'Ventas';
 export const TABLE_VENDEDORES = 'Vendedores';
 export const TABLE_DISTRIBUIDORES = 'Distribuidores';
@@ -49,7 +51,7 @@ export async function createWithAutoId<T>(
   const fields = Object.keys(fila);
   const values = Object.values(fila);
   if (fields.length === 0) {
-    Promise.reject(new Error('No data to insert'));
+    throw new ServerError(ERRORS.BAD_REQUEST, 'No data to insert');
   }
 
   const { lastID } = await db.run(
@@ -71,7 +73,7 @@ export async function createWithCuid<T>(
   const fields = Object.keys(rest);
   const values = Object.values(rest);
   if (fields.length === 0) {
-    throw new Error('No data to insert');
+    throw new ServerError(ERRORS.BAD_REQUEST, 'No data to insert');
   }
 
   const { changes } = await db.run(
@@ -94,7 +96,7 @@ export async function updateById<T>(
   const fields = Object.keys(fila);
   const values = Object.values(fila);
   if (fields.length === 0) {
-    throw new Error('No data to update');
+    throw new ServerError(ERRORS.BAD_REQUEST, 'No data to update');
   }
   const { changes } = await db.run(
     `update ${nombreTabla}  set (${fields.join(',')}) = (${Array(fields.length)

@@ -1,5 +1,5 @@
 /// <reference path="../../types/global.d.ts" />
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import dotEnv from 'dotenv';
 
@@ -28,6 +28,7 @@ import {
   updateUser,
   deleteUser,
 } from './users.js';
+import ServerError from './serverError.js';
 
 const app = express();
 
@@ -135,6 +136,15 @@ app.use(express.static('../public'));
 
 app.get('*', (_, res) => {
   res.sendFile('index.html', { root: '../public' });
+});
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  if (err instanceof ServerError) {
+    res.statusCode = err.code;
+    res.statusMessage = err.toString();
+    res.end();
+    // res.status(err.code).send(err.toString());
+  } else next(err);
 });
 
 app.listen(port, () => {
