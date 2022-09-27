@@ -24,12 +24,12 @@ export const initDb = async (
       driver: sqlite3.Database,
     });
     if (test) {
-      db.on('trace', console.log);
       const sql = await readFile(
         '/home/satyam/lacorazon-monorepo/database/db.schema.sql',
         'utf-8'
       );
-      await await db.exec(sql, []);
+      await db.exec(sql, []);
+      db.on('trace', console.log);
     }
     return db;
   }
