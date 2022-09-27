@@ -107,7 +107,6 @@ const u = async () =>
       await Promise.all(
         users.map(async (v) => {
           const updated = await apiFetch(url(v.id), 'GET');
-          console.log(chalk.red(updated), chalk.green(v));
           const { password, ...noPassword } = v;
           assert.deepEqual(updated, noPassword, 'no match');
         })
