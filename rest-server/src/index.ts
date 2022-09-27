@@ -48,8 +48,8 @@ initAuth(app, db);
 
 const auth = express.Router();
 
-auth.get('/login', login);
-auth.get('/logout', logout);
+auth.post('/login', login);
+auth.post('/logout', logout);
 auth.get('/isLoggedIn', checkAuthenticated);
 
 const ventas = express.Router();
