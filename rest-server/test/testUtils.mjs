@@ -42,8 +42,9 @@ export const apiFetch = async (partialUrl, method = 'GET', body) => {
         method,
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
+        redirect: 'manual',
       }
-    : { method };
+    : { method, redirect: 'manual' };
   const resp = await fetch(
     `http://localhost:${process.env.PORT}/api/${partialUrl}`,
     options
@@ -56,6 +57,13 @@ export const apiFetch = async (partialUrl, method = 'GET', body) => {
       error.body = await resp.text();
       throw error;
     }
+  }
+  if (resp.status === 301 || resp.status === 302) {
+    const location = resp.headers.get('location');
+    const err = new Error(`redirect: ${location}`);
+    err.code = resp.status;
+    err.location = location;
+    throw err;
   }
   const err = new Error(resp.statusText);
   err.code = resp.status;
