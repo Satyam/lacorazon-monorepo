@@ -3,10 +3,13 @@ import dotEnv from 'dotenv';
 import { report } from './testUtils.mjs';
 import u from './users.mjs';
 import v from './vendedores.mjs';
+import auth from './auth.mjs';
 dotEnv.config();
-process.env.NODE_ENV = 'test';
 
-$.verbose = false;
+// the following have to do with different leves of debugging
+process.env.NODE_ENV = 'test';
+// process.env.DEBUG = 'express:*';
+// $.verbose = false;
 
 try {
   await $`fuser -k 3000/tcp`;
@@ -22,6 +25,7 @@ console.log();
 await sleep(1000);
 await v();
 await u();
+await auth();
 report();
 console.log('Ignore the following error!');
 server.kill();

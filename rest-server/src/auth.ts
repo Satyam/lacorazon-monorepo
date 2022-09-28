@@ -2,7 +2,11 @@ import { Express, NextFunction, Request, Response } from 'express';
 import { Database } from 'sqlite';
 import passport from 'passport';
 import session from 'express-session';
-import { Strategy as LocalStrategy, VerifyFunction } from 'passport-local';
+import {
+  Strategy as LocalStrategy,
+  VerifyFunction,
+  IVerifyOptions,
+} from 'passport-local';
 import { createHmac } from 'crypto';
 import { TABLE_USERS } from './utils.js';
 
@@ -29,25 +33,25 @@ export function hashPassword(password?: string) {
 }
 
 const verify =
-  (db: Database) =>
+  (db: Database): VerifyFunction =>
   (
     email: string,
     password: string,
-    done: (err: any, user: User | false) => never
+    done: (error: any, user?: any, options?: IVerifyOptions) => void
   ) => {
     db.get(
       `select id, nombre, email
      from ${TABLE_USERS} where lower(email) = lower(?) and password = ?`,
       [email, hashPassword(password)]
-    )
-      .then((user) => done(null, user ?? false))
-      .catch((err) => done(err, false));
+    ).then(
+      (user) => done(null, user ?? false),
+      (err) => done(err, false)
+    );
   };
-
 export const initAuth = (app: Express, db: Database) => {
   app.use(
     session({
-      secret: 'secret',
+      secret: process.env.JWT_SECRET ?? 'alguna cosa',
       resave: false,
       saveUninitialized: true,
     })
@@ -59,10 +63,19 @@ export const initAuth = (app: Express, db: Database) => {
   app.use(passport.session());
   // allow passport to use "express-session".
 
-  passport.use(new LocalStrategy(verify(db) as VerifyFunction));
+  passport.use(
+    new LocalStrategy(
+      { usernameField: 'email', passwordField: 'password' },
+      verify(db)
+    )
+  );
 
   passport.serializeUser<string>((user, done) => {
-    done(null, JSON.stringify(user));
+    try {
+      done(null, JSON.stringify(user));
+    } catch (error) {
+      done(error);
+    }
   });
 
   passport.deserializeUser<string>((userString, done) => {
@@ -74,18 +87,18 @@ export const initAuth = (app: Express, db: Database) => {
   });
 };
 
-export const login = passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-});
-
+export const login = () => {
+  passport.authenticate('local', {
+    successRedirect: '/dashboard',
+    failureRedirect: '/login',
+  });
+};
 export const logout = (req: Request, res: Response, next: NextFunction) =>
   req.logOut((err) => {
     if (err) {
       return next(err);
     }
     res.redirect('/login');
-    console.log(`-------> User Logged out`);
   });
 
 export const checkAuthenticated = (
