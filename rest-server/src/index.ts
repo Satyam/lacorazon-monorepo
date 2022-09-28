@@ -132,6 +132,15 @@ app.use('/api', express.json(), router);
 db.on('trace', (data: any) => {
   console.log(data);
 });
+
+if (process.env.NODE_ENV === 'test') {
+  app.get('/login', (_req: Request, res: Response) => {
+    res.send('Página de login');
+  });
+  app.get('/', (_req: Request, res: Response) => {
+    res.send('Home page');
+  });
+}
 app.use(express.static('../public'));
 
 app.get('*', (_, res) => {
