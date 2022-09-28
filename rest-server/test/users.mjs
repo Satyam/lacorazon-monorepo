@@ -137,18 +137,13 @@ const u = async () =>
     await test('There should still be two records', async () =>
       await listUsers(2));
 
-    await test('Delete them', async () =>
-      await Promise.all(
-        users.map(async (v) => {
-          const { id } = v;
-          assert(
-            await apiFetch(url(id), 'DELETE'),
-            'deleting existing records should return true'
-          );
-        })
+    await test('Delete the second one, leave one for auth tests', async () =>
+      await assert(
+        await apiFetch(url(users[1].id), 'DELETE'),
+        'deleting existing records should return true'
       ));
 
-    await test('There should none now', async () => await listUsers(0));
+    await test('There should none now', async () => await listUsers(1));
   });
 
 export default u;
