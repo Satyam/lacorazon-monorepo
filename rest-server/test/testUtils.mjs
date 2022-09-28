@@ -11,9 +11,9 @@ let fail = 0;
 let unknowns = 0;
 
 export const test = async (descr, fn) => {
+  console.log(chalk.cyan(descr));
   try {
     await fn();
-    console.log(chalk.cyan(descr));
     pass++;
   } catch (err) {
     if (err instanceof AssertionError) {
@@ -49,20 +49,26 @@ export const apiFetch = async (partialUrl, method = 'GET', body) => {
     `http://localhost:${process.env.PORT}/api/${partialUrl}`,
     options
   );
-  if (resp.ok) {
-    try {
-      return await resp.json();
-    } catch (err) {
-      const error = new Error('Unable to decode response');
-      error.body = await resp.text();
-      throw error;
+  try {
+    const reply = await resp.text();
+    if ($.verbose) console.log({ reply });
+    if (resp.ok) {
+      try {
+        return JSON.parse(reply);
+      } catch (err) {
+        const error = new Error('Unable to decode response');
+        error.body = await resp.text();
+        throw error;
+      }
     }
-  }
-  if (resp.status === 301 || resp.status === 302) {
-    const location = resp.headers.get('location');
-    const err = new Error(`redirect: ${location}`);
-    err.code = resp.status;
-    err.location = location;
+    if (resp.status === 301 || resp.status === 302) {
+      const location = resp.headers.get('location');
+      const err = new Error(`redirect: ${location}`);
+      err.code = resp.status;
+      err.location = location;
+      throw err;
+    }
+  } catch (err) {
     throw err;
   }
   const err = new Error(resp.statusText);
