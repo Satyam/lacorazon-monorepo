@@ -87,12 +87,26 @@ export const initAuth = (app: Express, db: Database) => {
   });
 };
 
-export const login = () => {
-  passport.authenticate('local', {
-    successRedirect: '/dashboard',
-    failureRedirect: '/login',
-  });
+// export const login = () => {
+//   passport.authenticate('local', {
+//     successRedirect: '/',
+//     failureRedirect: '/login',
+//   });
+// };
+
+export const login = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect('/login');
+    }
+
+    res.redirect('/');
+  })(req, res, next);
 };
+
 export const logout = (req: Request, res: Response, next: NextFunction) =>
   req.logOut((err) => {
     if (err) {

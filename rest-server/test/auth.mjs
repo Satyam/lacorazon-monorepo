@@ -45,6 +45,29 @@ const auth = async () =>
         'Should have redirected to /login'
       );
     });
+    await test('Logout', async () => {
+      await assert.rejects(
+        apiFetch(url('logout'), 'POST'),
+        {
+          code: 302,
+          location: '/login',
+        },
+        'Should have redirected to /login'
+      );
+    });
+    await test('login with unknown user', async () => {
+      await assert.rejects(
+        apiFetch(url('login'), 'POST', {
+          email: 'jose',
+          password: 'josecito',
+        }),
+        {
+          code: 302,
+          location: '/login',
+        },
+        'Should have redirected to Login'
+      );
+    });
   });
 
 export default auth;
