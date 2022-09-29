@@ -36,7 +36,12 @@ export const test = async (descr, fn) => {
     }
   }
 };
-export const apiFetch = async (partialUrl, method = 'GET', body) => {
+export const apiFetch = async (
+  partialUrl,
+  method = 'GET',
+  body,
+  returnResponse
+) => {
   const options = body
     ? {
         method,
@@ -54,11 +59,12 @@ export const apiFetch = async (partialUrl, method = 'GET', body) => {
     if ($.verbose) console.log({ reply });
     if (resp.ok) {
       try {
-        return JSON.parse(reply);
+        const r = JSON.parse(reply);
+        return returnResponse ? { ...r, _response: resp } : r;
       } catch (err) {
-        const error = new Error('Unable to decode response');
-        error.body = await resp.text();
-        throw error;
+        err.msg = reply;
+        if (returnResponse) err.response = resp;
+        throw err;
       }
     }
     if (resp.status === 301 || resp.status === 302) {
@@ -66,14 +72,17 @@ export const apiFetch = async (partialUrl, method = 'GET', body) => {
       const err = new Error(`redirect: ${location}`);
       err.code = resp.status;
       err.location = location;
+      if (returnResponse) err.response = resp;
       throw err;
     }
   } catch (err) {
+    if (returnResponse) err.response = resp;
     throw err;
   }
   const err = new Error(resp.statusText);
   err.code = resp.status;
   err.msg = resp.statusText.replace('Error:', '').trim();
+  if (returnResponse) err.response = resp;
   throw err;
 };
 
