@@ -9,7 +9,7 @@ dotEnv.config();
 // the following have to do with different leves of debugging
 process.env.NODE_ENV = 'test';
 // process.env.DEBUG = 'express:*';
-// $.verbose = false;
+$.verbose = false;
 
 try {
   await $`fuser -k 3000/tcp`;

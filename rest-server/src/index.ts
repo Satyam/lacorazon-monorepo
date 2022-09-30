@@ -1,10 +1,12 @@
 /// <reference path="../../types/global.d.ts" />
 import express, { NextFunction, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import ConnectSqlite from 'connect-sqlite3';
 import dotEnv from 'dotenv';
 
 import { initDb } from './utils.js';
-import { login, logout, initAuth, checkAuthenticated } from './auth.js';
+import { login, logout, currentUser } from './auth.js';
 import {
   listVentas,
   getVenta,
@@ -43,14 +45,25 @@ if (!db) {
 }
 
 app.use(cookieParser());
-
-initAuth(app, db);
+debugger;
+const AppSessionStore = ConnectSqlite(session);
+app.use(
+  session({
+    secret: process.env.JWT_SECRET ?? 'alguna cosa',
+    resave: false,
+    saveUninitialized: true,
+    // @ts-ignore
+    store: new AppSessionStore({
+      db: 'sessions.sqlite',
+    }),
+  })
+);
 
 const auth = express.Router();
 
-auth.post('/login', login);
+auth.post('/login', login(db));
 auth.post('/logout', logout);
-auth.get('/isLoggedIn', checkAuthenticated);
+auth.get('/currentUser', currentUser);
 
 const ventas = express.Router();
 

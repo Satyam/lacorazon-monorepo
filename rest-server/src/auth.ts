@@ -1,27 +1,15 @@
-import { Express, NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { Database } from 'sqlite';
-import passport from 'passport';
-import session from 'express-session';
-import {
-  Strategy as LocalStrategy,
-  VerifyFunction,
-  IVerifyOptions,
-} from 'passport-local';
+
 import { createHmac } from 'crypto';
 import { TABLE_USERS } from './utils.js';
-
-declare global {
-  namespace Express {
-    // tslint:disable-next-line:no-empty-interface
-    interface AuthInfo {}
-    // tslint:disable-next-line:no-empty-interface
-    interface User {
-      id: ID;
-      nombre: string;
-      email: string;
-    }
+import { ERRORS, ServerError } from './serverError.js';
+declare module 'express-session' {
+  interface SessionData {
+    user: User;
   }
 }
+
 export function hashPassword(password?: string) {
   if (!password) return password;
   const hmac = createHmac(
@@ -32,96 +20,39 @@ export function hashPassword(password?: string) {
   return hmac.digest('hex');
 }
 
-const verify =
-  (db: Database): VerifyFunction =>
-  (
-    email: string,
-    password: string,
-    done: (error: any, user?: any, options?: IVerifyOptions) => void
-  ) => {
-    db.get(
+export const login = (db: Database) => async (req: Request, res: Response) => {
+  req.session.user = undefined;
+  const { email, password } = req.body;
+  await db
+    .get(
       `select id, nombre, email
-     from ${TABLE_USERS} where lower(email) = lower(?) and password = ?`,
+   from ${TABLE_USERS} where lower(email) = lower(?) and password = ?`,
       [email, hashPassword(password)]
-    ).then(
-      (user) => done(null, user ?? false),
-      (err) => done(err, false)
-    );
-  };
-export const initAuth = (app: Express, db: Database) => {
-  app.use(
-    session({
-      secret: process.env.JWT_SECRET ?? 'alguna cosa',
-      resave: false,
-      saveUninitialized: true,
-    })
-  );
-
-  // This is the basic express session({..}) initialization.
-  app.use(passport.initialize());
-  // init passport on every route call.
-  app.use(passport.session());
-  // allow passport to use "express-session".
-
-  passport.use(
-    new LocalStrategy(
-      { usernameField: 'email', passwordField: 'password' },
-      verify(db)
     )
-  );
-
-  passport.serializeUser<string>((user, done) => {
-    try {
-      done(null, JSON.stringify(user));
-    } catch (error) {
-      done(error);
-    }
-  });
-
-  passport.deserializeUser<string>((userString, done) => {
-    try {
-      done(null, JSON.parse(userString));
-    } catch (err) {
-      done(err);
-    }
-  });
+    .then((user) => {
+      if (user) {
+        req.session.user = user;
+        res.json(user);
+      } else
+        throw new ServerError(ERRORS.UNAUTHORIZED, 'email or password failed');
+    });
 };
 
-// export const login = () => {
-//   passport.authenticate('local', {
-//     successRedirect: '/',
-//     failureRedirect: '/login',
-//   });
-// };
-
-export const login = (req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.redirect('/login');
-    }
-
-    res.redirect('/');
-  })(req, res, next);
-};
-
-export const logout = (req: Request, res: Response, next: NextFunction) =>
-  req.logOut((err) => {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('/login');
+export const logout = async (req: Request, res: Response) =>
+  req.session.destroy((err) => {
+    if (err) throw err;
+    res.json({});
   });
 
-export const checkAuthenticated = (
+export const currentUser = (req: Request, res: Response) => {
+  res.json(req.session.user || {});
+};
+
+export const authorized = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/login');
+  if (req.session.user) next();
+  else throw new ServerError(ERRORS.UNAUTHORIZED, 'Not authorized');
 };

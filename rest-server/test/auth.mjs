@@ -9,65 +9,40 @@ const user = users[0];
 
 const auth = async () =>
   await describe('Users', async () => {
-    await test('not logged in', async () => {
-      await assert.rejects(
-        apiFetch(url('isLoggedIn')),
-        {
-          code: 302,
-          location: '/login',
-        },
-        'Should have redirected to /login'
-      );
+    await test('no current User', async () => {
+      const reply = await apiFetch(url('currentUser'));
+      assert.deepEqual(reply, {}, 'There should not be any user logged in yet');
     });
 
     await test('login', async () => {
       const { email, password } = users[0];
-      await assert.rejects(
-        apiFetch(url('login'), 'POST', {
-          email,
-          password,
-        }),
-        {
-          code: 302,
-          location: '/',
-        },
-        'Should have redirected to root'
-      );
+      const reply = await apiFetch(url('login'), 'POST', {
+        email,
+        password,
+      });
+      const { password: _, ...rest } = users[0];
+      assert.deepEqual(reply, rest, 'Should have returned the current user');
     });
 
     await test('Should be logged in', async () => {
-      await assert.rejects(
-        apiFetch(url('isLoggedIn')),
-        {
-          code: 302,
-          location: '/login',
-        },
-        'Should have redirected to /login'
-      );
+      const reply = await apiFetch(url('currentUser'));
+      const { password: _, ...rest } = users[0];
+      assert.deepEqual(reply, rest, 'Should have returned the current user');
     });
+
     await test('Logout', async () => {
-      await assert.rejects(
-        apiFetch(url('logout'), 'POST'),
-        {
-          code: 302,
-          location: '/login',
-        },
-        'Should have redirected to /login'
-      );
+      const reply = await apiFetch(url('logout'), 'POST');
+      assert.deepEqual(reply, {}, 'Should have replied with an empty object');
     });
-    await test('login with unknown user', async () => {
+
+    await test('login with unknown user', async () =>
       await assert.rejects(
         apiFetch(url('login'), 'POST', {
           email: 'jose',
           password: 'josecito',
         }),
-        {
-          code: 302,
-          location: '/login',
-        },
-        'Should have redirected to Login'
-      );
-    });
+        { code: 401 },
+        'Should have returned unauthorized'
+      ));
   });
-
 export default auth;
