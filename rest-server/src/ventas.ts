@@ -1,10 +1,10 @@
 import { Database } from 'sqlite';
 import {
-  createWithCuid,
   updateById,
   deleteById,
   TABLE_VENTAS,
   TABLE_VENDEDORES,
+  createWithAutoId,
 } from './utils.js';
 
 export const listVentas = (db: Database, idVendedor?: ID) =>
@@ -30,7 +30,7 @@ export const getVenta = (db: Database, id: ID) =>
     { $id: id }
   );
 export const createVenta = (db: Database, venta: Venta) =>
-  createWithCuid<Venta>(db, TABLE_VENTAS, venta);
+  createWithAutoId<Venta>(db, TABLE_VENTAS, venta);
 export const updateVenta = (db: Database, id: ID, venta: Venta) =>
   updateById<Venta>(db, TABLE_VENTAS, id, venta);
 export const deleteVenta = (db: Database, id: ID) =>
