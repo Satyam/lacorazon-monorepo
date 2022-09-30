@@ -36,26 +36,46 @@ export const test = async (descr, fn) => {
     }
   }
 };
+
+let sessionId = null;
+
 export const apiFetch = async (
   partialUrl,
   method = 'GET',
   body,
   returnResponse
 ) => {
-  const options = body
-    ? {
-        method,
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-        redirect: 'manual',
-      }
-    : { method, redirect: 'manual' };
+  const options = {
+    method,
+    redirect: 'manual',
+  };
+  if (body) {
+    options.body = JSON.stringify(body);
+    options.headers = { 'Content-Type': 'application/json' };
+  }
+  if (sessionId) {
+    options.headers = {
+      ...options.headers,
+      Cookie: `connect.sid=${sessionId}`,
+    };
+  }
   const resp = await fetch(
     `http://localhost:${process.env.PORT}/api/${partialUrl}`,
     options
   );
   try {
     const reply = await resp.text();
+    const setCookie = resp.headers.raw()['set-cookie'];
+    if (setCookie) {
+      setCookie.forEach((cookie) => {
+        cookie.split(';').forEach((part) => {
+          const [key, value] = part.split('=');
+          if (key === 'connect.sid') {
+            sessionId = value;
+          }
+        });
+      });
+    }
     if ($.verbose) console.log({ reply });
     if (resp.ok) {
       try {
