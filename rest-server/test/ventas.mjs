@@ -3,6 +3,13 @@ import { ventas, vendedores } from './data.mjs';
 
 const url = (id) => (id ? `ventas/${id}` : 'ventas');
 
+const ventaYVendedor = (venta) => ({
+  ...venta,
+  vendedor: venta.idVendedor
+    ? vendedores.find((vd) => vd.id === venta.idVendedor).nombre
+    : null,
+});
+
 const vt = async () =>
   await describe('Ventas', async () => {
     const listVentas = async (cant) => {
@@ -26,7 +33,6 @@ const vt = async () =>
     ventas[0].idVendedor = vendedores[0].id;
     ventas[1].idVendedor = vendedores[1].id;
     ventas[2].idVendedor = vendedores[1].id;
-    console.log(ventas);
 
     await test('Initially empty', async () => await listVentas(0));
 
@@ -34,14 +40,18 @@ const vt = async () =>
       await Promise.all(
         ventas.map(async (venta) => {
           const newVenta = await apiFetch(url(), 'POST', venta);
+          venta.iva = !!venta.iva;
+          venta.idVendedor = venta.idVendedor ?? null;
           if (newVenta) {
-            const { id, ...rest } = newVenta;
+            newVenta.iva = !!newVenta.iva;
+            const { id, ...restNV } = newVenta;
 
             assert.deepEqual(
-              rest,
+              restNV,
               venta,
               `returned venta doesn't match what was sent`
             );
+
             assert.equal(
               typeof id,
               'number',
@@ -56,8 +66,10 @@ const vt = async () =>
     await test('checking the inserted data', async () =>
       await Promise.all(
         ventas.map(async (venta) => {
-          const inserted = await apiFetch(`ventas/${venta.id}`, 'GET');
-          assert.deepEqual(inserted, venta, 'no match');
+          const inserted = await apiFetch(url(venta.id));
+          inserted.iva = !!inserted.iva;
+
+          assert.deepEqual(inserted, ventaYVendedor(venta), 'no match');
         })
       ));
 
@@ -79,20 +91,19 @@ const vt = async () =>
         ventas.map(async (venta) => {
           venta.cantidad *= 2;
           venta.iva = !venta.iva;
-          const { id, ...rest } = venta;
-          const updatedVenta = await apiFetch(url(id), 'PUT', rest);
+          const { id, cantidad, iva } = venta;
+          const updatedVenta = await apiFetch(url(venta.id), 'PUT', {
+            cantidad,
+            iva,
+          });
           if (updatedVenta) {
+            updatedVenta.iva = !!updatedVenta.iva;
             const { id: uId, ...uRest } = updatedVenta;
 
             assert.deepEqual(
-              uRest,
-              rest,
+              updatedVenta,
+              venta,
               `returned venta doesn't match what was sent`
-            );
-            assert.equal(
-              uId,
-              id,
-              'in update of ventas, id should remain the same'
             );
           }
         })
@@ -102,7 +113,8 @@ const vt = async () =>
       await Promise.all(
         ventas.map(async (venta) => {
           const updated = await apiFetch(url(venta.id), 'GET');
-          assert.deepEqual(updated, venta, 'no match');
+          updated.iva = !!updated.iva;
+          assert.deepEqual(updated, ventaYVendedor(venta), 'no match');
         })
       ));
 
@@ -118,6 +130,36 @@ const vt = async () =>
 
     await test(`There should still be ${ventas.length} records`, async () =>
       await listVentas(ventas.length));
+
+    await test('Probando listado en lugar de busquedas individuales', async () => {
+      const listVentas = await apiFetch(url());
+      return Promise.all(
+        listVentas.map((venta) => {
+          venta.iva = !!venta.iva;
+          return assert.deepEqual(
+            venta,
+            ventaYVendedor(ventas.find((v) => v.id === venta.id)),
+            'Venta no se corresponde'
+          );
+        })
+      );
+    });
+
+    await test('Probando listado de ventas por vendedor', async () => {
+      const listVentas = await apiFetch(
+        `ventas?idVendedor=${vendedores[1].id}`
+      );
+      return Promise.all(
+        listVentas.map((venta) => {
+          venta.iva = !!venta.iva;
+          return assert.deepEqual(
+            venta,
+            ventas.find((v) => v.id === venta.id),
+            'Venta no se corresponde'
+          );
+        })
+      );
+    });
 
     await test('Delete them', async () =>
       await Promise.all(
