@@ -24,12 +24,11 @@ const server = $`node ./dist/index.js`;
 console.log();
 
 await sleep(1000);
-// se debe llamar a vendedores antes que a ventas para tener vendedores que hagan la venta
-// await vendedores();
+await vendedores();
 await ventas();
 // se debe llamar a users antes que a auth para que queden usuarios para hacer login
-// await users();
-// await auth();
+await users();
+await auth();
 report();
 console.log('Ignore the following error!');
 server.kill();
