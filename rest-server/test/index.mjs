@@ -26,7 +26,6 @@ console.log();
 await sleep(1000);
 await vendedores();
 await ventas();
-// se debe llamar a users antes que a auth para que queden usuarios para hacer login
 await users();
 await auth();
 report();

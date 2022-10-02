@@ -5,7 +5,7 @@ const url = (id) => (id ? `users/${id}` : 'users');
 
 const u = async () =>
   await describe('Users', async () => {
-    const listUsers = async (cant) => {
+    const countUsers = async (cant) => {
       const listUsers = await apiFetch(url());
       assert.equal(
         listUsers.length,
@@ -13,7 +13,7 @@ const u = async () =>
         `users list should contain ${cant} records`
       );
     };
-    await test('Initially Empty', async () => await listUsers(0));
+    await test('Initially Empty', async () => await countUsers(0));
 
     await test('inserting two records', async () =>
       await Promise.all(
@@ -67,8 +67,8 @@ const u = async () =>
         'no rechazó el pedido incompleto'
       ));
 
-    await test('There should be two records now', async () =>
-      await listUsers(2));
+    await test(`There should be ${users.length} records now`, async () =>
+      await countUsers(users.length));
 
     await test('Cheking valid users', async () =>
       await Promise.all(
@@ -134,16 +134,20 @@ const u = async () =>
         'no rechazó el nombre duplicado'
       ));
 
-    await test('There should still be two records', async () =>
-      await listUsers(2));
+    await test(`There should still be ${users.length} records`, async () =>
+      await countUsers(users.length));
 
-    await test('Delete the second one, leave one for auth tests', async () =>
-      await assert(
-        await apiFetch(url(users[1].id), 'DELETE'),
-        'deleting existing records should return true'
+    await test('Delete them all', async () =>
+      Promise.all(
+        users.map(async (user) =>
+          assert(
+            await apiFetch(url(user.id), 'DELETE'),
+            'deleting existing records should return true'
+          )
+        )
       ));
 
-    await test('There should none now', async () => await listUsers(1));
+    await test('There should none now', async () => await countUsers(0));
   });
 
 export default u;

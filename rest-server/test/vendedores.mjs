@@ -5,7 +5,7 @@ const url = (id) => (id ? `vendedores/${id}` : 'vendedores');
 
 const v = async () =>
   await describe('Vendedores', async () => {
-    const listVendedores = async (cant) => {
+    const countVendedores = async (cant) => {
       const listVendedores = await apiFetch(url());
       assert.equal(
         listVendedores.length,
@@ -14,7 +14,7 @@ const v = async () =>
       );
     };
 
-    await test('Initially empty', async () => await listVendedores(0));
+    await test('Initially empty', async () => await countVendedores(0));
 
     await test('inserting two records', async () =>
       await Promise.all(
@@ -70,8 +70,8 @@ const v = async () =>
         'no rechazó el pedido incompleto'
       ));
 
-    await test('There should be two records now', async () =>
-      await listVendedores(2));
+    await test(`There should be ${vendedores.length} records now`, async () =>
+      await countVendedores(vendedores.length));
 
     await test('Updating vendedores', async () =>
       await Promise.all(
@@ -127,8 +127,8 @@ const v = async () =>
         'no rechazó el nombre duplicado'
       ));
 
-    await test('There should still be two records', async () =>
-      await listVendedores(2));
+    await test(`There should still be ${vendedores.length} records`, async () =>
+      await countVendedores(vendedores.length));
 
     await test('Delete them', async () =>
       await Promise.all(
@@ -141,7 +141,7 @@ const v = async () =>
         })
       ));
 
-    await test('There should none now', async () => await listVendedores(0));
+    await test('There should none now', async () => await countVendedores(0));
   });
 
 export default v;

@@ -12,7 +12,7 @@ const ventaYVendedor = (venta) => ({
 
 const vt = async () =>
   await describe('Ventas', async () => {
-    const listVentas = async (cant) => {
+    const countVentas = async (cant) => {
       const listVentas = await apiFetch(url());
       assert.equal(
         listVentas.length,
@@ -34,7 +34,7 @@ const vt = async () =>
     ventas[1].idVendedor = vendedores[1].id;
     ventas[2].idVendedor = vendedores[1].id;
 
-    await test('Initially empty', async () => await listVentas(0));
+    await test('Initially empty', async () => await countVentas(0));
 
     await test('inserting all ventas', async () =>
       await Promise.all(
@@ -84,7 +84,7 @@ const vt = async () =>
       ));
 
     await test(`There should be ${ventas.length} records now`, async () =>
-      await listVentas(ventas.length));
+      await countVentas(ventas.length));
 
     await test('Updating ventas', async () =>
       await Promise.all(
@@ -129,7 +129,7 @@ const vt = async () =>
       ));
 
     await test(`There should still be ${ventas.length} records`, async () =>
-      await listVentas(ventas.length));
+      await countVentas(ventas.length));
 
     await test('Probando listado en lugar de busquedas individuales', async () => {
       const listVentas = await apiFetch(url());
@@ -172,7 +172,17 @@ const vt = async () =>
         })
       ));
 
-    await test('There should none now', async () => await listVentas(0));
+    await test('There should none now', async () => await countVentas(0));
+
+    await test('Deleting inserted vendedores', async () =>
+      await Promise.all(
+        vendedores.map(async (vendedor) => {
+          assert(
+            await apiFetch(`vendedores/${vendedor.id}`, 'DELETE'),
+            'deleting existing records should return true'
+          );
+        })
+      ));
   });
 
 export default vt;
