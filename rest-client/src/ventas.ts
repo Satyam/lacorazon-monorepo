@@ -20,9 +20,10 @@ const convertRes = (venta: dbVenta) =>
   } as VentaYVendedor);
 
 export const apiListVentas = (idVendedor?: ID) =>
-  apiList<dbVenta[]>(VENTAS_SERVICE, idVendedor).then((rows) =>
-    rows.map<VentaYVendedor>(convertRes)
-  );
+  apiList<dbVenta[]>(
+    VENTAS_SERVICE,
+    idVendedor ? { idVendedor: String(idVendedor) } : undefined
+  ).then((rows) => rows.map<VentaYVendedor>(convertRes));
 
 export const apiGetVenta = (id: ID) =>
   apiGet<dbVenta>(VENTAS_SERVICE, id).then(convertRes);
