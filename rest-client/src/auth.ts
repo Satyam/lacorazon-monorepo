@@ -1,4 +1,4 @@
-import apiFetch from './apiFetch';
+import apiFetch from './apiFetch.js';
 
 export type SafeUserData = Omit<User, 'password'>;
 export type CurrentUser = SafeUserData | null;
