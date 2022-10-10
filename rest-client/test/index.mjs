@@ -1,9 +1,9 @@
 #!/usr/bin/env zx
 import dotEnv from 'dotenv';
 import { report } from './testUtils.mjs';
-// import users from './users.mjs';
+import users from './users.mjs';
 import vendedores from './vendedores.mjs';
-// import ventas from './ventas.mjs';
+import ventas from './ventas.mjs';
 // import auth from './auth.mjs';
 dotEnv.config();
 
@@ -31,8 +31,8 @@ console.log();
 
 await sleep(1000);
 await vendedores();
-// await ventas();
-// await users();
+await ventas();
+await users();
 // await auth();
 report();
 console.log('Ignore the following error!');
