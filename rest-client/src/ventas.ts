@@ -8,15 +8,17 @@ import {
 
 export const VENTAS_SERVICE = 'ventas';
 
-type dbVenta = Omit<VentaYVendedor, 'fecha'> & { fecha: string };
+type dbVenta = Omit<VentaYVendedor, 'fecha'> & { fecha?: string };
 
 const convertReq = (venta: Venta) =>
-  ({ ...venta, fecha: venta.fecha.toISOString() } as dbVenta);
+  (venta.fecha
+    ? { ...venta, fecha: venta.fecha.toISOString() }
+    : venta) as dbVenta;
 
 const convertRes = (venta: dbVenta) =>
   ({
     ...venta,
-    fecha: new Date(venta.fecha),
+    fecha: venta.fecha ? new Date(venta.fecha) : venta.fecha,
   } as VentaYVendedor);
 
 export const apiListVentas = (idVendedor?: ID) =>
