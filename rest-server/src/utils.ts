@@ -46,7 +46,7 @@ export function listAll<T>(db: Database, nombreTabla: string) {
 export async function createWithAutoId<T>(
   db: Database,
   nombreTabla: string,
-  fila: Partial<T & { id: ID }>
+  fila: Partial<T>
 ) {
   const fields = Object.keys(fila);
   const values = Object.values(fila);
@@ -78,25 +78,24 @@ export async function createWithAutoId<T>(
 export async function createWithCuid<T>(
   db: Database,
   nombreTabla: string,
-  fila: Partial<T & { id: ID }>
+  fila: Partial<T> & { id: ID }
 ) {
-  const id = cuid();
-  const { id: _, ...rest } = fila;
-  const fields = Object.keys(rest);
-  const values = Object.values(rest);
-  if (fields.length === 0) {
+  fila.id = cuid() as ID;
+  const fields = Object.keys(fila);
+  const values = Object.values(fila);
+  if (fields.length === 1) {
     throw new ServerError(ERRORS.BAD_REQUEST, 'No data to insert');
   }
   try {
     const { changes } = await db.run(
-      `insert into ${nombreTabla} (id, ${fields.join(',')}) values (${Array(
-        fields.length + 1
+      `insert into ${nombreTabla} ( ${fields.join(',')}) values (${Array(
+        fields.length
       )
         .fill('?')
         .join(',')})`,
-      [id, ...values]
+      values
     );
-    return changes === 1 ? getById<T>(db, nombreTabla, id) : undefined;
+    return changes === 1 ? getById<T>(db, nombreTabla, fila.id) : undefined;
   } catch (err) {
     // @ts-ignore
     if (err.errno === 19) {
