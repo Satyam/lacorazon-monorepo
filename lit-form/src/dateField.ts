@@ -3,6 +3,8 @@ import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 
+// Don't use toISOString because it gives the date un UTC time, not local
+// and may show a different day close to midnight.
 const datePart = (d: Date = new Date()) =>
   [
     d.getFullYear().toString().padStart(4, '0'),
@@ -22,16 +24,14 @@ export class DateField extends FieldBase<Date> {
   override value: Date = new Date();
 
   protected override get fieldValue(): Date {
-    return new Date(this.fieldEl().value);
+    return new Date(this.fieldEl.value);
   }
   protected override set fieldValue(v: Date) {
-    this.fieldEl().value = datePart(v);
+    this.fieldEl.value = datePart(v);
   }
 
-  // Not sure why I had to do this.
-  override reset() {
-    super.reset();
-    this.fieldValue = this.value;
+  protected override get defaultValue(): Date {
+    return new Date(this.fieldEl.defaultValue);
   }
 
   override inputControl() {

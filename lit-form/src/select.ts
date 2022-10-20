@@ -26,12 +26,6 @@ export class SelectField extends FieldBase<string> {
   @property({ type: String })
   nullLabel = '';
 
-  // Not sure why I had to do this.
-  override reset() {
-    super.reset();
-    this.fieldEl().value = this.value;
-  }
-
   override inputControl() {
     const l = this.labelFieldName;
     const v = this.valueFieldName;

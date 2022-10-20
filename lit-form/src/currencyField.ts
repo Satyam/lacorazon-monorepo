@@ -9,16 +9,14 @@ export class CurrencyField extends FieldBase<number> {
   override value = 0;
 
   protected override get fieldValue(): number {
-    return Number(this.fieldEl().value);
+    return Number(this.fieldEl.value);
   }
   protected override set fieldValue(v: number) {
-    this.fieldEl().value = String(v);
+    this.fieldEl.value = String(v);
   }
 
-  // Not sure why I had to do this.
-  override reset() {
-    super.reset();
-    this.fieldValue = this.value;
+  protected override get defaultValue(): number {
+    return Number(this.fieldEl.defaultValue);
   }
 
   override inputControl() {

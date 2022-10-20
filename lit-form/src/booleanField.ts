@@ -20,16 +20,14 @@ export class BooleanField extends FieldBase<boolean> {
   checkLabel = '';
 
   protected override get fieldValue(): boolean {
-    return this.fieldEl().checked;
+    return this.fieldEl.checked;
   }
   protected override set fieldValue(v: boolean) {
-    this.fieldEl().checked = v;
+    this.fieldEl.checked = v;
   }
 
-  // Not sure why I had to do this.
-  override reset() {
-    super.reset();
-    this.fieldValue = this.value;
+  protected override get defaultValue(): boolean {
+    return this.fieldEl.defaultChecked;
   }
 
   override inputControl() {

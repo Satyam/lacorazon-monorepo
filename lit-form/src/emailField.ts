@@ -12,12 +12,6 @@ export class EmailField extends FieldBase<string> {
   @property({ type: String })
   override value = '';
 
-  // Not sure why I had to do this.
-  override reset() {
-    super.reset();
-    this.fieldEl().value = this.value;
-  }
-
   protected override extraValidationCheck(field: HTMLInputElement): boolean {
     return emailRegexp.test(field.value);
   }

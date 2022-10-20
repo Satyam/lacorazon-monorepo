@@ -11,18 +11,13 @@ export class TextField extends FieldBase<string> {
   @property({ type: Boolean })
   password = false;
 
-  // Not sure why I had to do this.
-  override reset() {
-    super.reset();
-    this.fieldEl().value = this.value;
-  }
-
   override inputControl() {
     return html`
       <input
         type=${this.password ? 'password' : 'text'}
         name=${this.name}
         value=${this.value}
+        tabindex="0"
         class="form-control"
         placeholder=${this.placeholder}
         ?required=${this.required}
