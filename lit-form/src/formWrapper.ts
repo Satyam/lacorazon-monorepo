@@ -1,132 +1,128 @@
 import { LitElement, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-
-import { FieldBase, InputChangedEvent } from './fieldBase';
-import { getTarget } from './utils';
+import { customElement, queryAssignedElements } from 'lit/decorators.js';
+import { FieldBase } from './fieldBase';
 
 export const FORM_SUBMIT_EVENT: 'formSubmit' = 'formSubmit' as const;
 export class FormSubmitEvent extends Event {
-  values: FieldData;
-  constructor(values: FieldData) {
+  wrapper: FormWrapper;
+  form: HTMLFormElement;
+  submitter: HTMLElement | null;
+  constructor(
+    wrapper: FormWrapper,
+    form: HTMLFormElement,
+    submitter: HTMLElement | null
+  ) {
     super('formSubmit', { composed: true, bubbles: true });
-    this.values = values;
+    this.wrapper = wrapper;
+    this.form = form;
+    this.submitter = submitter;
   }
 }
+
+type FieldElement =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | HTMLButtonElement;
+
 export const FORM_CHANGED_EVENT: 'formChanged' = 'formChanged' as const;
 export class FormChangedEvent extends Event {
-  form: FormWrapper;
-  fieldName: string;
+  wrapper: FormWrapper;
+  form: HTMLFormElement;
+  field: FieldElement;
+  name: string;
   value: VALUE;
-  isDirty: boolean;
   constructor(
-    form: FormWrapper,
-    fieldName: string,
-    value: VALUE,
-    isDirty: boolean
+    wrapper: FormWrapper,
+    form: HTMLFormElement,
+    field: FieldElement,
+    name: string,
+    value: VALUE
   ) {
     super(FORM_CHANGED_EVENT, { composed: true, bubbles: true });
+    this.wrapper = wrapper;
     this.form = form;
-    this.fieldName = fieldName;
+    this.field = field;
+    this.name = name;
     this.value = value;
-    this.isDirty = isDirty;
   }
 }
 
 @customElement('form-wrapper')
 export class FormWrapper extends LitElement {
-  @property({ type: Boolean })
-  novalidate = false;
+  @queryAssignedElements({ selector: 'form' })
+  private _formElements!: Array<HTMLElement>;
 
-  private _fields: FieldBase<VALUE>[] = [];
-  private _values: FieldData = {};
-  private _dirtyFields: DirtyFields = {};
-  private _submitButtons: HTMLButtonElement[] = [];
+  private _formEl: HTMLFormElement | undefined;
+
+  public get fields() {
+    return (this._formEl ? [...this._formEl.elements] : []) as FieldElement[];
+  }
 
   public get values() {
-    return this._values;
+    return this.fields.reduce(
+      (vals, el) =>
+        el.name
+          ? {
+              ...vals,
+              [el.name]: el.value,
+            }
+          : vals,
+      {}
+    );
   }
 
   public get dirtyFields() {
-    return this._dirtyFields;
+    return this.fields
+      .filter((el) =>
+        el instanceof FieldBase
+          ? el.isDirty
+          : el.value !== (el as HTMLInputElement).defaultValue
+      )
+      .map((el) => el.name);
   }
 
   public get isDirty() {
-    return this._fields.some((f) => f.isDirty);
+    return this.fields.some((el) =>
+      el instanceof FieldBase
+        ? el.isDirty
+        : el.value !== (el as HTMLInputElement).defaultValue
+    );
   }
 
-  private slotChange(ev: { target: HTMLSlotElement }) {
-    const findEls = (els: Element[]): void =>
-      els.forEach((el) => {
-        if (el instanceof FieldBase) {
-          this._fields.push(el);
-          this._values[el.name] = el.value;
-          this._dirtyFields[el.name] = false;
-        }
-
-        if (el.nodeName === 'BUTTON') {
-          const btn = el as HTMLButtonElement;
-          switch (btn.type) {
-            case 'submit':
-              this._submitButtons.push(btn);
-              btn.disabled = true;
-              btn.addEventListener('click', this.submitHandler);
-              break;
-            case 'reset':
-              btn.disabled = true;
-              btn.addEventListener('click', this.resetHandler);
-              break;
-          }
-        }
-        if (el.children.length) findEls(Array.from(el.children));
-      });
-    this._fields = [];
-    this._values = {};
-    this._dirtyFields = {};
-    this._submitButtons = [];
-
-    findEls(Array.from(ev.target.assignedElements()) as Element[]);
-  }
-
-  public reset(): void {
-    this._fields.forEach((el) => el.reset());
-  }
-
-  private resetHandler = () => {
-    this.reset();
-  };
-
-  private submitHandler = (ev: Event) => {
-    const submitButton = getTarget<HTMLButtonElement>(ev);
-    if (this._fields.every((f) => f.checkValidity())) {
-      if (submitButton.name) {
-        this.dispatchEvent(
-          new FormSubmitEvent({ ...this._values, [submitButton.name]: true })
-        );
-      } else {
-        this.dispatchEvent(new FormSubmitEvent(this._values));
-      }
+  private _submitHandler = (ev: SubmitEvent) => {
+    ev.preventDefault();
+    if (this.fields.every((f) => f.checkValidity())) {
+      this.dispatchEvent(
+        new FormSubmitEvent(this, this._formEl!, ev.submitter)
+      );
     }
   };
 
-  private inputChanged = (ev: InputChangedEvent<VALUE>) => {
-    ev.stopPropagation();
-    const { isDirty, name, value } = ev;
-    this._submitButtons.forEach((btn) => {
-      btn.disabled = !isDirty;
-    });
-    this._dirtyFields[name] = isDirty;
-    this._values[name] = value;
-    this.dispatchEvent(new FormChangedEvent(this, name, value, this.isDirty));
+  private _inputHandler = (ev: InputEvent) => {
+    const el = ev.target as FieldElement;
+    this.dispatchEvent(
+      new FormChangedEvent(this, this._formEl!, el, el.name, el.value)
+    );
   };
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this._formEl?.removeEventListener('submit', this._submitHandler);
+    // @ts-ignore
+    this._formEl?.removeEventListener('input', this._inputHandler);
+  }
+
+  protected override firstUpdated() {
+    this._formEl = this._formElements[0] as HTMLFormElement;
+    console.log(this.fields);
+    this._formEl?.addEventListener('submit', this._submitHandler);
+    // @ts-ignore
+    this._formEl?.addEventListener('input', this._inputHandler);
+  }
+
   override render() {
-    return html`<form
-      ?novalidate=${this.novalidate}
-      @submit=${this.submitHandler}
-      @inputChanged=${this.inputChanged}
-    >
-      <slot @slotchange=${this.slotChange}></slot>
-    </form>`;
+    return html`<slot></slot>`;
   }
 }
 

@@ -19,6 +19,9 @@ export class InputChangedEvent<T> extends Event {
 
 @customElement('field-base')
 export abstract class FieldBase<T> extends LitElement {
+  static formAssociated = true;
+  internals = this.attachInternals();
+
   static override readonly styles = [
     BootBase.styles,
     css`
@@ -62,25 +65,35 @@ export abstract class FieldBase<T> extends LitElement {
 
   protected fieldRef: Ref<HTMLInputElement> = createRef();
 
-  protected fieldEl() {
+  public get form() {
+    return this.internals.form;
+  }
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('focus', () => this.fieldEl.focus());
+  }
+  protected get fieldEl() {
     return this.fieldRef.value!;
   }
 
   protected get fieldValue(): T {
-    return this.fieldEl().value as unknown as T;
+    return this.fieldEl.value as unknown as T;
   }
 
   protected set fieldValue(v: T) {
-    this.fieldEl().value = String(v);
+    this.fieldEl.value = String(v);
   }
-  public defaultValue?: T;
+
+  protected get defaultValue(): T {
+    return this.fieldEl.value as unknown as T;
+  }
 
   public get isDirty() {
-    return this.value !== this.defaultValue;
+    return this.fieldEl.value !== this.fieldEl.defaultValue;
   }
 
-  protected override firstUpdated() {
-    this.defaultValue = this.fieldValue;
+  public get isValid() {
+    return this.fieldEl.validity.valid;
   }
 
   protected extraValidationCheck(_field: HTMLInputElement) {
@@ -88,31 +101,20 @@ export abstract class FieldBase<T> extends LitElement {
   }
 
   public checkValidity() {
-    const field = this.fieldEl();
+    const field = this.fieldEl;
     const isValid = this.extraValidationCheck(field) && field.checkValidity();
     field.classList.add(isValid ? 'is-valid' : 'is-invalid');
 
     return isValid;
   }
 
-  public reset() {
-    if (this.defaultValue) {
-      this.value = this.defaultValue;
-      this.dispatchEvent(new InputChangedEvent(this.name, this.value, false));
-    }
-  }
-
   protected inputHandler(ev: Event) {
     if (this.name.length === 0 || this.readonly) return;
     ev.preventDefault();
-    this.fieldEl().classList.remove('is-valid', 'is-invalid');
+    this.fieldEl.classList.remove('is-valid', 'is-invalid');
     this.value = this.fieldValue;
     return this.dispatchEvent(
-      new InputChangedEvent(
-        this.name,
-        this.value,
-        this.value !== this.defaultValue
-      )
+      new InputChangedEvent(this.name, this.value, this.isDirty)
     );
   }
 
