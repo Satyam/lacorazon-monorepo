@@ -64,7 +64,7 @@ export class LoginForm extends LitElement {
   ];
 
   submit(ev: FormSubmitEvent) {
-    const data = ev.values;
+    const data = ev.wrapper.values;
     if (data) {
       apiLogin(data).then((user) => {
         window.dispatchEvent(new LoginEvent(user));
@@ -73,26 +73,29 @@ export class LoginForm extends LitElement {
       });
     }
   }
+
   override render() {
     return html`
       <h1>Login</h1>
-      <form-wrapper novalidate @formSubmit=${this.submit}>
-        <email-field
-          label="Email"
-          name="email"
-          placeholder="e-Mail"
-          errorFeedback="Debe indicar una dirección de correo válida y que coincida con la registrada"
-          required
-        ></email-field>
-        <text-field
-          label="Contraseña"
-          name="password"
-          placeholder="Contraseña"
-          required
-          password
-          errorFeedback="Debe indicar una contraseña"
-        ></text-field>
-        <button type="submit" class="btn btn-primary" disabled>Acceder</button>
+      <form-wrapper @formSubmit=${this.submit}>
+        <form>
+          <email-field
+            label="Email"
+            name="email"
+            placeholder="e-Mail"
+            errorFeedback="Debe indicar una dirección de correo válida y que coincida con la registrada"
+            required
+          ></email-field>
+          <text-field
+            label="Contraseña"
+            name="password"
+            placeholder="Contraseña"
+            required
+            password
+            errorFeedback="Debe indicar una contraseña"
+          ></text-field>
+          <button type="submit" class="btn btn-primary">Acceder</button>
+        </form>
       </form-wrapper>
     `;
   }

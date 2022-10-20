@@ -33,7 +33,7 @@ export class EditVenta extends PageBase<VentaYVendedor> {
   }
 
   submit(ev: FormSubmitEvent) {
-    const data = ev.values;
+    const data = ev.wrapper.values;
     this._loading = true;
     if (this.idVenta) {
       apiUpdateVenta({ id: this.idVenta, ...data } as Venta).then(
@@ -47,12 +47,12 @@ export class EditVenta extends PageBase<VentaYVendedor> {
     }
   }
 
-  protected fieldRef: Ref<NumberField> = createRef();
+  protected precioTotalFieldRef: Ref<NumberField> = createRef();
 
   formChanged(ev: FormChangedEvent) {
-    const precioTotalField = this.fieldRef.value;
+    const precioTotalField = this.precioTotalFieldRef.value;
     if (precioTotalField) {
-      const values = ev.form.values as Venta;
+      const values = ev.wrapper.values as Venta;
       precioTotalField.value =
         (values.cantidad || 0) * (values.precioUnitario || 0);
     }
@@ -60,52 +60,52 @@ export class EditVenta extends PageBase<VentaYVendedor> {
 
   renderForm(data: VentaYVendedor) {
     return html`
-      <form-wrapper
-        novalidate
-        @formSubmit=${this.submit}
-        @formChanged=${this.formChanged}
-      >
-        <date-field
-          label="Fecha"
-          name="fecha"
-          .value=${data.fecha}
-        ></date-field>
-        <text-field
-          label="Concepto"
-          name="concepto"
-          value=${data.concepto || ''}
-        ></text-field>
-        <select-field
-          label="Vendedor"
-          name="idVendedor"
-          value=${data.idVendedor || ''}
-          labelFieldName="nombre"
-          valueFieldName="id"
-          .options=${this._options}
-        >
-        </select-field>
-        <number-field
-          label="Cantidad"
-          name="cantidad"
-          value=${data.cantidad || 0}
-        ></number-field>
-        <currency-field
-          label="Precio Unitario"
-          name="precioUnitario"
-          value=${data.precioUnitario || 0}
-        ></currency-field>
-        <boolean-field
-          checkLabel="IVA"
-          name="iva"
-          .value=${!!data.iva}
-        ></boolean-field>
-        <currency-field
-          label="Precio Total"
-          value=${(data.cantidad || 0) * (data.precioUnitario || 0)}
-          readonly
-          ${ref(this.fieldRef)}
-        ></currency-field>
-        <button type="submit" class="btn btn-primary" disabled>Acceder</button>
+      <form-wrapper @formSubmit=${this.submit} @formChanged=${this.formChanged}
+        ><form>
+          <date-field
+            label="Fecha"
+            name="fecha"
+            .value=${data.fecha}
+          ></date-field>
+          <text-field
+            label="Concepto"
+            name="concepto"
+            value=${data.concepto || ''}
+          ></text-field>
+          <select-field
+            label="Vendedor"
+            name="idVendedor"
+            value=${data.idVendedor || ''}
+            labelFieldName="nombre"
+            valueFieldName="id"
+            .options=${this._options}
+          >
+          </select-field>
+          <number-field
+            label="Cantidad"
+            name="cantidad"
+            value=${data.cantidad || 0}
+          ></number-field>
+          <currency-field
+            label="Precio Unitario"
+            name="precioUnitario"
+            value=${data.precioUnitario || 0}
+          ></currency-field>
+          <boolean-field
+            checkLabel="IVA"
+            name="iva"
+            .value=${!!data.iva}
+          ></boolean-field>
+          <currency-field
+            label="Precio Total"
+            value=${(data.cantidad || 0) * (data.precioUnitario || 0)}
+            readonly
+            ${ref(this.precioTotalFieldRef)}
+          ></currency-field>
+          <button type="submit" class="btn btn-primary" disabled>
+            Acceder
+          </button>
+        </form>
       </form-wrapper>
     `;
   }
