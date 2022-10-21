@@ -7,7 +7,6 @@ import {
   apiIsLoggedIn,
   CurrentUser,
 } from '@lacorazon/post-client';
-import '@lacorazon/lit-form';
 import { FormSubmitEvent } from '@lacorazon/lit-form';
 import { router } from './utils';
 
