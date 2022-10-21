@@ -8,7 +8,7 @@ export default {
   output: {
     dir: DIST,
     format: 'es',
-    // sourcemap: true,
+    sourcemap: true,
   },
   plugins: [
     clear({
