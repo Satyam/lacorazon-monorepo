@@ -12,6 +12,9 @@ const datePart = (d: Date = new Date()) =>
     d.getDate().toString().padStart(2, '0'),
   ].join('-');
 
+/**
+ * @attr {Date} value
+ */
 @customElement('date-field')
 export class DateField extends FieldBase<Date> {
   @property({

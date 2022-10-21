@@ -3,6 +3,9 @@ import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 
+/**
+ * @attr {Number} value
+ */
 @customElement('number-field')
 export class NumberField extends FieldBase<number> {
   @property({ type: Number })

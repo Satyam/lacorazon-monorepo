@@ -2,7 +2,9 @@ import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
-
+/**
+ * @attr {Boolean} password
+ */
 @customElement('text-field')
 export class TextField extends FieldBase<string> {
   @property({ type: String })

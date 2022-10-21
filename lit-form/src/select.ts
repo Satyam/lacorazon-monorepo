@@ -3,6 +3,13 @@ import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 
+/**
+ * @attr {Boolean} multiple
+ * @attr {Number} size
+ * @attr labelFieldName
+ * @attr valueFieldName
+ * @attr nullLabel
+ */
 @customElement('select-field')
 export class SelectField extends FieldBase<string> {
   @property({ type: String })

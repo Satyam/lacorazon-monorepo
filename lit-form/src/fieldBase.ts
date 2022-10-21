@@ -17,6 +17,17 @@ export class InputChangedEvent<T> extends Event {
   }
 }
 
+/**
+ * @attr label
+ * @attr name
+ * @attr value
+ * @attr placeholder
+ * @attr errorFeedback
+ * @attr hint
+ * @attr {Boolean} required
+ * @attr {Boolean} readonly
+ * @attr {Boolean} disabled
+ */
 @customElement('field-base')
 export abstract class FieldBase<T> extends LitElement {
   static formAssociated = true;
