@@ -1,6 +1,12 @@
 import { LitElement, html } from 'lit';
 import { customElement, queryAssignedElements } from 'lit/decorators.js';
-import { FieldBase } from './fieldBase';
+import {
+  FieldBase,
+  InputRenderedEvent,
+  InputChangedEvent,
+  INPUT_RENDERED_EVENT,
+  INPUT_CHANGED_EVENT,
+} from './fieldBase';
 
 export const FORM_SUBMIT_EVENT: 'formSubmit' = 'formSubmit' as const;
 export class FormSubmitEvent extends Event {
@@ -50,22 +56,27 @@ export class FormChangedEvent extends Event {
 
 @customElement('form-wrapper')
 export class FormWrapper extends LitElement {
+  constructor() {
+    super();
+    this.addEventListener(INPUT_RENDERED_EVENT, this._registerField);
+    this.addEventListener('submit', this._submitHandler);
+    this.addEventListener(INPUT_CHANGED_EVENT, this._inputHandler);
+  }
+
   @queryAssignedElements({ selector: 'form' })
   private _formElements!: Array<HTMLElement>;
 
   private _formEl: HTMLFormElement | undefined;
 
-  public get fields() {
-    return (this._formEl ? [...this._formEl.elements] : []) as FieldElement[];
-  }
+  private _fields: FieldBase[] = [];
 
   public get values() {
-    return this.fields.reduce(
+    return this._fields.reduce(
       (vals, el) =>
         el.name
           ? {
               ...vals,
-              [el.name]: el.value,
+              [el.name]: el.typedValue,
             }
           : vals,
       {}
@@ -73,52 +84,38 @@ export class FormWrapper extends LitElement {
   }
 
   public get dirtyFields() {
-    return this.fields
-      .filter((el) =>
-        el instanceof FieldBase
-          ? el.isDirty
-          : el.value !== (el as HTMLInputElement).defaultValue
-      )
-      .map((el) => el.name);
+    return this._fields.filter((el) => el.isDirty).map((el) => el.name);
   }
 
   public get isDirty() {
-    return this.fields.some((el) =>
-      el instanceof FieldBase
-        ? el.isDirty
-        : el.value !== (el as HTMLInputElement).defaultValue
-    );
+    return this._fields.some((el) => el.isDirty);
+  }
+
+  private _registerField(ev: Event) {
+    ev.stopPropagation();
+    const { fieldBase } = ev as InputRenderedEvent;
+    this._fields.push(fieldBase);
   }
 
   private _submitHandler = (ev: SubmitEvent) => {
     ev.preventDefault();
-    if (this.fields.every((f) => f.checkValidity())) {
+    if (this._fields.every((f) => f.checkValidity())) {
       this.dispatchEvent(
         new FormSubmitEvent(this, this._formEl!, ev.submitter)
       );
     }
   };
 
-  private _inputHandler = (ev: InputEvent) => {
+  private _inputHandler = (ev: Event) => {
+    const { name, typedValue } = ev as InputChangedEvent;
     const el = ev.target as FieldElement;
     this.dispatchEvent(
-      new FormChangedEvent(this, this._formEl!, el, el.name, el.value)
+      new FormChangedEvent(this, this._formEl!, el, name, typedValue)
     );
   };
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this._formEl?.removeEventListener('submit', this._submitHandler);
-    // @ts-ignore
-    this._formEl?.removeEventListener('input', this._inputHandler);
-  }
-
   protected override firstUpdated() {
     this._formEl = this._formElements[0] as HTMLFormElement;
-    console.log(this.fields);
-    this._formEl?.addEventListener('submit', this._submitHandler);
-    // @ts-ignore
-    this._formEl?.addEventListener('input', this._inputHandler);
   }
 
   override render() {
