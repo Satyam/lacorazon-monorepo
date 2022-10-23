@@ -6,6 +6,7 @@ declare global {
     [FORM_SUBMIT_EVENT]: FormSubmitEvent;
     [FORM_CHANGED_EVENT]: FormChangedEvent;
     [INPUT_CHANGED_EVENT]: InputChangedEvent<VALUE>;
+    [INPUT_RENDERED_EVENT]: InputRenderedEvent;
   }
 }
 

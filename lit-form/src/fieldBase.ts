@@ -5,22 +5,32 @@ import { BootBase } from './bootstrapBase';
 
 export const INPUT_CHANGED_EVENT: 'inputChanged' = 'inputChanged' as const;
 
-export class InputChangedEvent<T> extends Event {
+export class InputChangedEvent extends Event {
   name: string;
-  value: T;
+  typedValue: any;
   isDirty: boolean;
-  constructor(name: string, value: T, isDirty: boolean) {
+  constructor(name: string, typedValue: any, isDirty: boolean) {
     super(INPUT_CHANGED_EVENT, { composed: true, bubbles: true });
     this.name = name;
-    this.value = value;
+    this.typedValue = typedValue;
     this.isDirty = isDirty;
+  }
+}
+
+export const INPUT_RENDERED_EVENT: 'inputRendered' = 'inputRendered' as const;
+export class InputRenderedEvent extends Event {
+  name: string;
+  fieldBase: FieldBase;
+  constructor(name: string, fieldBase: FieldBase) {
+    super(INPUT_RENDERED_EVENT, { composed: true, bubbles: true });
+    this.name = name;
+    this.fieldBase = fieldBase;
   }
 }
 
 /**
  * @attr label
  * @attr name
- * @attr value
  * @attr placeholder
  * @attr errorFeedback
  * @attr hint
@@ -29,7 +39,7 @@ export class InputChangedEvent<T> extends Event {
  * @attr {Boolean} disabled
  */
 @customElement('field-base')
-export abstract class FieldBase<T> extends LitElement {
+export abstract class FieldBase extends LitElement {
   static formAssociated = true;
   internals = this.attachInternals();
 
@@ -53,8 +63,6 @@ export abstract class FieldBase<T> extends LitElement {
 
   @property({ type: String })
   name = '';
-
-  value?: T;
 
   @property({ type: String })
   placeholder = '';
@@ -87,17 +95,11 @@ export abstract class FieldBase<T> extends LitElement {
     return this.fieldRef.value!;
   }
 
-  protected get fieldValue(): T {
-    return this.fieldEl.value as unknown as T;
-  }
+  abstract get typedValue(): unknown;
 
-  protected set fieldValue(v: T) {
-    this.fieldEl.value = String(v);
-  }
+  abstract set typedValue(v: unknown);
 
-  protected get defaultValue(): T {
-    return this.fieldEl.value as unknown as T;
-  }
+  abstract get defaultValue(): unknown;
 
   public get isDirty() {
     return this.fieldEl.value !== this.fieldEl.defaultValue;
@@ -123,13 +125,16 @@ export abstract class FieldBase<T> extends LitElement {
     if (this.name.length === 0 || this.readonly) return;
     ev.preventDefault();
     this.fieldEl.classList.remove('is-valid', 'is-invalid');
-    this.value = this.fieldValue;
     return this.dispatchEvent(
-      new InputChangedEvent(this.name, this.value, this.isDirty)
+      new InputChangedEvent(this.name, this.typedValue, this.isDirty)
     );
   }
 
   protected abstract inputControl(): HTMLTemplateResult;
+
+  override firstUpdated() {
+    this.dispatchEvent(new InputRenderedEvent(this.name, this));
+  }
 
   protected override render() {
     return html`
