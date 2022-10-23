@@ -7,25 +7,28 @@ import { ref } from 'lit/directives/ref.js';
  * @attr {Number} value
  */
 @customElement('number-field')
-export class NumberField extends FieldBase<number> {
-  @property({ type: Number })
-  override value = 0;
+export class NumberField extends FieldBase {
+  @property({ type: String })
+  value = '0';
 
-  protected override get fieldValue(): number {
+  get typedValue(): number {
     return Number(this.fieldEl.value);
   }
-  protected override set fieldValue(v: number) {
-    this.fieldEl.value = String(v);
+
+  set typedValue(v) {
+    this.value = String(v);
   }
-  protected override get defaultValue(): number {
+
+  get defaultValue(): number {
     return Number(this.fieldEl.defaultValue);
   }
+
   override inputControl() {
     return html`
       <input
         type="number"
         name=${this.name}
-        value=${String(this.value)}
+        value=${this.value}
         class="form-control"
         placeholder=${this.placeholder}
         ?required=${this.required}

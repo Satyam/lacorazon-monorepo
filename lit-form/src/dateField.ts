@@ -16,7 +16,7 @@ const datePart = (d: Date = new Date()) =>
  * @attr {Date} value
  */
 @customElement('date-field')
-export class DateField extends FieldBase<Date> {
+export class DateField extends FieldBase {
   @property({
     type: Date,
     converter: {
@@ -24,16 +24,18 @@ export class DateField extends FieldBase<Date> {
       toAttribute: (value: Date) => value.toLocaleDateString(),
     },
   })
-  override value: Date = new Date();
+  @property({ type: String })
+  value = '';
 
-  protected override get fieldValue(): Date {
+  get typedValue(): Date {
     return new Date(this.fieldEl.value);
   }
-  protected override set fieldValue(v: Date) {
-    this.fieldEl.value = datePart(v);
+
+  set typedValue(v) {
+    this.value = datePart(v instanceof Date ? v : new Date(v));
   }
 
-  protected override get defaultValue(): Date {
+  get defaultValue(): Date {
     return new Date(this.fieldEl.defaultValue);
   }
 
@@ -42,7 +44,7 @@ export class DateField extends FieldBase<Date> {
       <input
         type="date"
         name=${this.name}
-        value=${datePart(this.value)}
+        value=${this.value}
         class="form-control"
         placeholder=${this.placeholder}
         ?required=${this.required}

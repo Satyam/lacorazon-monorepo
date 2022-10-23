@@ -3,15 +3,28 @@ import { customElement, property } from 'lit/decorators.js';
 import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 /**
+ * @attr value
  * @attr {Boolean} password
  */
 @customElement('text-field')
-export class TextField extends FieldBase<string> {
-  @property({ type: String })
-  override value = '';
-
+export class TextField extends FieldBase {
   @property({ type: Boolean })
   password = false;
+
+  @property({ type: String })
+  value = '';
+
+  get typedValue() {
+    return this.fieldEl.value;
+  }
+
+  set typedValue(v) {
+    this.value = String(v);
+  }
+
+  get defaultValue(): string {
+    return this.fieldEl.defaultValue;
+  }
 
   override inputControl() {
     return html`

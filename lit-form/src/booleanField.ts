@@ -13,27 +13,27 @@ d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a
 
 /**
  * @attr checkLabel
- * @attr {Boolean} value
+ * @attr {Boolean} checked
  */
 @customElement('boolean-field')
-export class BooleanField extends FieldBase<boolean> {
+export class BooleanField extends FieldBase {
   @property({ type: Boolean })
-  override value = false;
+  checked = false;
 
   @property({ type: String })
   checkLabel = '';
 
-  protected override get fieldValue(): boolean {
+  get typedValue(): boolean {
     return this.fieldEl.checked;
   }
-  protected override set fieldValue(v: boolean) {
-    this.fieldEl.checked = v;
+
+  set typedValue(v) {
+    this.fieldEl.checked = !!v;
   }
 
-  protected override get defaultValue(): boolean {
+  get defaultValue(): boolean {
     return this.fieldEl.defaultChecked;
   }
-
   override inputControl() {
     // It is important that I render an actual input box even if not visible because it is readonly
     // because fieldBase expects to find an actual input box even if only an svg image is shown
@@ -47,13 +47,13 @@ export class BooleanField extends FieldBase<boolean> {
             viewBox="0 0 16 16"
             class="form-check-input mt-2 me-2"
           >
-            ${this.value ? svgCheckSquareFill : svgSquare}
+            ${this.checked ? svgCheckSquareFill : svgSquare}
           </svg>`
         : null}
       <input
         type="checkbox"
         name=${this.name}
-        ?checked=${this.value}
+        ?checked=${this.checked}
         class=${`form-check-input mt-2 me-2 ${this.readonly ? 'd-none' : ''}`}
         placeholder=${this.placeholder}
         ?required=${this.required}
