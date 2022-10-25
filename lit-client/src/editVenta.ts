@@ -53,7 +53,7 @@ export class EditVenta extends PageBase<VentaYVendedor> {
     const precioTotalField = this.precioTotalFieldRef.value;
     if (precioTotalField) {
       const values = ev.wrapper.values as Venta;
-      precioTotalField.value =
+      precioTotalField.typedValue =
         (values.cantidad || 0) * (values.precioUnitario || 0);
     }
   }
@@ -65,7 +65,7 @@ export class EditVenta extends PageBase<VentaYVendedor> {
           <date-field
             label="Fecha"
             name="fecha"
-            .value=${data.fecha}
+            .typedValue=${data.fecha}
           ></date-field>
           <text-field
             label="Concepto"
@@ -84,27 +84,25 @@ export class EditVenta extends PageBase<VentaYVendedor> {
           <number-field
             label="Cantidad"
             name="cantidad"
-            value=${data.cantidad || 0}
+            .typedValue=${data.cantidad || 0}
           ></number-field>
           <currency-field
             label="Precio Unitario"
             name="precioUnitario"
-            value=${data.precioUnitario || 0}
+            .typedValue=${data.precioUnitario || 0}
           ></currency-field>
           <boolean-field
             checkLabel="IVA"
             name="iva"
-            .value=${!!data.iva}
+            .typedValue=${!!data.iva}
           ></boolean-field>
           <currency-field
             label="Precio Total"
-            value=${(data.cantidad || 0) * (data.precioUnitario || 0)}
+            .typedValue=${(data.cantidad || 0) * (data.precioUnitario || 0)}
             readonly
             ${ref(this.precioTotalFieldRef)}
           ></currency-field>
-          <button type="submit" class="btn btn-primary" disabled>
-            Acceder
-          </button>
+          <button type="submit" class="btn btn-primary">Aceptar</button>
         </form>
       </form-wrapper>
     `;
