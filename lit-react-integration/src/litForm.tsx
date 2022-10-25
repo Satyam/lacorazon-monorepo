@@ -34,9 +34,7 @@ export const BooleanField = createComponent(
   'boolean-field',
   LitBooleanField,
   {
-    onInputChanged: INPUT_CHANGED_EVENT as EventName<
-      InputChangedEvent<boolean>
-    >,
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
   }
 );
 
@@ -45,16 +43,16 @@ export const CurrencyField = createComponent(
   'currency-field',
   LitCurrencyField,
   {
-    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent<number>>,
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
   }
 );
 
 export const DateField = createComponent(React, 'date-field', LitDateField, {
-  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent<Date>>,
+  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
 });
 
 export const EmailField = createComponent(React, 'email-field', LitEmailField, {
-  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent<string>>,
+  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
 });
 
 export const NumberField = createComponent(
@@ -62,7 +60,7 @@ export const NumberField = createComponent(
   'number-field',
   LitNumberField,
   {
-    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent<number>>,
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
   }
 );
 
@@ -71,10 +69,10 @@ export const SelectField = createComponent(
   'select-field',
   LitSelectField,
   {
-    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent<string>>,
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
   }
 );
 
 export const TextField = createComponent(React, 'text-field', LitTextField, {
-  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent<string>>,
+  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
 });
