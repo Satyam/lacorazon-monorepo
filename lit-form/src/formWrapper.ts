@@ -115,7 +115,12 @@ export class FormWrapper extends LitElement {
   };
 
   protected override firstUpdated() {
-    this._formEl = this._formElements[0] as HTMLFormElement;
+    const formEl = this._formElements[0] as HTMLFormElement;
+    if (!formEl)
+      throw new SyntaxError(
+        'FormWrapper should contain a plain <form> element'
+      );
+    this._formEl = formEl;
   }
 
   override render() {
