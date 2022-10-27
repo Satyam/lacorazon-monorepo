@@ -27,20 +27,22 @@ const ShowVendedor = ({ id }: { id: ID }) => {
       {vendedor && (
         <>
           <FormWrapper>
-            <TextField
-              label="Nombre"
-              name="nombre"
-              value={vendedor.nombre}
-              placeholder="Nombre"
-              readonly
-            />
-            <EmailField
-              label="Email"
-              name="email"
-              value={vendedor.email || '-'}
-              placeholder="Email"
-              readonly
-            />
+            <form>
+              <TextField
+                label="Nombre"
+                name="nombre"
+                value={vendedor.nombre}
+                placeholder="Nombre"
+                readonly
+              />
+              <EmailField
+                label="Email"
+                name="email"
+                value={vendedor.email || '-'}
+                placeholder="Email"
+                readonly
+              />
+            </form>
           </FormWrapper>
           <Accordion>
             <AccordionPanel label="Ventas" name="ventas">

@@ -95,7 +95,9 @@ export const EditVenta = ({ id }: { id: ID }) => {
   };
 
   const onSubmit = (ev: FormSubmitEvent) => {
-    const { precioTotal, ...values } = ev.values;
+    const { precioTotal, ...values } = ev.wrapper.values as Venta & {
+      precioTotal: number;
+    };
     if (id) {
       updateVenta.mutate({ ...values, id });
     } else {
@@ -110,38 +112,44 @@ export const EditVenta = ({ id }: { id: ID }) => {
     >
       {venta ? (
         <FormWrapper onFormSubmit={onSubmit}>
-          <DateField label="Fecha" name="fecha" value={venta.fecha}></DateField>
-          <TextField
-            label="Concepto"
-            name="concepto"
-            value={venta.concepto || ''}
-          />
-          <SelectField
-            label="Vendedor"
-            name="idVendedor"
-            labelFieldName="nombre"
-            valueFieldName="id"
-            nullLabel="--"
-            options={vendedores as unknown as AnyRow[]}
-            value={String(venta.idVendedor)}
-          />
-          <NumberField
-            label="Cantidad"
-            name="cantidad"
-            value={venta.cantidad || 0}
-          />
-          <CurrencyField
-            label="Precio Unitario"
-            name="precioUnitario"
-            value={venta.precioUnitario || 0}
-          />
-          <BooleanField checkLabel="IVA" name="iva" value={!!venta.iva} />
-          <CurrencyField
-            label="Precio Total"
-            name="precioTotal"
-            value={(venta.cantidad || 0) * (venta.precioUnitario || 0)}
-          />
-          <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
+          <form>
+            <DateField
+              label="Fecha"
+              name="fecha"
+              value={venta.fecha}
+            ></DateField>
+            <TextField
+              label="Concepto"
+              name="concepto"
+              value={venta.concepto || ''}
+            />
+            <SelectField
+              label="Vendedor"
+              name="idVendedor"
+              labelFieldName="nombre"
+              valueFieldName="id"
+              nullLabel="--"
+              options={vendedores as unknown as AnyRow[]}
+              value={String(venta.idVendedor)}
+            />
+            <NumberField
+              label="Cantidad"
+              name="cantidad"
+              value={venta.cantidad || 0}
+            />
+            <CurrencyField
+              label="Precio Unitario"
+              name="precioUnitario"
+              value={venta.precioUnitario || 0}
+            />
+            <BooleanField checkLabel="IVA" name="iva" checked={venta.iva} />
+            <CurrencyField
+              label="Precio Total"
+              name="precioTotal"
+              value={(venta.cantidad || 0) * (venta.precioUnitario || 0)}
+            />
+            <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
+          </form>
         </FormWrapper>
       ) : id ? (
         <Alert color="danger">El usuario no existe o fue borrado</Alert>
