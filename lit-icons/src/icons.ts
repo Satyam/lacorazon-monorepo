@@ -97,6 +97,9 @@ export class IconCheckTrue extends IconBase {
   svg = svgCheckSquareFill;
 }
 
+/**
+ * @attr {Boolean} value
+ */
 @customElement('icon-check')
 export class IconCheck extends LitElement {
   @property({
