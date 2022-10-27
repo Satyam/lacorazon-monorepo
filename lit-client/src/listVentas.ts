@@ -91,7 +91,9 @@ export class ListVentas extends PageBase<VentaYVendedor[]> {
           `}
       <td class="text-end">${row.cantidad}</td>
       <td class="text-end">${formatCurrency(row.precioUnitario)}</td>
-      <td class="text-center"><icon-check ?value=${row.iva}></icon-check></td>
+      <td class="text-center">
+        <icon-check value=${!!row.iva}></icon-check>
+      </td>
       <td class="text-end">
         ${formatCurrency((row.cantidad || 0) * (row.precioUnitario || 0))}
       </td>
