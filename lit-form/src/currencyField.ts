@@ -8,15 +8,11 @@ import { ref } from 'lit/directives/ref.js';
  */
 @customElement('currency-field')
 export class CurrencyField extends FieldBase {
-  @property({ type: String })
-  value = '0';
+  @property({ type: Number })
+  value = 0;
 
   get typedValue(): number {
     return Number(this.fieldEl.value);
-  }
-
-  set typedValue(v) {
-    this.value = String(v);
   }
 
   get defaultValue(): number {

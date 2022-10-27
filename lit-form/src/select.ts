@@ -4,6 +4,7 @@ import { FieldBase } from './fieldBase';
 import { ref } from 'lit/directives/ref.js';
 
 /**
+ * @attr value
  * @attr {Boolean} multiple
  * @attr {Number} size
  * @attr labelFieldName
@@ -17,10 +18,6 @@ export class SelectField extends FieldBase {
 
   get typedValue() {
     return this.fieldEl.value;
-  }
-
-  set typedValue(v) {
-    this.value = String(v);
   }
 
   get defaultValue(): string {

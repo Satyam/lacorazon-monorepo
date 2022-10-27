@@ -27,13 +27,10 @@ export class BooleanField extends FieldBase {
     return this.fieldEl.checked;
   }
 
-  set typedValue(v) {
-    this.fieldEl.checked = !!v;
-  }
-
   get defaultValue(): boolean {
     return this.fieldEl.defaultChecked;
   }
+
   override inputControl() {
     // It is important that I render an actual input box even if not visible because it is readonly
     // because fieldBase expects to find an actual input box even if only an svg image is shown

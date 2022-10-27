@@ -18,10 +18,6 @@ export class EmailField extends FieldBase {
     return this.fieldEl.value;
   }
 
-  set typedValue(v) {
-    this.value = String(v);
-  }
-
   get defaultValue(): string {
     return this.fieldEl.defaultValue;
   }

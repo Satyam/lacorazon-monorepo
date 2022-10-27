@@ -97,8 +97,6 @@ export abstract class FieldBase extends LitElement {
 
   abstract get typedValue(): unknown;
 
-  abstract set typedValue(v: unknown);
-
   abstract get defaultValue(): unknown;
 
   public get isDirty() {

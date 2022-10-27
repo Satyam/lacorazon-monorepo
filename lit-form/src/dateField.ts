@@ -19,20 +19,12 @@ const datePart = (d: Date = new Date()) =>
 export class DateField extends FieldBase {
   @property({
     type: Date,
-    converter: {
-      fromAttribute: (value) => (value ? new Date(value) : new Date()),
-      toAttribute: (value: Date) => value.toLocaleDateString(),
-    },
+    converter: (value) => (value ? new Date(value) : new Date()),
   })
-  @property({ type: String })
-  value = '';
+  value = new Date();
 
   get typedValue(): Date {
     return new Date(this.fieldEl.value);
-  }
-
-  set typedValue(v) {
-    this.value = datePart(v instanceof Date ? v : new Date(v));
   }
 
   get defaultValue(): Date {
@@ -44,7 +36,7 @@ export class DateField extends FieldBase {
       <input
         type="date"
         name=${this.name}
-        value=${this.value}
+        value=${datePart(this.value)}
         class="form-control"
         placeholder=${this.placeholder}
         ?required=${this.required}
