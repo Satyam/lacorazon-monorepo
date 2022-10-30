@@ -32,7 +32,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
   };
 
   const onSubmit = (ev: FormSubmitEvent) => {
-    const values = ev.values;
+    const values = ev.wrapper.values as Vendedor;
     if (id) {
       updateVendedor({ ...values, id });
     } else {
@@ -51,19 +51,21 @@ export const EditVendedor = ({ id }: { id: ID }) => {
         <Alert color="danger">El usuario no existe o fue borrado</Alert>
       ) : (
         <FormWrapper onFormSubmit={onSubmit}>
-          <TextField
-            label="Nombre"
-            name="nombre"
-            value={vendedor?.nombre}
-            placeholder="Nombre"
-          />
-          <EmailField
-            label="Email"
-            name="email"
-            value={vendedor?.email || '-'}
-            placeholder="Email"
-          />
-          <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
+          <form>
+            <TextField
+              label="Nombre"
+              name="nombre"
+              value={vendedor?.nombre}
+              placeholder="Nombre"
+            />
+            <EmailField
+              label="Email"
+              name="email"
+              value={vendedor?.email || '-'}
+              placeholder="Email"
+            />
+            <DetailsButtonSet isNew={!id} onDelete={onDeleteClick} />
+          </form>
         </FormWrapper>
       )}
     </Page>

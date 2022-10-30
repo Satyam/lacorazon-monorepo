@@ -29,43 +29,45 @@ const ShowVenta = ({ id }: { id: ID }) => {
       }}
     >
       <FormWrapper>
-        <DateField label="Fecha" name="fecha" value={venta?.fecha} readonly />
-        <TextField
-          label="Concepto"
-          name="concepto"
-          value={venta?.concepto || ''}
-          readonly
-        />
-        <TextField
-          label="Vendedor"
-          name="vendedor"
-          value={venta?.vendedor || '-'}
-          readonly
-        />
-        <NumberField
-          label="Cantidad"
-          name="cantidad"
-          value={venta?.cantidad || 0}
-          readonly
-        />
-        <CurrencyField
-          label="Precio Unitario"
-          name="precioUnitario"
-          value={venta?.precioUnitario || 0}
-          readonly
-        />
-        <BooleanField
-          checkLabel="IVA"
-          name="iva"
-          value={!!venta?.iva}
-          readonly
-        />
-        <CurrencyField
-          label="Precio Total"
-          name="precioTotal"
-          value={(venta?.cantidad || 0) * (venta?.precioUnitario || 0)}
-          readonly
-        />
+        <form>
+          <DateField label="Fecha" name="fecha" value={venta?.fecha} readonly />
+          <TextField
+            label="Concepto"
+            name="concepto"
+            value={venta?.concepto || ''}
+            readonly
+          />
+          <TextField
+            label="Vendedor"
+            name="vendedor"
+            value={venta?.vendedor || '-'}
+            readonly
+          />
+          <NumberField
+            label="Cantidad"
+            name="cantidad"
+            value={venta?.cantidad || 0}
+            readonly
+          />
+          <CurrencyField
+            label="Precio Unitario"
+            name="precioUnitario"
+            value={venta?.precioUnitario || 0}
+            readonly
+          />
+          <BooleanField
+            checkLabel="IVA"
+            name="iva"
+            checked={!!venta?.iva}
+            readonly
+          />
+          <CurrencyField
+            label="Precio Total"
+            name="precioTotal"
+            value={(venta?.cantidad || 0) * (venta?.precioUnitario || 0)}
+            readonly
+          />
+        </form>
       </FormWrapper>
     </Page>
   );
