@@ -31,7 +31,9 @@ header {
 #indicator.htmx-request {
   display:block;
 }
-
+#title {
+  display:none;
+}
 h1 {
   max-width: 1400px;
   margin: .5em auto

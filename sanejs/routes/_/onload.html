@@ -1,5 +1,10 @@
 <script>
   addEventListener('DOMContentLoaded', () => {
+    htmx.on('htmx:afterSwap', function (evt) {
+      console.log('title', document.getElementById('title').innerHTML);
+      console.log('detail', evt.detail);
+      document.title = document.getElementById('title').innerHTML;
+    });
     htmx.on('htmx:responseError', function (evt) {
       console.log('htmx:responseError', evt.detail);
     });
