@@ -69,9 +69,10 @@ if (app.get('env') === 'development') {
   app.use(connectLivereload());
 }
 
-app.get('/node_modules/*', (req: Request, res: Response) => {
-  res.sendFile(require.resolve(req.path.replace('/node_modules/', '')));
+app.use('/node_modules', (req: Request, res: Response) => {
+  res.sendFile(require.resolve(req.path.replace('/', '')));
 });
+
 // Serve static resources like images and css.
 app.use(express.static(staticDirectory));
 
