@@ -14,9 +14,9 @@
     "@lacorazon/lit-form": "^1.0.0",
     "@lacorazon/lit-icons": "^1.0.0",
     "@lacorazon/post-client": "^1.0.0",
-    "lit": "^2.2.1"
+    "lit": "^3.3.1"
   },
   "devDependencies": {
-    "@webcomponents/webcomponentsjs": "^2.6.0"
+    "@webcomponents/webcomponentsjs": "^2.8.0"
   }
 }

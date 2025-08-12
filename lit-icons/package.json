@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme",
   "dependencies": {
-    "lit": "^2.2.1"
+    "lit": "^3.3.1"
   }
 }

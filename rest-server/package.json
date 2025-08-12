@@ -24,20 +24,20 @@
   "homepage": "https://github.com/Satyam/lacorazon-monorepo#readme",
   "description": "",
   "dependencies": {
-    "connect-sqlite3": "^0.9.13",
-    "cookie-parser": "^1.4.6",
-    "cuid": "^2.1.8",
-    "dotenv": "^16.0.2",
-    "express": "^5.0.0-beta.1",
-    "express-session": "^1.17.3",
-    "sqlite": "^4.1.2",
-    "sqlite3": "^5.0.11"
+    "connect-sqlite3": "^0.9.16",
+    "cookie-parser": "^1.4.7",
+    "cuid": "^3.0.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@types/connect-sqlite3": "^0.9.1",
-    "@types/cookie-parser": "^1.4.3",
-    "@types/express": "^4.17.13",
-    "@types/express-session": "^1.17.5",
-    "@types/node": "^18.7.16"
+    "@types/connect-sqlite3": "^0.9.5",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/node": "^24.2.1"
   }
 }
