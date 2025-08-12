@@ -8,13 +8,18 @@ const checkSession = (req: Request): Promise<User> =>
   new Promise((resolve, reject) => {
     const token: string = req.cookies[process.env.SESSION_COOKIE];
     if (token) {
-      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) reject(UNAUTHORIZED);
-        else if (typeof decoded === 'object') {
-          const { iat, exp, ...user } = decoded;
-          resolve(user as User);
-        } else reject(UNAUTHORIZED);
-      });
+      jwt.verify(
+        token,
+        process.env.JWT_SECRET,
+        { algorithms: ['none'] },
+        (err, decoded) => {
+          if (err) reject(UNAUTHORIZED);
+          else if (typeof decoded === 'object') {
+            const { iat, exp, ...user } = decoded;
+            resolve(user as User);
+          } else reject(UNAUTHORIZED);
+        }
+      );
     } else reject(UNAUTHORIZED);
   });
 
@@ -22,7 +27,7 @@ const setSessionCookie = (res: Response, user: User) =>
   res.cookie(
     process.env.SESSION_COOKIE,
     jwt.sign(user, process.env.JWT_SECRET, {
-      expiresIn: `${process.env.SESSION_DURATION}s`,
+      expiresIn: parseInt(process.env.SESSION_DURATION, 10),
     }),
     {
       httpOnly: true,

@@ -142,7 +142,7 @@ export function createWithCuid<T>(
   );
 }
 
-export function updateById<T>(
+export function updateById<T extends Object = Object>(
   nombreTabla: string,
   id: ID,
   fila: T,

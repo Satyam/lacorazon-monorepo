@@ -56,7 +56,7 @@ app.post(
 
 app.use(express.static('../public'));
 
-app.get('*', (_, res) => {
+app.get('/{*splat}', (_, res) => {
   res.sendFile('index.html', { root: '../public' });
 });
 
