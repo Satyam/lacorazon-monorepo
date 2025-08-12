@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import copy from 'rollup-plugin-copy';
 import clear from 'rollup-plugin-clear';
-import bundleHtml from './buildhtml';
+import bundleHtml from './buildhtml.js';
 import { join } from 'path';
 
 const PUBLIC = '../public';
