@@ -1,12 +1,13 @@
-const requestTransform = <Id, IN>(
+const requestTransform = <Id, IN extends AnyRow>(
   req: ApiRequest<Id, IN>,
   reqTransf: RequestTransformer<IN>
 ) => {
   const t = (row: IN) => {
-    if (typeof row === 'undefined') return undefined;
-    const reqOut: AnyRow = Object.assign({}, row);
+    if (typeof row === 'undefined' || row === null) return undefined;
+
+    const reqOut = Object.assign({}, row) as Record<keyof IN, VALUE>;
     for (const key in reqTransf) {
-      reqOut[key] = reqTransf[key](row[key], key, row);
+      reqOut[key] = reqTransf[key]?.(row[key], key, row) ?? row[key];
     }
     return reqOut;
   };
@@ -24,13 +25,13 @@ const requestTransform = <Id, IN>(
 function replyTransform<OUT>(
   data: AnyRow | AnyRow[],
   resTransf: ReplyTransformer<OUT>
-): unknown {
+): OUT | OUT[] {
   const t = (row: AnyRow) => {
-    const resOut = Object.assign({}, row) as ArrayElementType<OUT>;
+    const resOut = Object.assign({}, row);
     for (const key in resTransf) {
-      resOut[key] = resTransf[key](row[key], key, row);
+      resOut[key] = (resTransf[key]?.(row[key], key, row) ?? row[key]) as VALUE;
     }
-    return resOut;
+    return resOut as OUT;
   };
   if (Array.isArray(data)) return data.map((row) => t(row));
   return t(data);
