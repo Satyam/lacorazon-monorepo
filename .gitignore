@@ -106,6 +106,8 @@ dist
 # satyam
 db.sqlite.sql
 db.sqlite
+db.sqlite-shm
+db.sqlite-wal
 sessions.sqlite
 .rollup.cache
 public/
