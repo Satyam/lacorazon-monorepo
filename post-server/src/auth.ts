@@ -8,18 +8,13 @@ const checkSession = (req: Request): Promise<User> =>
   new Promise((resolve, reject) => {
     const token: string = req.cookies[process.env.SESSION_COOKIE];
     if (token) {
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET,
-        { algorithms: ['none'] },
-        (err, decoded) => {
-          if (err) reject(UNAUTHORIZED);
-          else if (typeof decoded === 'object') {
-            const { iat, exp, ...user } = decoded;
-            resolve(user as User);
-          } else reject(UNAUTHORIZED);
-        }
-      );
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) reject(UNAUTHORIZED);
+        else if (typeof decoded === 'object') {
+          const { iat, exp, ...user } = decoded;
+          resolve(user as User);
+        } else reject(UNAUTHORIZED);
+      });
     } else reject(UNAUTHORIZED);
   });
 
@@ -60,7 +55,7 @@ const resolvers: AuthResolvers = {
       }
       return {
         error: UNAUTHORIZED,
-        data: 'null',
+        data: 'Unauthorized',
       };
     }),
   logout: (_1, _req, res) => {
@@ -76,7 +71,7 @@ const resolvers: AuthResolvers = {
       .catch((_error) => {
         return {
           error: UNAUTHORIZED,
-          data: 'null',
+          data: 'Unauthorized',
         };
       }),
 };
