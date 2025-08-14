@@ -1,7 +1,13 @@
 import { h, Fragment } from 'preact';
 import { Link } from 'preact-router/match';
 import { useState } from 'preact/hooks';
-import { Navbar, Nav, Dropdown, NavDropdown } from 'react-bootstrap';
+import {
+  Navbar,
+  Nav,
+  Dropdown,
+  NavDropdown,
+  DropdownDivider,
+} from 'react-bootstrap';
 
 import { IconLoggedIn, IconLoggedOut } from '@lacorazon/lit-react-integration';
 
@@ -74,7 +80,7 @@ export const Navigation = () => {
                     <Dropdown.Item onClick={() => logout()}>
                       Logout
                     </Dropdown.Item>
-                    <Dropdown.Item divider />
+                    <DropdownDivider />
                     <Dropdown.Item as={Link} href="/profile">
                       Profile
                     </Dropdown.Item>
