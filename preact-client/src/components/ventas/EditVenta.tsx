@@ -152,7 +152,7 @@ export const EditVenta = ({ id }: { id: ID }) => {
           </form>
         </FormWrapper>
       ) : id ? (
-        <Alert color="danger">El usuario no existe o fue borrado</Alert>
+        <Alert variant="danger">El usuario no existe o fue borrado</Alert>
       ) : null}
     </Page>
   );

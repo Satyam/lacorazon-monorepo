@@ -96,7 +96,7 @@ export const EditVendedor = ({ id }: { id: ID }) => {
       heading={`${id ? 'Edit' : 'Add'} Vendedor`}
     >
       {id && !vendedor ? (
-        <Alert color="danger">El usuario no existe o fue borrado</Alert>
+        <Alert variant="danger">El usuario no existe o fue borrado</Alert>
       ) : (
         <FormWrapper onFormSubmit={onSubmit}>
           <form>
