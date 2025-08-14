@@ -31,7 +31,7 @@ export const AuthContext = createContext<AuthType>(initialValues);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<CurrentUser>(null);
-  const [timer, setTimer] = useState<NodeJS.Timer | null>(null);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const queryClient = useQueryClient();
 
   const login = (data: LoginInfo) =>
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const stopAll = () => {
     setCurrentUser(null);
-    clearInterval(timer!);
+    if (timer) clearInterval(timer);
     setTimer(null);
     queryClient.clear();
     location.replace('/');

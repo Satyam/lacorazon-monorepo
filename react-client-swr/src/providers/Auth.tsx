@@ -30,7 +30,7 @@ export const AuthContext = createContext<AuthType>(initialValues);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<CurrentUser>(null);
-  const [timer, setTimer] = useState<NodeJS.Timer | null>(null);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   const login = (data: LoginInfo) =>
     apiLogin(data).then((user) => {
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const stopAll = () => {
     setCurrentUser(null);
-    clearInterval(timer!);
+    if (timer) clearInterval(timer);
     setTimer(null);
     location.replace('/');
   };
