@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "module": "index.mjs",
+  "type": "module",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c -w"
