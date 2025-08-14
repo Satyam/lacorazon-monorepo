@@ -28,7 +28,7 @@ export const initDb = async (
         '/home/satyam/lacorazon-monorepo/database/db.schema.sql',
         'utf-8'
       );
-      await db.exec(sql, []);
+      await db.exec(sql);
       db.on('trace', console.log);
     }
     return db;

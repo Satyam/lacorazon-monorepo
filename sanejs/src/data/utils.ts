@@ -114,7 +114,7 @@ module.exports = {
     );
   },
 
-  updateById: <T>(
+  updateById: <T extends Object>(
     nombreTabla: string,
     id: ID,
     fila: T,

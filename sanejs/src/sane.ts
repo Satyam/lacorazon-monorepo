@@ -278,7 +278,7 @@ async function buildTemplate(
   processFrontMatter(template); // Sets { fm }
 
   // Process Markdown.
-  processMarkdown(template); // If template is markdown, parse to html
+  await processMarkdown(template); // If template is markdown, parse to html
 
   if (!isPartial) {
     // Process extends tags.
@@ -387,9 +387,9 @@ function processFrontMatter(template: Template): void {
  * If the template contains Markdown, it converts it to HTML.
  * @param {Template} template - Template to be processed.
  */
-function processMarkdown(template: Template): void {
+async function processMarkdown(template: Template): Promise<void> {
   if (template.path.endsWith('.md')) {
-    template.html = marked.parse(template.html);
+    template.html = await marked.parse(template.html);
   }
 }
 
