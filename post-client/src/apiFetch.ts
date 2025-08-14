@@ -1,4 +1,4 @@
-const requestTransform = <Id, IN extends AnyRow>(
+const requestTransform = <Id, IN extends AnyRow = {}>(
   req: ApiRequest<Id, IN>,
   reqTransf: RequestTransformer<IN>
 ) => {
@@ -47,7 +47,7 @@ export function apiFetch<Id, IN, OUT>(
   transformRequest?: RequestTransformer<IN>,
   transformReply?: ReplyTransformer<OUT>
 ): Promise<OUT>;
-export function apiFetch<Id, IN extends AnyRow | undefined, OUT>(
+export function apiFetch<Id, IN extends AnyRow = {}, OUT = {}>(
   req: ApiRequest<Id, IN>,
   transformRequest: RequestTransformer<IN> | undefined,
   transformReply?: ReplyTransformer<OUT>
