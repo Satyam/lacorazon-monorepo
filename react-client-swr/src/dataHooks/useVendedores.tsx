@@ -16,7 +16,7 @@ export const useListVendedores = (options?: OptionsType) => {
 
   const { data, mutate } = useSWR<Vendedor[]>(
     [VENDEDORES_SERVICE, options],
-    (_, options) => apiListVendedores(options),
+    (_: any, options: OptionsType | undefined) => apiListVendedores(options),
     { onError: (err) => pushError(err, 'Error leyendo tabla de vendedores') }
   );
 
@@ -48,7 +48,8 @@ export const useGetVendedor = (id: ID, options?: OptionsType) => {
 
   const { data, mutate } = useSWR<Vendedor>(
     id ? [VENDEDORES_SERVICE, id, options] : null,
-    (_, id, options) => apiGetVendedor(id, options),
+    (_: any, id: ID, options: OptionsType | undefined) =>
+      apiGetVendedor(id, options),
     {
       fallbackData: initialData as Vendedor,
       onError: (err) => {

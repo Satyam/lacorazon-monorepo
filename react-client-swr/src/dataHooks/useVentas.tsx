@@ -17,7 +17,7 @@ export const useListVentas = (options?: OptionsType) => {
 
   const { data, mutate } = useSWR<VentaYVendedor[]>(
     [VENTAS_SERVICE, options],
-    (_, options) => apiListVentas(options),
+    (_: any, options: OptionsType | undefined) => apiListVentas(options),
     { onError: (err) => pushError(err, `Leyendo tabla de ventas`) }
   );
 
@@ -53,7 +53,8 @@ export const useGetVenta = (id: ID, options?: OptionsType) => {
 
   const { data, mutate } = useSWR<VentaYVendedor>(
     id ? [VENTAS_SERVICE, id, options] : null,
-    (_, id, options) => apiGetVenta(id, options),
+    (_: any, id: ID, options: OptionsType | undefined) =>
+      apiGetVenta(id, options),
     {
       fallbackData: initialData as VentaYVendedor,
       onError: (err) => {
