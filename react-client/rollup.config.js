@@ -50,4 +50,9 @@ export default {
       ],
     }),
   ],
+  onwarn: (log, handler) => {
+    // console.log(JSON.stringify(log, null, 2));
+    if (log.code === 'MODULE_LEVEL_DIRECTIVE') return;
+    handler(log);
+  },
 };
