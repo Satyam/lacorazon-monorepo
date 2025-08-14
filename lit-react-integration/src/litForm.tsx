@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createComponent, EventName } from '@lit-labs/react';
+import { createComponent, EventName } from '@lit/react';
 import {
   FormWrapper as LitFormWrapper,
   FORM_SUBMIT_EVENT,
@@ -19,60 +19,75 @@ import {
 
 export { FormChangedEvent, FormSubmitEvent, InputChangedEvent };
 
-export const FormWrapper = createComponent(
-  React,
-  'form-wrapper',
-  LitFormWrapper,
-  {
+export const FormWrapper = createComponent({
+  react: React,
+  tagName: 'form-wrapper',
+  elementClass: LitFormWrapper,
+  events: {
     onFormSubmit: FORM_SUBMIT_EVENT as EventName<FormSubmitEvent>,
     onFormChanged: FORM_CHANGED_EVENT as EventName<FormChangedEvent>,
-  }
-);
-
-export const BooleanField = createComponent(
-  React,
-  'boolean-field',
-  LitBooleanField,
-  {
-    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
-  }
-);
-
-export const CurrencyField = createComponent(
-  React,
-  'currency-field',
-  LitCurrencyField,
-  {
-    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
-  }
-);
-
-export const DateField = createComponent(React, 'date-field', LitDateField, {
-  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+  },
 });
 
-export const EmailField = createComponent(React, 'email-field', LitEmailField, {
-  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+export const BooleanField = createComponent({
+  react: React,
+  tagName: 'boolean-field',
+  elementClass: LitBooleanField,
+  events: {
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+  },
 });
 
-export const NumberField = createComponent(
-  React,
-  'number-field',
-  LitNumberField,
-  {
+export const CurrencyField = createComponent({
+  react: React,
+  tagName: 'currency-field',
+  elementClass: LitCurrencyField,
+  events: {
     onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
-  }
-);
+  },
+});
 
-export const SelectField = createComponent(
-  React,
-  'select-field',
-  LitSelectField,
-  {
+export const DateField = createComponent({
+  react: React,
+  tagName: 'date-field',
+  elementClass: LitDateField,
+  events: {
     onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
-  }
-);
+  },
+});
 
-export const TextField = createComponent(React, 'text-field', LitTextField, {
-  onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+export const EmailField = createComponent({
+  react: React,
+  tagName: 'email-field',
+  elementClass: LitEmailField,
+  events: {
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+  },
+});
+
+export const NumberField = createComponent({
+  react: React,
+  tagName: 'number-field',
+  elementClass: LitNumberField,
+  events: {
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+  },
+});
+
+export const SelectField = createComponent({
+  react: React,
+  tagName: 'select-field',
+  elementClass: LitSelectField,
+  events: {
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+  },
+});
+
+export const TextField = createComponent({
+  react: React,
+  tagName: 'text-field',
+  elementClass: LitTextField,
+  events: {
+    onInputChanged: INPUT_CHANGED_EVENT as EventName<InputChangedEvent>,
+  },
 });

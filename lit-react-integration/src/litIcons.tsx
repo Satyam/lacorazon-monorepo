@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createComponent } from '@lit-labs/react';
+import { createComponent } from '@lit/react';
 
 import {
   IconAdd as LitIconAdd,
@@ -18,57 +18,73 @@ import {
   IconCheck as LitIconCheck,
 } from '@lacorazon/lit-icons';
 
-export const IconAdd = createComponent(React, 'icon-add', LitIconAdd, {});
-export const IconShow = createComponent(React, 'icon-show', LitIconShow, {});
-export const IconEdit = createComponent(React, 'icon-edit', LitIconEdit, {});
-export const IconDanger = createComponent(
-  React,
-  'icon-danger',
-  LitIconDanger,
-  {}
-);
-export const IconTrash = createComponent(React, 'icon-trash', LitIconTrash, {});
-export const IconAddPerson = createComponent(
-  React,
-  'icon-add-person',
-  LitIconAddPerson,
-  {}
-);
-export const IconAddtoCart = createComponent(
-  React,
-  'icon-addto-cart',
-  LitIconAddtoCart,
-  {}
-);
-export const IconWait = createComponent(React, 'icon-wait', LitIconWait, {});
-export const IconLoggedOut = createComponent(
-  React,
-  'icon-logged-out',
-  LitIconLoggedOut,
-  {}
-);
-export const IconLoggedIn = createComponent(
-  React,
-  'icon-logged-in',
-  LitIconLoggedIn,
-  {}
-);
-export const IconQuestion = createComponent(
-  React,
-  'icon-question',
-  LitIconQuestion,
-  {}
-);
-export const IconCheckFalse = createComponent(
-  React,
-  'icon-check-false',
-  LitIconCheckFalse,
-  {}
-);
-export const IconCheckTrue = createComponent(
-  React,
-  'icon-check-false',
-  LitIconCheckTrue,
-  {}
-);
-export const IconCheck = createComponent(React, 'icon-check', LitIconCheck, {});
+export const IconAdd = createComponent({
+  react: React,
+  tagName: 'icon-add',
+  elementClass: LitIconAdd,
+});
+export const IconShow = createComponent({
+  react: React,
+  tagName: 'icon-show',
+  elementClass: LitIconShow,
+});
+export const IconEdit = createComponent({
+  react: React,
+  tagName: 'icon-edit',
+  elementClass: LitIconEdit,
+});
+export const IconDanger = createComponent({
+  react: React,
+  tagName: 'icon-danger',
+  elementClass: LitIconDanger,
+});
+export const IconTrash = createComponent({
+  react: React,
+  tagName: 'icon-trash',
+  elementClass: LitIconTrash,
+});
+export const IconAddPerson = createComponent({
+  react: React,
+  tagName: 'icon-add-person',
+  elementClass: LitIconAddPerson,
+});
+export const IconAddtoCart = createComponent({
+  react: React,
+  tagName: 'icon-addto-cart',
+  elementClass: LitIconAddtoCart,
+});
+export const IconWait = createComponent({
+  react: React,
+  tagName: 'icon-wait',
+  elementClass: LitIconWait,
+});
+export const IconLoggedOut = createComponent({
+  react: React,
+  tagName: 'icon-logged-out',
+  elementClass: LitIconLoggedOut,
+});
+export const IconLoggedIn = createComponent({
+  react: React,
+  tagName: 'icon-logged-in',
+  elementClass: LitIconLoggedIn,
+});
+export const IconQuestion = createComponent({
+  react: React,
+  tagName: 'icon-question',
+  elementClass: LitIconQuestion,
+});
+export const IconCheckFalse = createComponent({
+  react: React,
+  tagName: 'icon-check-false',
+  elementClass: LitIconCheckFalse,
+});
+export const IconCheckTrue = createComponent({
+  react: React,
+  tagName: 'icon-check-false',
+  elementClass: LitIconCheckTrue,
+});
+export const IconCheck = createComponent({
+  react: React,
+  tagName: 'icon-check',
+  elementClass: LitIconCheck,
+});
