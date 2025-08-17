@@ -46,7 +46,7 @@ export const Accordion = ({
 
   const panels = Children.toArray(children).filter(
     (p) => isValidElement(p) && p.type === AccordionPanel
-  ) as React.ReactElement[];
+  ) as React.ReactElement<AccordionPanelProps>[];
 
   useEffect(() => {
     if (mutuallyExclusive && nowOpen.length > 1) {
@@ -57,7 +57,7 @@ export const Accordion = ({
     }
   }, []);
 
-  const onToggle = (ev: MouseEvent) => {
+  const onToggle = (ev: UIEvent) => {
     ev.stopPropagation();
     const panel = ev.target as HTMLDetailsElement;
     const name = panel.dataset.name ?? '';
@@ -80,7 +80,7 @@ export const Accordion = ({
         {heading && <legend>{heading}</legend>}
         {panels.map((panel) => {
           const name = panel.props.name;
-          return cloneElement(panel, {
+          return cloneElement<AccordionPanelProps>(panel, {
             key: name,
             open: nowOpen.includes(name),
             onToggle,

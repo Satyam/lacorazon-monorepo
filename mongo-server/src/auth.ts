@@ -22,7 +22,7 @@ const setSessionCookie = (res: Response, user: User) =>
   res.cookie(
     process.env.SESSION_COOKIE,
     jwt.sign(user, process.env.JWT_SECRET, {
-      expiresIn: `${process.env.SESSION_DURATION}s`,
+      expiresIn: parseInt(process.env.SESSION_DURATION, 10),
     }),
     {
       httpOnly: true,
@@ -55,7 +55,7 @@ const resolvers: AuthResolvers = {
       }
       return {
         error: UNAUTHORIZED,
-        data: 'null',
+        data: 'Unauthorized',
       };
     }),
   logout: (_1, _req, res) => {
@@ -71,7 +71,7 @@ const resolvers: AuthResolvers = {
       .catch((_error) => {
         return {
           error: UNAUTHORIZED,
-          data: 'null',
+          data: 'Unauthorized',
         };
       }),
 };

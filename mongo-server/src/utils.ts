@@ -10,6 +10,10 @@ export const TABLE_CONSIGNA = 'Consigna';
 
 const monitorCommands = false;
 
+type DocWithId = Document & {
+  _id: number;
+};
+
 export const mongo = new MongoClient(
   process.env.MONGO_URL || 'mongodb://localhost:27017',
   { monitorCommands, pkFactory: { createPk: cuid } }
@@ -30,7 +34,7 @@ export function mongoInit() {
   });
 }
 
-export function getColl<T>(name: string) {
+export function getColl<T extends Document>(name: string) {
   return _db.collection<T>(name);
 }
 
@@ -52,24 +56,30 @@ export const defaultProjection: Document[] = [
   },
 ];
 
-export function listAll<T>(nombreTabla: string) {
+export function listAll<T extends Document>(nombreTabla: string) {
   return formatReply<T[]>(
     getColl(nombreTabla).aggregate<T>(defaultProjection).toArray()
   );
 }
 
-export function rawGetById<T>(nombreTabla: string, id: ID): Promise<T | null> {
+export function rawGetById<T extends Document>(
+  nombreTabla: string,
+  id: ID
+): Promise<T | null> {
   return getColl(nombreTabla)
     .aggregate<T>([{ $match: { _id: id } }, ...defaultProjection])
     .toArray()
     .then((rows) => rows[0]);
 }
 
-export function getById<T>(nombreTabla: string, id: ID): ApiReply<T> {
+export function getById<T extends Document>(
+  nombreTabla: string,
+  id: ID
+): ApiReply<T> {
   return formatReply<T>(rawGetById<T>(nombreTabla, id));
 }
 
-export function createWithAutoId<T>(
+export function createWithAutoId<T extends Document>(
   nombreTabla: string,
   fila: Partial<T & { id: ID }>
 ): ApiReply<T> {
@@ -84,7 +94,7 @@ export function createWithAutoId<T>(
   );
 }
 
-export function updateById<T>(
+export function updateById<T extends DocWithId>(
   nombreTabla: string,
   id: ID,
   fila: T
