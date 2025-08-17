@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "allowJs": false,
+    "baseUrl": ".",
+    "paths": {
+      "@types": [
+        "./types/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "**/*.js",
+    "**/*.d.ts"
+  ]
+}

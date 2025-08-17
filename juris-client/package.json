@@ -1,0 +1,17 @@
+{
+  "name": "@lacorazon/juris-client",
+  "version": "1.0.0",
+  "description": "Juris client for post-server",
+  "license": "MIT",
+  "author": "Daniel Barreiro <satyam@satyam.com.ar> (Satyam)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "dependencies": {
+    "@types/juris": "file:types",
+    "juris": "^0.88.2"
+  }
+}
