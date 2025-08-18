@@ -1,7 +1,0 @@
-{
-  "private": true,
-  "name": "@types/juris",
-  "version": "0.8.22",
-  "types":"index.d.ts"
-
-}

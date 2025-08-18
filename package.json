@@ -71,7 +71,6 @@
     "glob": "^11.0.3",
     "rollup": "^4.46.2",
     "rollup-plugin-clear": "^2.0.7",
-    "rollup-plugin-concat": "^1.0.4",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-postcss": "^4.0.2",
     "typescript": "^5.9.2"

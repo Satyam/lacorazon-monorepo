@@ -1,20 +1,15 @@
-/// <reference path="../types/global.d.ts" />
-
-import Juris from 'juris';
-
-window.juris = new Juris({
-  states: {
-    user: {
-      name: null,
-      email: null,
-    },
-    title: '??',
-    url: { service: '/' },
-  },
-
-  layout: {
-    div: {
-      children: [{ NavBar: {} }, { Routes: {} }],
-    },
-  },
-});
+import './jurisInstance.js';
+import './src/pages/Login.js';
+import './src/pages/Home.js';
+import './src/headless/Navigation.js';
+import './src/headless/DataFetch.js';
+import './src/components/Routes.js';
+import './src/components/NavBar.js';
+import './src/components/Conditional.js';
+import './src/pages/ventas/ShowVenta.js';
+import './src/pages/ventas/ListVentas.js';
+import './src/pages/ventas/EditVenta.js';
+import './src/pages/vendedor/ShowVendedor.js';
+import './src/pages/vendedor/ListVendedores.js';
+import './src/pages/vendedor/EditVendedor.js';
+import './jurisRender.js';
