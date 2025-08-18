@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w"
+    "watch": "chokidar *.js **/*.js ./index.html --initial -c \"rollup -c \""
   },
   "dependencies": {
     "@types/juris": "file:types",

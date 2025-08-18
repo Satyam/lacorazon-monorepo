@@ -1,10 +1,6 @@
-/**
- * @param {Object} props
- * @param {import('@types').JurisContextBase} context
- * @returns {import('@types').HeadlessComponent}
- */
-export const DataFetch = {
-  fn: (props, { getState, setState }) => ({
+juris.registerHeadlessComponent(
+  'DataFetch',
+  (props, { getState, setState }) => ({
     api: {
       fetch: async (req, transformRequest, transformReply) => {
         const { service } = req;
@@ -66,9 +62,8 @@ export const DataFetch = {
         return Date.now() - lastFetch > maxAge;
       },
     },
-  }),
-  options: {},
-};
+  })
+);
 
 const requestTransform = (req, reqTransf) => {
   const t = (row) => {
@@ -102,4 +97,3 @@ function replyTransform(data, resTransf) {
   if (Array.isArray(data)) return data.map((row) => t(row));
   return t(data);
 }
-export default DataFetch;

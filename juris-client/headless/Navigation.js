@@ -1,11 +1,6 @@
-/**
- * @param {Object} props
- * @param {import('@types').JurisContextBase} context
- * @returns {import('@types').HeadlessComponent}
- */
-
-export const Navigation = {
-  fn: (props, { setState }) => {
+juris.registerHeadlessComponent(
+  'Navigation',
+  (props, { setState }) => {
     return {
       hooks: {
         onRegister: () => {
@@ -48,6 +43,5 @@ export const Navigation = {
       console.log('🧭 URL updated:', path);
     }
   },
-  options: { autoInit: true },
-};
-export default Navigation;
+  { autoInit: true }
+);

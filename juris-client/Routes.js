@@ -1,16 +1,9 @@
-/**
- * @param {Object} props
- * @param {import('@types').JurisContextBase} context
- * @returns {import('@types').JurisVDOMElement}
- */
-
-import { Home } from './pages/Home';
-export const Routes = (props, { getState }) => {
+juris.registerComponent('Routes', (props, { getState }) => {
   return {
     render: () => ({
       div: {
         children: () => {
-          const path = getState('url.service', '/');
+          const path = getState('url.service');
 
           switch (path) {
             case '/':
@@ -24,6 +17,4 @@ export const Routes = (props, { getState }) => {
       },
     }),
   };
-};
-
-export default Routes;
+});
