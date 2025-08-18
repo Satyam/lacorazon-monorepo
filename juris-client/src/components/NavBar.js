@@ -143,7 +143,7 @@ juris.registerComponent(
           },
           {
             h1: {
-              text: getState('title'),
+              text: () => getState('title'),
             },
           },
         ],
