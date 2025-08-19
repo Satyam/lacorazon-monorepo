@@ -1,5 +1,7 @@
-juris.registerComponent('ListVentas', (props, { getState, setState }) => {
-  setState('title', 'Ventas');
+juris.registerComponent('ListVentas', (props, { getState, setState }) => ({
+  render: () => {
+    setState('title', 'Ventas');
 
-  return { p: { text: 'Ventas' } };
-});
+    return { p: { text: 'Ventas' } };
+  },
+}));
