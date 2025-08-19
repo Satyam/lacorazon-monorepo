@@ -8,7 +8,7 @@ export default function addImports() {
     buildStart: () =>
       glob('./src/**/*.js')
         .then((g) =>
-          ['jurisInstance.js', ...g, 'jurisRender.js']
+          ['jurisInstance.js', ...g.toSorted(), 'jurisRender.js']
             .map((f) => `import './${f}';`)
             .join('\n')
         )
