@@ -12,7 +12,7 @@ juris.registerHeadlessComponent(
             ? requestTransform(req, transformRequest)
             : req;
 
-        fetch(`${window.origin}/api/${req.service}`, {
+        return fetch(`${window.origin}/api/${req.service}`, {
           method: 'POST',
           headers: {
             'Content-type': 'application/json; charset=utf-8',
@@ -62,7 +62,8 @@ juris.registerHeadlessComponent(
         return Date.now() - lastFetch > maxAge;
       },
     },
-  })
+  }),
+  { autoInit: true }
 );
 
 const requestTransform = (req, reqTransf) => {
