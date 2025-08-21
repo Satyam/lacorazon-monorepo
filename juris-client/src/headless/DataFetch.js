@@ -4,7 +4,6 @@ juris.registerHeadlessComponent(
     api: {
       fetch: async (req, transformRequest, transformReply) => {
         const { service } = req;
-        setState('data.loading', true);
         setState(`data.${service}.loading`, true);
         setState(`data.${service}.error`, null);
         const body =
@@ -27,8 +26,7 @@ juris.registerHeadlessComponent(
             });
           })
           .then((resp) => {
-            const { data, error } = resp;
-            if (error) return Promise.reject(resp);
+            if (resp.error) return Promise.reject(resp);
           })
           .then((response) => {
             const { data, error } = response;
