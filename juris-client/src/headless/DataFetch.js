@@ -1,11 +1,15 @@
+const K_LOADING = 'fetch.loading';
+const K_DETAILS = 'fetch.details';
+
 juris.registerHeadlessComponent(
   'DataFetch',
   (props, { getState, setState }) => ({
     api: {
       fetch: async (req, transformRequest, transformReply) => {
-        const { service } = req;
-        setState(`data.${service}.loading`, true);
-        setState(`data.${service}.error`, null);
+        const { service, op } = req;
+        const details = `At: ${Date.now()}, ${service}:${op}`;
+        setState(K_LOADING, getState(K_LOADING) + 1);
+        setState(K_DETAILS, [...getState(K_DETAILS, details)]);
         const body =
           transformRequest && 'data' in req
             ? requestTransform(req, transformRequest)
@@ -39,25 +43,13 @@ juris.registerHeadlessComponent(
               return replyTransform(data, transformReply);
             }
           })
-          .then((data) => {
-            setState(`data.${service}.data`, data);
-            setState(`data.${service}.lastFetch`, Date.now());
-          })
-          .catch((error) => {
-            setState(`data.${service}.error`, error);
-          })
           .finally(() => {
-            setState(`data.${service}.loading`, false);
+            setState(K_LOADING, Math.max(getState(K_LOADING) - 1, 0));
+            setState(
+              K_DETAILS,
+              getState(K_DETAILS).filter((f) => f != details)
+            );
           });
-      },
-
-      getData: (service) => getState(`data.${service}.data`),
-      isLoading: (service) => getState(`data.${service}.loading`, false),
-      getError: (service) => getState(`data.${service}.error`),
-      shouldRefetch: (service, maxAge = 300000) => {
-        // 5 minutes
-        const lastFetch = getState(`data.${service}.lastFetch`, 0);
-        return Date.now() - lastFetch > maxAge;
       },
     },
   }),
