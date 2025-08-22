@@ -18,7 +18,7 @@ export default {
     sourcemap: true,
   },
   plugins: [
-    addImports(),
+    // addImports(),
     commonjs(),
     clear({
       targets: [PUBLIC],
