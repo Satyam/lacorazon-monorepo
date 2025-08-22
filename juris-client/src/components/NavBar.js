@@ -25,7 +25,6 @@ juris.registerComponent(
   (props, { getState, setState, Navigation, DataApi, newState }) => ({
     render: () => {
       const [getShow, setShow] = newState('show', false);
-      DataApi.isLoggedIn();
       return {
         div: {
           children: [
