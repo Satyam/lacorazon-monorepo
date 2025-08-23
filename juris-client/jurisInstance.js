@@ -14,7 +14,12 @@ window.juris = new Juris({
 
   layout: {
     div: {
-      children: [{ NavBar: {} }, { Routes: {} }],
+      children: [
+        { Loading: {} },
+        { ErrorBoundary: {} },
+        { NavBar: {} },
+        { Routes: {} },
+      ],
     },
   },
 });
