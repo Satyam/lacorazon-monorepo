@@ -4,9 +4,7 @@ juris.registerComponent('Home', (props, { setState, getState }) => ({
     return {
       pre: {
         text: () =>
-          JSON.stringify(getState('data'), null, 1) +
-          '\nstate:\n' +
-          JSON.stringify(juris.stateManager.state, null, 2),
+          '\nstate:\n' + JSON.stringify(juris.stateManager.state, null, 2),
       },
     };
   },
