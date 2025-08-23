@@ -9,7 +9,7 @@ juris.registerHeadlessComponent(
         const { service, op } = req;
         const details = `At: ${Date.now()}, ${service}:${op}`;
         setState(K_LOADING, getState(K_LOADING) + 1);
-        setState(K_DETAILS, [...getState(K_DETAILS, details)]);
+        setState(K_DETAILS, [...getState(K_DETAILS, []), details]);
         const body =
           transformRequest && 'data' in req
             ? requestTransform(req, transformRequest)
