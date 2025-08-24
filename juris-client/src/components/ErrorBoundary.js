@@ -1,59 +1,67 @@
-function handleGlobalError(event) {
-  setState('app.error', {
-    message: event.error.message,
-    stack: event.error.stack,
-    timestamp: Date.now(),
-    type: 'javascript',
-  });
-}
+juris.registerComponent(
+  'ErrorBoundary',
+  (props, { getState, setState, Modal, Conditional }) => {
+    function handleGlobalError(event) {
+      event.preventDefault();
+      console.log('Got Global error', event.error.message);
+      setState('app.error', {
+        message: event.error.message,
+        stack: event.error.stack,
+        timestamp: Date.now(),
+        type: 'javascript',
+      });
+    }
 
-function handlePromiseRejection(event) {
-  setState('app.error', {
-    message: event.reason.message || 'Promise rejection',
-    stack: event.reason.stack || '',
-    timestamp: Date.now(),
-    type: 'promise',
-  });
-}
+    function handlePromiseRejection(event) {
+      event.preventDefault();
+      console.log('Got unhandled promise', event.reason.message);
+      setState('app.error', {
+        message: event.reason.message || 'Promise rejection',
+        stack: event.reason.stack || '',
+        timestamp: Date.now(),
+        type: 'promise',
+      });
+    }
+    return {
+      hooks: {
+        onMount: () => {
+          // Set up global error handler
+          window.addEventListener('error', handleGlobalError);
+          window.addEventListener('unhandledrejection', handlePromiseRejection);
+        },
 
-juris.registerComponent('ErrorBoundary', (props, context) => ({
-  hooks: {
-    onMount: () => {
-      // Set up global error handler
-      window.addEventListener('error', handleGlobalError);
-      window.addEventListener('unhandledrejection', handlePromiseRejection);
-    },
+        onUnmount: () => {
+          window.removeEventListener('error', handleGlobalError);
+          window.removeEventListener(
+            'unhandledrejection',
+            handlePromiseRejection
+          );
+        },
+      },
 
-    onUnmount: () => {
-      window.removeEventListener('error', handleGlobalError);
-      window.removeEventListener('unhandledrejection', handlePromiseRejection);
-    },
-  },
+      render: () => {
+        const error = getState('app.error', false);
+        const isRecovering = getState('app.isRecovering', false);
 
-  render: () => {
-    const { getState, setState } = context;
-    const error = getState('app.error');
-    const isRecovering = getState('app.isRecovering', false);
-
-    if (error && !isRecovering) {
-      return {
-        div: {
-          className: 'error-boundary',
-          children: [
-            { h2: { text: 'Something went wrong' } },
-            { p: { text: error.message } },
-            {
-              details: {
-                children: [
-                  { summary: { text: 'Error Details' } },
-                  { pre: { text: error.stack } },
+        return {
+          Conditional: {
+            condition: () => error && !isRecovering,
+            whenTrue: {
+              Modal: {
+                headerVariant: 'danger',
+                header: { h2: { text: 'Something went wrong' } },
+                body: [
+                  { p: { children: error.message } },
+                  {
+                    details: {
+                      children: [
+                        { summary: { text: 'Error Details' } },
+                        { pre: { text: error.stack } },
+                      ],
+                    },
+                  },
                 ],
-              },
-            },
-            {
-              div: {
-                className: 'error-actions',
-                children: [
+                footer: [
                   {
                     button: {
                       text: 'Try Again',
@@ -75,12 +83,13 @@ juris.registerComponent('ErrorBoundary', (props, context) => ({
                 ],
               },
             },
-          ],
-        },
-      };
-    }
-  },
-}));
+            whenFalse: 'no error',
+          },
+        };
+      },
+    };
+  }
+);
 
 /*
     // Normal rendering with error protection
