@@ -1,11 +1,13 @@
 import './jurisInstance.js';
 import './src/components/ErrorBoundary.js';
 import './src/components/Conditional.js';
+import './src/components/Modal.js';
 import './src/components/NavBar.js';
 import './src/components/Routes.js';
 import './src/headless/DataFetch.js';
 import './src/headless/DataApi.js';
 import './src/headless/Navigation.js';
+import './src/components/Loading.js';
 import './src/headless/User.js';
 import './src/pages/Home.js';
 import './src/pages/Login.js';

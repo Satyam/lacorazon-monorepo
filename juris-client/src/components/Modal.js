@@ -1,12 +1,17 @@
+/**
+ * headerVariant one of:
+ * Bootstrap Alert variants: primary, secondary, warning, info, danger, success, light, dark
+ */
 juris.registerComponent(
   'Modal',
   (
-    { header, body, footer, closeText, okText, className, onClose, onOk },
+    { header, body, footer, closeText, okText, headerVariant, onClose, onOk },
     context
   ) => ({
     render: () => ({
       div: {
-        className: `modal ${className}`,
+        className: 'modal',
+        style: { display: 'block' },
         tabindex: '-1',
         role: 'dialog',
         children: [
@@ -22,7 +27,11 @@ juris.registerComponent(
                       header
                         ? {
                             div: {
-                              className: 'modal-header',
+                              className: `modal-header${
+                                headerVariant
+                                  ? ` alert alert-${headerVariant}`
+                                  : ''
+                              }`,
                               children: [
                                 {
                                   h5: {
@@ -61,6 +70,7 @@ juris.registerComponent(
                             div: {
                               className: 'modal-footer',
                               children: [
+                                footer,
                                 closeText
                                   ? {
                                       button: {

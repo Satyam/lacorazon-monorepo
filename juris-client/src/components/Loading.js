@@ -24,7 +24,7 @@ juris.registerComponent('Loading', (props, { getState }) => ({
     getState('fetch.loading') > 0
       ? {
           Modal: {
-            className: 'alert alert-secondary',
+            headerVariant: 'secondary',
             header: [
               {
                 i: {
@@ -43,5 +43,5 @@ juris.registerComponent('Loading', (props, { getState }) => ({
             }, // body
           }, // Modal
         }
-      : null,
+      : 'not loading',
 }));
