@@ -1,24 +1,3 @@
-juris.registerComponent('Error', (props, context) => ({
-  render: () => ({
-    div: {
-      id: 'error',
-      className: 'alert alert-danger hidden',
-      children: [
-        {
-          i: {
-            className: 'bi bi-exclamation-triangle',
-          },
-        }, // i>
-        {
-          span: {
-            className: 'msg',
-          },
-        }, // span>
-      ],
-    }, // div>
-  }),
-}));
-
 juris.registerComponent('Loading', (props, { getState }) => ({
   render: () =>
     getState('fetch.loading') > 0
@@ -43,5 +22,5 @@ juris.registerComponent('Loading', (props, { getState }) => ({
             }, // body
           }, // Modal
         }
-      : 'not loading',
+      : null,
 }));
