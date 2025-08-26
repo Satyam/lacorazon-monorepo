@@ -8,42 +8,40 @@
 
 juris.registerHeadlessComponent(
   'User',
-  (props, { getState, setState, subscribe, DataApi }) => {
-    const handleUserData = ({ error, data }) => {
-      if (error) {
-        clearUser();
-        if (error === 401) {
-          // Do something
-        }
-      } else {
-        // Do something
-      }
-    };
+  (props, { getState, setState, DataApi }) => {
     const clearUser = () => {
       setState('user.name', null);
       setState('user.email', null);
     };
+    const handleUserError = ({ error, data }) => {
+      clearUser();
+      if (error === 401) {
+        console.info('unauthorized');
+        setState('user.unauthorized', true);
+      } else {
+        console.error('other error', error, data);
+        throw new Error(`Unexpected error in DataFetch [${error}] ${data}`);
+      }
+    };
+    const handleUserData = ({ data }) => {
+      setState('user.name', data.nombre);
+      setState('user.email', data.email);
+    };
     return {
       api: {
-        isLoggedIn: async () => {
-          handleUserData(await DataApi.isLoggedIn());
-        },
-        login: async (email, password) => {
-          handleUserData(await DataApi.login({ email, password }));
-        },
-        logout: async () => {
-          await DataApi.logout();
-          clearUser();
-        },
+        isLoggedIn: () =>
+          DataApi.isLoggedIn().then(handleUserData, handleUserError),
+        login: (email, password) =>
+          DataApi.login({ email, password }).then(
+            handleUserData,
+            handleUserError
+          ),
+        logout: () => DataApi.logout().then(clearUser, handleUserError),
       },
       hooks: {
-        onRegister: () => {
-          console.log('User.onRegister isLoggedIn', DataApi.isLoggedIn());
-        },
-        onUnregister: async () => {
-          await DataApi.logout();
-          clearUser();
-        },
+        onRegister: () =>
+          DataApi.isLoggedIn().then(handleUserData, handleUserError),
+        onUnregister: () => DataApi.logout().then(clearUser, handleUserError),
       },
     };
   },
