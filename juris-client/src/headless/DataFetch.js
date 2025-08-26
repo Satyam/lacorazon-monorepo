@@ -30,11 +30,8 @@ juris.registerHeadlessComponent(
             });
           })
           .then((resp) => {
-            if (resp.error) return Promise.reject(resp);
-          })
-          .then((response) => {
-            const { data, error } = response;
-            if (error) return Promise.reject(response);
+            const { data, error } = resp;
+            if (error) return Promise.reject(resp);
             if (transformReply) {
               if (!data) return data;
               if (Array.isArray(data)) {
@@ -42,6 +39,7 @@ juris.registerHeadlessComponent(
               }
               return replyTransform(data, transformReply);
             }
+            return resp;
           })
           .finally(() => {
             setState(K_LOADING, Math.max(getState(K_LOADING) - 1, 0));
