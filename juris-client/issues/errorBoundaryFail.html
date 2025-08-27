@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error Boundary</title>
+  </head>
+  <body>
+    <!-- https://github.com/jurisjs/juris/issues/18 -->
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/juris@0.9.0/juris.js"></script>
+    <script>
+      const juris = new Juris({
+        state: {
+          error: null,
+        },
+        layout: {
+          div: {
+            children: [{ ErrorBoundary: {} }, { TriggerError: {} }],
+          },
+        },
+      });
+
+      juris.registerComponent(
+        'ErrorBoundary',
+        (props, { getState, setState, executeBatch }) => {
+          const handleGlobalError = (event) => {
+            event.preventDefault();
+            // executeBatch(() => {
+            setState('error', event.error.message);
+            // });
+          };
+
+          return {
+            render: () =>
+              getState('error')
+                ? {
+                    div: {
+                      style: { color: 'red' },
+                      text: () => getState('error'),
+                    },
+                  }
+                : 'no error',
+            hooks: {
+              onMount: () => {
+                window.addEventListener('error', handleGlobalError);
+              },
+              onUnmount: () => {
+                window.removeEventListener('error', handleGlobalError);
+              },
+            },
+          };
+        }
+      );
+
+      juris.registerComponent('TriggerError', () => ({
+        render: () => ({
+          p: {
+            text: 'trigger error',
+          },
+        }),
+        hooks: {
+          onMount: () => {
+            setTimeout(() => {
+              throw new Error('Big Mistake');
+            }, 1000);
+          },
+        },
+      }));
+
+      juris.render('#app');
+    </script>
+  </body>
+</html>
