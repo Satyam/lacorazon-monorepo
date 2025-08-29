@@ -35,7 +35,7 @@ juris.registerHeadlessComponent(
           window.addEventListener('unhandledrejection', handlePromiseRejection);
         },
         onUnregister: () => {
-          window.removeEventListener('error', this.api.handleGlobalError);
+          window.removeEventListener('error', handleGlobalError);
           window.removeEventListener(
             'unhandledrejection',
             handlePromiseRejection
@@ -67,6 +67,7 @@ juris.registerComponent('ErrorBoundary', (props, { getState, setState }) => ({
             footer: [
               {
                 button: {
+                  class: 'btn btn-secondary',
                   text: 'Try Again',
                   onclick: () => {
                     setState(APP_IS_RECOVERING, true);
@@ -79,6 +80,7 @@ juris.registerComponent('ErrorBoundary', (props, { getState, setState }) => ({
               },
               {
                 button: {
+                  class: 'btn btn-secondary',
                   text: 'Reload Page',
                   onclick: () => window.location.reload(),
                 },
