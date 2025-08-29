@@ -47,3 +47,8 @@ label {
 .columna label.form-group {
   display: block;
 }
+
+.user-name {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}

@@ -22,16 +22,19 @@ juris.registerComponent('NavItem', ({ href, text, hidden = false }, {}) => ({
 
 juris.registerComponent(
   'NavBar',
-  (props, { getState, setState, Navigation, DataApi, newState }) => ({
+  (props, { getState, setState, Navigation, DataApi, newState, User }) => ({
     render: () => {
-      const [getShow, setShow] = newState('show', false);
+      const [getCollapsed, setCollapsed] = newState('collapsed', false);
+      const [getShowDropdown, setShowDropdown] = newState(
+        'showDropdown',
+        false
+      );
       return {
         div: {
           children: [
             {
               nav: {
-                id: 'navbar',
-                className: 'navbar navbar-light navbar-expand-lg',
+                className: 'navbar navbar-expand-lg',
                 children: [
                   {
                     a: {
@@ -49,26 +52,28 @@ juris.registerComponent(
                   },
                   {
                     button: {
-                      className: 'navbar-toggler',
+                      className: () =>
+                        `navbar-toggler ${getCollapsed() ? ' collapsed' : ''}`,
                       type: 'button',
                       children: [
                         { span: { className: 'navbar-toggler-icon' } }, // span.
                       ],
                       onclick: (ev) => {
                         ev.preventDefault();
-                        setShow(!getShow());
-                        $collapse.classList.toggle('show');
+                        setCollapsed(!getCollapsed());
                       },
                     },
                   }, // button.
                   {
                     div: {
                       className: () =>
-                        `collapse navbar-collapse ${getShow() ? 'show' : ''}`,
+                        `collapse navbar-collapse ${
+                          getCollapsed() ? '' : 'show'
+                        }`,
                       children: [
                         {
                           ul: {
-                            className: 'navbar-nav me-auto logged-in',
+                            className: 'navbar-nav',
                             children: [
                               {
                                 NavItem: {
@@ -98,54 +103,98 @@ juris.registerComponent(
                           },
                         }, // ul.
                         {
-                          span: {
-                            className: 'navbar-text ms-auto',
+                          div: {
+                            className: 'navbar-text ms-auto dropdown',
                             children: [
                               {
-                                i: {
-                                  className: 'bi bi-person-x logged-out',
-                                  children: [' Invitado'],
-                                },
-                              }, // i.
-                              {
-                                i: {
-                                  className:
-                                    'bi bi-person-check-fill logged-in',
-                                  children: [
-                                    { span: { className: 'user-name' } },
-                                  ],
-                                },
-                              }, // i.
-                            ],
-                          },
-                        }, // span.
-                        {
-                          ul: {
-                            className: 'navbar-nav',
-                            children: [
-                              {
-                                NavItem: {
-                                  href: '/login',
-                                  text: 'Login',
-                                  hidden: () => !getState('user.name'),
+                                button: {
+                                  className: `nav-link pe-2 dropdown-toggle ${
+                                    getShowDropdown() ? 'show' : ''
+                                  }`,
+                                  onclick: (ev) => {
+                                    setShowDropdown(!getShowDropdown());
+                                  },
+
+                                  children: () =>
+                                    getState('user.name')
+                                      ? {
+                                          i: {
+                                            className:
+                                              'bi bi-person-check-fill',
+                                            children: [
+                                              {
+                                                span: {
+                                                  className: 'user-name',
+                                                  text: () =>
+                                                    getState('user.name'),
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        } // i.                              {
+                                      : {
+                                          i: {
+                                            className: 'bi bi-person-x',
+                                            children: {
+                                              span: {
+                                                className: 'user-name',
+                                                text: 'Invitado',
+                                              },
+                                            },
+                                          },
+                                        }, // i.
                                 },
                               },
                               {
-                                NavItem: {
-                                  href: '/logout',
-                                  text: 'Logout',
-                                  hidden: () => getState('user.name'),
+                                div: {
+                                  className: () =>
+                                    `dropdown-menu dropdown-menu-right ${
+                                      getShowDropdown() ? ' show' : ''
+                                    }`,
+                                  children: () =>
+                                    getState('user.name')
+                                      ? {
+                                          div: {
+                                            className: 'dropdown-item',
+                                            href: '/logout',
+                                            text: 'Logout',
+                                            onclick: () => {
+                                              User.logout();
+                                              Navigation.replace('/');
+                                            },
+                                          },
+                                        }
+                                      : {
+                                          div: {
+                                            className: 'dropdown-item',
+                                            href: '/login',
+                                            text: 'Login',
+                                            onclick: () => {
+                                              Navigation.push('/login');
+                                            },
+                                          },
+                                        },
                                 },
-                              },
+                              }, // ul.
                             ],
                           },
-                        }, // ul.
+                        },
                       ],
                     },
                   }, // div.
                 ],
               },
             }, // nav.
+            {
+              p: {
+                text: () => `Collapsed ${getCollapsed()}`,
+              },
+            },
+            {
+              p: {
+                text: () => `dropdown menu ${getShowDropdown()}`,
+              },
+            },
             {
               h1: {
                 text: () => getState('title'),
@@ -157,9 +206,3 @@ juris.registerComponent(
     },
   })
 );
-
-// <(\w+)\s           {$1:{
-// <\/(\w+)\s?}       } // $1.
-// (\w+)="([^"]*)"    $1: '$2',
-// className:         className:
-// />
