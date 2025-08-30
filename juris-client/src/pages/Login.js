@@ -1,6 +1,6 @@
 juris.registerComponent(
   'Login',
-  (props, { setState, getState, newState, User }) => {
+  (props, { setState, getState, newState, User, Navigation }) => {
     const [getEmail, setEmail] = newState('email', '');
     const [getPassword, setPassword] = newState('password', '');
     return {
@@ -11,7 +11,9 @@ juris.registerComponent(
             novalidate: true,
             onsubmit: (ev) => {
               ev.preventDefault();
-              User.login(getEmail(), getPassword());
+              User.login(getEmail(), getPassword()).then(() =>
+                Navigation.back()
+              );
             },
             children: [
               {
