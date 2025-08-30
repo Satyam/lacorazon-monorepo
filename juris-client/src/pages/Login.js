@@ -1,5 +1,5 @@
 juris.registerComponent(
-  'Home',
+  'Login',
   (props, { setState, getState, newState, User }) => {
     const [getEmail, setEmail] = newState('email', '');
     const [getPassword, setPassword] = newState('password', '');
