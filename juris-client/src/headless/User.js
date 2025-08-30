@@ -1,11 +1,3 @@
-// "auth": {
-//       "loading": false,
-//       "error": {
-//         "error": 401,
-//         "data": "Unauthorized"
-//       }
-//     }
-
 juris.registerHeadlessComponent(
   'User',
   (props, { getState, setState, DataApi }) => {
@@ -17,7 +9,7 @@ juris.registerHeadlessComponent(
       clearUser();
       if (error === 401) {
         console.info('unauthorized');
-        setState('user.unauthorized', true);
+        // setState('user.unauthorized', true);
       } else {
         console.error('other error', error, data);
         throw new Error(`Unexpected error in DataFetch [${error}] ${data}`);
