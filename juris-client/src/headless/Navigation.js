@@ -1,7 +1,9 @@
 juris.registerHeadlessComponent(
   'Navigation',
   (props, { setState }) => {
+    let previous = null;
     const setURL = (path) => {
+      if (path !== '/login') previous = path;
       const parts = path.substring(1).split('/');
       setState('url.path', path);
       setState('url.service', parts[0]);
@@ -32,8 +34,12 @@ juris.registerHeadlessComponent(
           history.replaceState({ path }, '', path);
           setURL(path);
         },
-        back: () => {
-          history.back();
+        back: function () {
+          if (previous) {
+            history.back();
+          } else {
+            this.replace('/');
+          }
         },
       },
     };
