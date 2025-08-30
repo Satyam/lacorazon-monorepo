@@ -1,47 +1,42 @@
 juris.registerHeadlessComponent(
   'Navigation',
   (props, { setState }) => {
+    const setURL = (path) => {
+      const parts = path.substring(1).split('/');
+      setState('url.path', path);
+      setState('url.service', parts[0]);
+      setState('url.param', parts[1]);
+    };
+    const handleUrlChange = () => {
+      setURL(window.location.pathname);
+    };
+
     return {
       hooks: {
         onRegister: () => {
-          console.log('🧭 UrlStateSync initializing...');
-
-          // Initialize from current URL
           handleUrlChange();
 
-          // Listen for browser navigation (back/forward)
-          // window.addEventListener('hashchange', handleUrlChange);
           window.addEventListener('popstate', handleUrlChange);
-
-          console.log('✅ UrlStateSync ready');
         },
 
         onUnregister: () => {
-          // window.removeEventListener('hashchange', handleUrlChange);
           window.removeEventListener('popstate', handleUrlChange);
         },
       },
       api: {
         push: (path) => {
           history.pushState({ path }, '', path);
+          setURL(path);
         },
         replace: (path) => {
           history.replaceState({ path }, '', path);
+          setURL(path);
+        },
+        back: () => {
+          history.back();
         },
       },
     };
-
-    function handleUrlChange() {
-      const path = window.location.pathname;
-      const parts = path.substring(1).split('/');
-
-      // Inject URL state into global state
-      setState('url.path', path);
-      setState('url.service', parts[0]);
-      setState('url.param', parts[1]);
-
-      console.log('🧭 URL updated:', path);
-    }
   },
   { autoInit: true }
 );
