@@ -1,8 +1,8 @@
 juris.registerComponent(
   'Login',
   (props, { setState, getState, newState, User, Navigation }) => {
-    const [getEmail, setEmail] = newState('email', '');
-    const [getPassword, setPassword] = newState('password', '');
+    const [getEmail, setEmail] = newState('email', 'pepe@correo.com');
+    const [getPassword, setPassword] = newState('password', 'pepecito');
     return {
       render: () => {
         setState('title', 'Login');
@@ -36,6 +36,7 @@ juris.registerComponent(
                               className: 'form-control',
                               placeholder: 'Email',
                               required: true,
+                              value: 'pepe@correo.com',
                               oninput: (ev) => setEmail(ev.target.value),
                             },
                           },
@@ -72,6 +73,7 @@ juris.registerComponent(
                               className: 'form-control',
                               placeholder: 'Contraseña',
                               required: true,
+                              value: 'pepecito',
                               oninput: (ev) => setPassword(ev.target.value),
                             },
                           }, // input
