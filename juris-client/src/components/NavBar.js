@@ -1,34 +1,43 @@
-// TODO: use Conditional
-
-juris.registerComponent('NavItem', ({ href, text, hidden = false }, {}) => ({
-  render: () => ({
-    li: {
-      style: {
-        display: hidden ? 'none' : 'block',
+juris.registerComponent(
+  'NavItem',
+  ({ href, text }, { getState, Navigation }) => ({
+    render: () => ({
+      li: {
+        className: 'nav-item',
+        children:
+          getState('url.path') === href
+            ? {
+                div: {
+                  className: 'nav-link active',
+                  text,
+                },
+              } // a.
+            : {
+                a: {
+                  className: 'nav-link',
+                  href,
+                  text,
+                  onclick: (ev) => {
+                    ev.preventDefault();
+                    Navigation.push(href);
+                  },
+                },
+              }, // a.
       },
-      className: 'nav-item',
-      children: [
-        {
-          a: {
-            className: 'nav-link',
-            href,
-            text,
-          },
-        }, // a.
-      ],
-    },
-  }),
-}));
+    }),
+  })
+);
 
 juris.registerComponent(
   'NavBar',
-  (props, { getState, setState, Navigation, DataApi, newState, User }) => ({
+  (props, { getState, setState, Navigation, newState, User }) => ({
     render: () => {
       const [getCollapsed, setCollapsed] = newState('collapsed', false);
       const [getShowDropdown, setShowDropdown] = newState(
         'showDropdown',
         false
       );
+      const currentPath = getState('url.path');
       return {
         div: {
           children: [
@@ -68,38 +77,41 @@ juris.registerComponent(
                     div: {
                       className: () =>
                         `collapse navbar-collapse ${
-                          getCollapsed() ? '' : 'show'
+                          getCollapsed() ? 'show' : ''
                         }`,
                       children: [
                         {
                           ul: {
                             className: 'navbar-nav',
-                            children: [
-                              {
-                                NavItem: {
-                                  href: '/usuarios',
-                                  text: 'Usuarios',
-                                },
-                              },
-                              {
-                                NavItem: {
-                                  href: '/vendedores',
-                                  text: 'Vendedores',
-                                },
-                              },
-                              {
-                                NavItem: {
-                                  href: '/distribuidores',
-                                  text: 'Distribuidores',
-                                },
-                              },
-                              {
-                                NavItem: {
-                                  href: '/ventas',
-                                  text: 'Ventas',
-                                },
-                              },
-                            ],
+                            children: () =>
+                              getState('user.name')
+                                ? [
+                                    {
+                                      NavItem: {
+                                        href: '/usuarios',
+                                        text: 'Usuarios',
+                                      },
+                                    },
+                                    {
+                                      NavItem: {
+                                        href: '/vendedores',
+                                        text: 'Vendedores',
+                                      },
+                                    },
+                                    {
+                                      NavItem: {
+                                        href: '/distribuidores',
+                                        text: 'Distribuidores',
+                                      },
+                                    },
+                                    {
+                                      NavItem: {
+                                        href: '/ventas',
+                                        text: 'Ventas',
+                                      },
+                                    },
+                                  ]
+                                : null,
                           },
                         }, // ul.
                         {
@@ -148,28 +160,41 @@ juris.registerComponent(
                               {
                                 div: {
                                   className: () =>
-                                    `dropdown-menu dropdown-menu-right ${
+                                    `dropdown-menu dropdown-menu-end mt-3 ${
                                       getShowDropdown() ? ' show' : ''
                                     }`,
                                   children: () =>
                                     getState('user.name')
                                       ? {
-                                          div: {
+                                          a: {
                                             className: 'dropdown-item',
                                             href: '/logout',
                                             text: 'Logout',
-                                            onclick: () => {
+                                            disabled: () =>
+                                              currentPath === '/login',
+                                            onclick: (ev) => {
+                                              ev.preventDefault();
+                                              setShowDropdown(false);
                                               User.logout();
                                               Navigation.replace('/');
                                             },
                                           },
                                         }
                                       : {
-                                          div: {
-                                            className: 'dropdown-item',
+                                          a: {
+                                            className: () =>
+                                              `dropdown-item ${
+                                                currentPath === '/login'
+                                                  ? 'active'
+                                                  : ''
+                                              }`,
                                             href: '/login',
                                             text: 'Login',
-                                            onclick: () => {
+                                            disabled: () =>
+                                              currentPath === '/login',
+                                            onclick: (ev) => {
+                                              ev.preventDefault();
+                                              setShowDropdown(false);
                                               Navigation.push('/login');
                                             },
                                           },
@@ -185,16 +210,6 @@ juris.registerComponent(
                 ],
               },
             }, // nav.
-            {
-              p: {
-                text: () => `Collapsed ${getCollapsed()}`,
-              },
-            },
-            {
-              p: {
-                text: () => `dropdown menu ${getShowDropdown()}`,
-              },
-            },
             {
               h1: {
                 text: () => getState('title'),
