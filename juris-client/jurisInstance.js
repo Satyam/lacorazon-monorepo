@@ -1,6 +1,7 @@
 /// <reference path="../types/global.d.ts" />
 
-import Juris from 'juris';
+import { Juris } from 'juris';
+import { HeadlessManager } from 'juris/juris-headless';
 
 window.juris = new Juris({
   states: {
@@ -14,7 +15,9 @@ window.juris = new Juris({
       error: null,
     },
   },
-
+  features: {
+    headless: HeadlessManager,
+  },
   layout: {
     div: {
       children: [

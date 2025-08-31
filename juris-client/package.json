@@ -11,6 +11,6 @@
     "watch": "chokidar  ./src/**/*.js ./index.html --initial -c \"rollup -c \""
   },
   "dependencies": {
-    "juris": "^0.88.2"
+    "juris": "^0.9.0"
   }
 }
