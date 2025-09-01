@@ -1,4 +1,6 @@
 import './jurisInstance.js';
+import './src/components/Buttons.js';
+import './src/components/ConfirmDelete.js';
 import './src/components/ErrorBoundary.js';
 import './src/components/Conditional.js';
 import './src/components/Modal.js';
