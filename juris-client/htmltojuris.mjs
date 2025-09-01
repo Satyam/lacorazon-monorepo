@@ -35,13 +35,13 @@ const booleanAttr = [
 
 const input = [];
 
-if (stdin.isTTY) console.log('Press Ctrl-C to end input');
+if (stdin.isTTY)
+  console.log('Press Ctrl-D or Ctrl-C (depends on the OS)  to end input');
 for await (const line of createInterface({ input: stdin })) {
-  if (stdin.isTTY) console.log(`Received: ${line}`);
   input.push(line);
 }
 
-const root = parse(input.join('\n'), {
+const root = parse(input.join('\n').trim(), {
   lowerCaseTagName: true, // convert tag name to lower case (hurts performance heavily)
   comment: false, // retrieve comments (hurts performance slightly)
   fixNestedATags: false, // fix invalid nested <a> HTML tags
@@ -73,7 +73,7 @@ const root = parse(input.join('\n'), {
   },
 });
 
-console.log('const qq = ', processNode(root.firstChild));
+console.log('return ', processNode(root.firstChild));
 process.exit();
 
 function processNode(node) {
