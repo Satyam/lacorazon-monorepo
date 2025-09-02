@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "watch": "chokidar  ./src/**/*.js ./index.html --initial -c \"rollup -c \"",
+    "watch": "chokidar  \"./src/**/*.js\" ./index.html --initial -c \"rollup -c \"",
     "parseHtml": "node htmltojuris.mjs"
   },
   "dependencies": {
