@@ -1,3 +1,5 @@
+import juris from '@src/juris.js';
+
 juris.registerHeadlessComponent(
   'Navigation',
   (props, { setState }) => {

@@ -1,3 +1,5 @@
+import juris from '@src/juris.js';
+
 juris.registerComponent('Home', (props, { setState, getState }) => ({
   render: () => {
     setState('title', 'Bienvenido');

@@ -2,6 +2,7 @@ import copy from 'rollup-plugin-copy';
 import clear from 'rollup-plugin-clear';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import alias from '@rollup/plugin-alias';
 
 import addImports from './rollupAddImports.js';
 
@@ -11,13 +12,21 @@ const PUBLIC = '../public';
 const node_modules = '../node_modules';
 
 export default {
-  input: 'index.js',
+  input: './src/render.js',
   output: {
-    dir: PUBLIC,
+    file: join(PUBLIC, 'index.js'),
     format: 'es',
     sourcemap: true,
   },
   plugins: [
+    alias({
+      entries: {
+        '@src': './src',
+        '@pages': './src/pages',
+        '@headless': './src/headless',
+        '@components': './src/components',
+      },
+    }),
     // addImports(),
     commonjs(),
     clear({

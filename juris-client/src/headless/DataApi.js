@@ -1,3 +1,6 @@
+import juris from '@src/juris.js';
+import '@headless/DataFetch.js';
+
 const AUTH_SERVICE = 'auth';
 const VENDEDORES_SERVICE = 'vendedores';
 const VENTAS_SERVICE = 'ventas';

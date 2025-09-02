@@ -1,3 +1,5 @@
+import juris from '@src/juris.js';
+
 const K_LOADING = 'fetch.loading';
 const K_DETAILS = 'fetch.details';
 

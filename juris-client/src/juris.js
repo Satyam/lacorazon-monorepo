@@ -1,9 +1,9 @@
-/// <reference path="../types/global.d.ts" />
+/// <reference path="../../types/global.d.ts" />
 
 import { Juris } from 'juris';
 import { HeadlessManager } from 'juris/juris-headless';
 
-window.juris = new Juris({
+export const juris = new Juris({
   states: {
     user: {
       name: null,
@@ -29,3 +29,5 @@ window.juris = new Juris({
     },
   },
 });
+
+export default juris;

@@ -1,6 +1,9 @@
 const APP_ERROR = 'app.error';
 const APP_IS_RECOVERING = 'app.isRecovering';
 
+import juris from '@src/juris.js';
+import '@components/Modal.js';
+
 juris.registerHeadlessComponent(
   'ErrorHandler',
   (props, { setState, executeBatch }) => {

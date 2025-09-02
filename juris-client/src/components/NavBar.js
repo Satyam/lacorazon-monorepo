@@ -1,3 +1,6 @@
+import juris from '@src/juris.js';
+import '@headless/Navigation.js';
+
 juris.registerComponent(
   'NavItem',
   ({ href, text }, { getState, Navigation }) => ({

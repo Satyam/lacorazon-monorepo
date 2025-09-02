@@ -1,3 +1,8 @@
+import juris from '@src/juris.js';
+
+import '@headless/Navigation.js';
+import '@headless/User.js';
+
 juris.registerComponent(
   'Login',
   (props, { setState, getState, newState, User, Navigation }) => {

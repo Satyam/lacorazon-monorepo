@@ -1,4 +1,8 @@
-import { formatDate, formatCurrency, iconCheck } from '../../utils.js';
+import juris from '@src/juris.js';
+import '@headless/Navigation.js';
+import '@headless/DataApi.js';
+
+import { formatDate, formatCurrency, iconCheck } from '@src/utils.js';
 
 juris.registerComponent(
   'RowVenta',

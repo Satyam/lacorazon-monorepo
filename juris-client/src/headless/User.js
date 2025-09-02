@@ -1,3 +1,6 @@
+import juris from '@src/juris.js';
+import '@headless/DataApi.js';
+
 juris.registerHeadlessComponent(
   'User',
   (props, { getState, setState, DataApi }) => {

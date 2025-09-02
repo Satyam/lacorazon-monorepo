@@ -1,3 +1,5 @@
+import juris from '@src/juris.js';
+
 juris.registerComponent(
   'TableRowButtons',
   ({ action, id, descr }, { getState }) => ({

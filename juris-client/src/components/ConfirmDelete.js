@@ -1,3 +1,6 @@
+import juris from '@src/juris.js';
+import '@components/Modal.js';
+
 juris.registerComponent(
   'ConfirmDelete',
   ({ onConfirma, onCancela, descr }) => ({
