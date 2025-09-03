@@ -2,7 +2,7 @@ import juris from '@src/juris.js';
 
 juris.registerComponent(
   'TableRowButtons',
-  ({ action, id, descr }, { getState }) => ({
+  ({ action, id, message }, { getState }) => ({
     render: () => ({
       div: {
         className: 'btn-group btn-group-sm',
@@ -12,7 +12,7 @@ juris.registerComponent(
             button: {
               className: 'btn btn-outline-info',
               title: 'Ver detalle',
-              onClick: "{act('show')}",
+              onClick: () => action('show', id),
               children: {
                 i: {
                   className: 'bi bi-eye',
@@ -25,7 +25,7 @@ juris.registerComponent(
             button: {
               className: 'btn btn-outline-secondary',
               title: 'Modificar',
-              onClick: "{act('edit')}",
+              onClick: () => action('edit', id),
               children: {
                 i: {
                   className: 'bi bi-pencil',
@@ -38,7 +38,8 @@ juris.registerComponent(
             button: {
               className: 'btn btn-outline-danger',
               title: 'Borrar',
-              onClick: "{act('delete')}",
+
+              onClick: () => action('delete', id, message),
               children: {
                 i: {
                   className: 'bi bi-trash',
@@ -88,7 +89,7 @@ juris.registerComponent(
                   button: {
                     className: 'btn btn-outline-danger',
                     title: 'Borrar',
-                    onClick: "{act('delete')}",
+                    // onClick: "{act('delete')}",
                     children: {
                       i: {
                         className: 'bi bi-trash',
