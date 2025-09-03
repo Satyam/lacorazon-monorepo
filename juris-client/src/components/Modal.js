@@ -44,18 +44,9 @@ juris.registerComponent(
                                   ? {
                                       button: {
                                         type: 'button',
-                                        className: 'close',
-                                        'data-dismiss': 'modal',
+                                        className: 'btn-close',
                                         'aria-label': 'Close',
                                         onClick: onClose,
-                                        children: [
-                                          {
-                                            span: {
-                                              'aria-hidden': 'true',
-                                              text: '&times',
-                                            },
-                                          }, // span
-                                        ],
                                       },
                                     }
                                   : null, // button
