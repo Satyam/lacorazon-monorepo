@@ -21,8 +21,12 @@ export const juris = new Juris({
   layout: {
     div: {
       children: [
+        // Modals: the come and go
         { Loading: {} },
         { ErrorBoundary: {} },
+        { ConfirmDelete: {} },
+        // end Modals
+
         { NavBar: {} },
         { Routes: {} },
       ],
