@@ -20,8 +20,8 @@ const currFormatter = new Intl.NumberFormat(locale, {
 export const formatCurrency = (value) =>
   typeof value === 'undefined' ? '' : currFormatter.format(value);
 
-export const iconCheck = (value) => {
+export const iconCheck = (value) => ({
   i: {
-    className: `bi ${value ? 'bi-check-square' : 'bi-square'}`.at;
-  }
-};
+    className: `bi ${value ? 'bi-check-square' : 'bi-square'}`,
+  },
+});
