@@ -1,13 +1,22 @@
 import juris from '@src/juris.js';
 import '@headless/Navigation.js';
 import '@headless/DataApi.js';
+import '@components/Buttons.js';
+import {
+  CONFIRM_DELETE,
+  CONFIRM_DELETE_RESULT,
+  CONFIRM_DELETE_RESULT_CONFIRM,
+} from '@components/ConfirmDelete.js';
 
 import { formatDate, formatCurrency, iconCheck } from '@src/utils.js';
 
 juris.registerComponent(
-  'RowVenta',
-  ({ venta, idVendedor }, { Navigation, DataApi }) => {
-    const rowActionsHandler = (action, id, descr) => {
+  'ListVentas',
+  async (
+    { idVendedor },
+    { getState, setState, subscribe, executeBatch, DataApi, Navigation }
+  ) => {
+    const rowActionsHandler = (action, id, message) => {
       switch (action) {
         case 'show':
           Navigation.push(`/venta/${id}`);
@@ -16,98 +25,103 @@ juris.registerComponent(
           Navigation.push(`/venta/edit/${id}`);
           break;
         case 'delete':
-          confirmDelete(`la venta del ${descr}`, () => DataApi.removeVenta(id));
+          setState(CONFIRM_DELETE, {
+            message: `la venta del ${message}`,
+            id,
+          });
+          const unsubscribe = subscribe(
+            CONFIRM_DELETE_RESULT,
+            async (value) => {
+              unsubscribe();
+              if (value === CONFIRM_DELETE_RESULT_CONFIRM) {
+                DataApi.removeVenta(getState(`${CONFIRM_DELETE}.id`));
+              }
+              executeBatch(() => {
+                setState(CONFIRM_DELETE, null);
+              });
+            }
+          );
           break;
       }
     };
-    return {
-      render: () => {
-        const id = venta.id;
-        return {
-          tr: {
-            key: id,
-            children: [
-              {
-                td: {
-                  text: formatDate(venta.fecha),
-                },
+    const rowVenta = (venta) => {
+      const id = venta.id;
+      return {
+        tr: {
+          key: id,
+          children: [
+            {
+              td: {
+                text: formatDate(venta.fecha),
               },
-              {
-                td: {
-                  text: venta.concepto,
-                },
+            },
+            {
+              td: {
+                text: venta.concepto,
               },
-              () =>
-                venta.idVendedor
-                  ? null
-                  : {
-                      td: {
-                        title: 'Ver detalle del vendedor',
-                        children: {
-                          a: {
-                            href: `./showVendedor/${venta.idVendedor}`,
-                            onclick: (ev) => {
-                              ev.preventDefault();
-                              Navigation.push(
-                                `./showVendedor/${venta.idVendedor}`
-                              );
-                            },
-                            text: venta.vendedor,
+            },
+            () =>
+              idVendedor
+                ? null
+                : {
+                    td: {
+                      title: 'Ver detalle del vendedor',
+                      children: {
+                        a: {
+                          href: `./showVendedor/${venta.idVendedor}`,
+                          onclick: (ev) => {
+                            ev.preventDefault();
+                            Navigation.push(
+                              `./showVendedor/${venta.idVendedor}`
+                            );
                           },
+                          text: venta.vendedor,
                         },
                       },
                     },
-              {
-                td: {
-                  className: 'text-end',
-                  text: venta.cantidad,
-                },
+                  },
+            {
+              td: {
+                className: 'text-end',
+                text: venta.cantidad,
               },
-              {
-                td: {
-                  className: 'text-end',
-                  text: formatCurrency(venta.precioUnitario),
-                },
+            },
+            {
+              td: {
+                className: 'text-end',
+                text: formatCurrency(venta.precioUnitario),
               },
-              {
-                td: {
-                  className: 'text-center',
-                  children: iconCheck(!!venta?.iva),
-                },
+            },
+            {
+              td: {
+                className: 'text-center',
+                children: iconCheck(!!venta?.iva),
               },
-              {
-                td: {
-                  className: 'text-end',
-                  text: formatCurrency(
-                    formatCurrency(
-                      (venta.cantidad || 0) * (venta.precioUnitario || 0)
-                    )
-                  ),
-                },
+            },
+            {
+              td: {
+                className: 'text-end',
+                text: formatCurrency(
+                  (venta.cantidad || 0) * (venta.precioUnitario || 0)
+                ),
               },
-              {
-                td: {
-                  className: 'text-center',
-                  children: {
-                    TableRowButtons: {
-                      onclick: rowActionsHandler,
-                      id: venta.id,
-                      descr: formatDate(venta.fecha),
-                    },
+            },
+            {
+              td: {
+                className: 'text-center',
+                children: {
+                  TableRowButtons: {
+                    action: rowActionsHandler,
+                    id: venta.id,
+                    message: formatDate(venta.fecha),
                   },
                 },
               },
-            ],
-          },
-        };
-      },
+            },
+          ],
+        },
+      };
     };
-  }
-);
-
-juris.registerComponent(
-  'ListVentas',
-  async ({ idVendedor }, { getState, setState, DataApi }) => {
     const ventas = await DataApi.listVentas({ idVendedor });
     return {
       render: async () => {
@@ -176,8 +190,9 @@ juris.registerComponent(
                               children: [
                                 {
                                   button: {
-                                    onClick: '{onAdd}',
-                                    variant: 'primary',
+                                    onClick: () =>
+                                      Navigation.push('/ventas/new'),
+                                    className: 'btn btn-primary',
                                     title: 'Agregar',
                                     children: {
                                       i: {
@@ -199,11 +214,8 @@ juris.registerComponent(
 
               {
                 tbody: {
-                  children: ventas.map((venta) => {
-                    RowVenta: {
-                      venta, idVendedor;
-                    }
-                  }),
+                  children: () => ventas.map(rowVenta),
+                  // onclick,
                 },
               },
             ],
