@@ -52,3 +52,7 @@ label {
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
+
+i.bi:not(:empty)::before {
+  margin-right: 1em;
+}
