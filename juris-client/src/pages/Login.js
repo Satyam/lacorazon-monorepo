@@ -8,6 +8,8 @@ juris.registerComponent(
   (props, { setState, getState, newState, User, Navigation }) => {
     const [getEmail, setEmail] = newState('email', 'pepe@correo.com');
     const [getPassword, setPassword] = newState('password', 'pepecito');
+    const [getSubmitting, setSubmitting] = newState('submitting', false);
+    const [get401, set401] = newState('unauthorized', false);
     return {
       render: () => {
         setState('title', 'Login');
@@ -16,11 +18,36 @@ juris.registerComponent(
             novalidate: true,
             onsubmit: (ev) => {
               ev.preventDefault();
-              User.login(getEmail(), getPassword()).then(() =>
-                Navigation.back()
-              );
+              setSubmitting(true);
+              User.login(getEmail(), getPassword())
+                .then(() => {
+                  setSubmitting(false);
+                  Navigation.back();
+                })
+                .catch(({ error, data }) => {
+                  setSubmitting(false);
+                  if (error === 401) {
+                    set401(true);
+                    console.info('unauthorized');
+                    // setState('user.unauthorized', true);
+                  } else {
+                    console.error('other error', error, data);
+                    throw new Error(
+                      `Unexpected error in DataFetch [${error}] ${data}`
+                    );
+                  }
+                });
             },
             children: [
+              () =>
+                get401()
+                  ? {
+                      div: {
+                        className: 'alert alert-warning',
+                        text: 'Usuario inexistente o contraseña inválida',
+                      },
+                    }
+                  : null,
               {
                 label: {
                   className: 'form-group row',
@@ -38,7 +65,8 @@ juris.registerComponent(
                           {
                             input: {
                               name: 'email',
-                              className: 'form-control',
+                              className: () =>
+                                `form-control${get401() ? ' is-invalid' : ''}`,
                               placeholder: 'Email',
                               required: true,
                               value: 'pepe@correo.com',
@@ -75,7 +103,8 @@ juris.registerComponent(
                             input: {
                               type: 'password',
                               name: 'password',
-                              className: 'form-control',
+                              className: () =>
+                                `form-control${get401() ? ' is-invalid' : ''}`,
                               placeholder: 'Contraseña',
                               required: true,
                               value: 'pepecito',
@@ -98,7 +127,8 @@ juris.registerComponent(
                 button: {
                   type: 'submit',
                   className: 'btn btn-primary',
-                  disabled: () => !(getEmail() || getPassword()),
+                  disabled: () =>
+                    !(getEmail() || getPassword()) || getSubmitting(),
                   text: 'Acceder',
                 },
               }, // button
