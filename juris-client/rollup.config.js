@@ -18,6 +18,11 @@ export default {
     format: 'es',
     sourcemap: true,
   },
+  jsx: {
+    mode: 'classic',
+    factory: 'h',
+    importSource: 'juris',
+  },
   plugins: [
     alias({
       entries: {

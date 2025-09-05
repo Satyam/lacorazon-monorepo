@@ -1,6 +1,6 @@
 import juris from '@src/juris.js';
 
-juris.registerComponent(
+export const TableRowButtons = juris.registerComponent(
   'TableRowButtons',
   ({ action, id, message }, { getState }) => ({
     render: () => ({
