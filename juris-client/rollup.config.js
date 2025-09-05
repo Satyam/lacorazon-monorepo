@@ -21,7 +21,7 @@ export default {
   jsx: {
     mode: 'classic',
     factory: 'h',
-    importSource: 'juris',
+    importSource: '@src/utils.js',
   },
   plugins: [
     alias({

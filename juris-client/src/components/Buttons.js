@@ -1,6 +1,6 @@
-import juris from '@src/juris.js';
+import juris, { myRegisterComponent } from '@src/juris.js';
 
-export const TableRowButtons = juris.registerComponent(
+export const TableRowButtons = myRegisterComponent(
   'TableRowButtons',
   ({ action, id, message }, { getState }) => ({
     render: () => ({
@@ -53,7 +53,7 @@ export const TableRowButtons = juris.registerComponent(
   })
 );
 
-juris.registerComponent(
+export const DetailsButtonSet = myRegisterComponent(
   'DetailsButtonSet',
   ({ onDelete, isNew }, { getState }) => ({
     render: () =>

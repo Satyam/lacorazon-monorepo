@@ -34,4 +34,12 @@ export const juris = new Juris({
   },
 });
 
+export const myRegisterComponent = (name, componentFn) => {
+  juris.registerComponent(name, componentFn);
+  return Object.defineProperty(componentFn, 'name', {
+    value: name,
+    writable: false,
+  });
+};
+
 export default juris;

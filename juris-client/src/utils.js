@@ -25,3 +25,10 @@ export const iconCheck = (value) => ({
     className: `bi ${value ? 'bi-check-square' : 'bi-square'}`,
   },
 });
+
+export const h = (tag, attrs, ...children) => ({
+  [typeof tag === 'function' ? tag.name : tag]: {
+    ...attrs,
+    children,
+  },
+});
