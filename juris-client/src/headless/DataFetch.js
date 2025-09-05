@@ -41,7 +41,7 @@ juris.registerHeadlessComponent(
               }
               return replyTransform(data, transformReply);
             }
-            return resp;
+            return data;
           })
           .finally(() => {
             setState(K_LOADING, Math.max(getState(K_LOADING) - 1, 0));

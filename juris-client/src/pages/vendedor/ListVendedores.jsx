@@ -58,7 +58,7 @@ juris.registerComponent(
         </tr>
       );
     };
-    const { data: vendedores, error } = await DataApi.listVendedores();
+    const vendedores = await DataApi.listVendedores();
     return {
       render: async () => {
         setState('title', 'Vendedores');
