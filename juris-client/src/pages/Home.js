@@ -1,4 +1,4 @@
-import juris from '@src/juris.js';
+import juris from '@src/jurisInstance.js';
 
 juris.registerComponent('Home', (props, { setState, getState }) => ({
   render: () => {

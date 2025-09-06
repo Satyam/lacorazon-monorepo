@@ -1,4 +1,4 @@
-import juris from '@src/juris.js';
+import juris from '@src/jurisInstance.js';
 import '@pages/Home.js';
 import '@pages/Login.js';
 import '@pages/vendedor/ListVendedores.jsx';

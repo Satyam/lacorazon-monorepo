@@ -1,4 +1,4 @@
-import juris, { myRegisterComponent } from '@src/juris.js';
+import juris, { myRegisterComponent } from '@src/jurisInstance.js';
 
 export const TableRowButtons = myRegisterComponent(
   'TableRowButtons',

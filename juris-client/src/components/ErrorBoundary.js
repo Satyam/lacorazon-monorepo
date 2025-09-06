@@ -1,7 +1,7 @@
 const APP_ERROR = 'app.error';
 const APP_IS_RECOVERING = 'app.isRecovering';
 
-import juris from '@src/juris.js';
+import juris from '@src/jurisInstance.js';
 import '@components/Modal.js';
 
 juris.registerHeadlessComponent(
