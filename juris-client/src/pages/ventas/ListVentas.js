@@ -2,20 +2,14 @@ import juris from '@src/jurisInstance.js';
 import '@headless/Navigation.js';
 import '@headless/DataApi.js';
 import '@components/Buttons.js';
-import {
-  CONFIRM_DELETE,
-  CONFIRM_DELETE_RESULT,
-  CONFIRM_DELETE_RESULT_CONFIRM,
-} from '@components/ConfirmDelete.js';
+import '@components/ConfirmDelete.js';
 
 import { formatDate, formatCurrency, iconCheck } from '@src/utils.js';
 
 juris.registerComponent(
   'ListVentas',
-  async (
-    { idVendedor },
-    { getState, setState, subscribe, executeBatch, DataApi, Navigation }
-  ) => {
+  async ({ idVendedor }, { setState, DataApi, Navigation, components }) => {
+    const confirmDelete = components.getComponentAPI('ConfirmDelete').confirm;
     const rowActionsHandler = (action, id, message) => {
       switch (action) {
         case 'show':
@@ -25,20 +19,11 @@ juris.registerComponent(
           Navigation.push(`/venta/edit/${id}`);
           break;
         case 'delete':
-          setState(CONFIRM_DELETE, {
-            message: `la venta del ${message}`,
-            id,
-          });
-          const unsubscribe = subscribe(
-            CONFIRM_DELETE_RESULT,
-            async (value) => {
-              unsubscribe();
-              if (value === CONFIRM_DELETE_RESULT_CONFIRM) {
-                DataApi.removeVenta(getState(`${CONFIRM_DELETE}.id`));
+          return confirmDelete(`la venta del ${message}`, id).then(
+            ([result, id]) => {
+              if (result === 'confirm') {
+                return DataApi.removeVenta(id);
               }
-              executeBatch(() => {
-                setState(CONFIRM_DELETE, null);
-              });
             }
           );
           break;

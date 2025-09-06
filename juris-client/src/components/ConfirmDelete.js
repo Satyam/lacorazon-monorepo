@@ -2,52 +2,65 @@ import juris from '@src/jurisInstance.js';
 import '@components/Modal.js';
 
 export const CONFIRM_DELETE = 'confirmDelete';
-export const CONFIRM_DELETE_MESSAGE = 'confirmDelete.message';
-export const CONFIRM_DELETE_RESULT = 'confirmDelete.result';
-export const CONFIRM_DELETE_RESULT_CONFIRM = 'confirm';
-export const CONFIRM_DELETE_RESULT_CANCEL = 'cancel';
 
-juris.registerComponent('ConfirmDelete', ({}, { getState, setState }) => ({
-  render: () =>
-    getState(CONFIRM_DELETE, false)
-      ? {
-          Modal: {
-            headerVariant: 'danger',
-            closeText: 'Cancelar',
-            onClose: () =>
-              setState(CONFIRM_DELETE_RESULT, CONFIRM_DELETE_RESULT_CANCEL),
-            header: {
-              i: {
-                className: 'bi bi-exclamation-triangle',
-                text: '¿Confirma borrado?',
-              }, // i>
-            }, // header
-            body: {
-              p: {
-                text: () =>
-                  `¿Está seguro que desea borrar ${getState(
-                    CONFIRM_DELETE_MESSAGE
-                  )} ?`,
-              },
-            }, // body
-            footer: {
-              button: {
-                type: 'button',
-                className: 'btn btn-danger',
-                onClick: () =>
-                  setState(
-                    CONFIRM_DELETE_RESULT,
-                    CONFIRM_DELETE_RESULT_CONFIRM
-                  ),
-                children: {
+juris.registerComponent(
+  'ConfirmDelete',
+  ({}, { setState, newState, subscribe, executeBatch }) => {
+    const [getOpen, setOpen] = newState('open', false);
+    const [getMessage, setMessage] = newState('message', null);
+    return {
+      render: () =>
+        getOpen()
+          ? {
+              Modal: {
+                headerVariant: 'danger',
+                closeText: 'Cancelar',
+                onClose: () => setState(CONFIRM_DELETE, 'cancel'),
+                header: {
                   i: {
-                    className: 'bi trash',
-                    text: 'Borrar',
+                    className: 'bi bi-exclamation-triangle',
+                    text: '¿Confirma borrado?',
+                  }, // i>
+                }, // header
+                body: {
+                  p: {
+                    text: () =>
+                      `¿Está seguro que desea borrar ${getMessage()} ?`,
                   },
-                }, // i>
-              },
-            },
-          }, // Modal
-        }
-      : [],
-}));
+                }, // body
+                footer: {
+                  button: {
+                    type: 'button',
+                    className: 'btn btn-danger',
+                    onClick: () => setState(CONFIRM_DELETE, 'confirm'),
+                    children: {
+                      i: {
+                        className: 'bi trash',
+                        text: 'Borrar',
+                      },
+                    }, // i>
+                  },
+                },
+              }, // Modal
+            }
+          : [],
+      api: {
+        confirm: (message, ...args) =>
+          new Promise((resolve) => {
+            setState(CONFIRM_DELETE, null);
+            const unsubscribe = subscribe(CONFIRM_DELETE, (value) => {
+              unsubscribe();
+              executeBatch(() => {
+                setOpen(false);
+              });
+              if (value) {
+                resolve(args.length ? [value, ...args] : value);
+              }
+            });
+            setMessage(message);
+            setOpen(true);
+          }),
+      },
+    };
+  }
+);
