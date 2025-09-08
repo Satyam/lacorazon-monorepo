@@ -56,3 +56,6 @@ label {
 i.bi:not(:empty)::before {
   margin-right: 1em;
 }
+i.bi {
+  font-style: normal;
+}
