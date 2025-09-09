@@ -59,3 +59,7 @@ i.bi:not(:empty)::before {
 i.bi {
   font-style: normal;
 }
+form {
+  max-width: 60em;
+  margin: auto;
+}
