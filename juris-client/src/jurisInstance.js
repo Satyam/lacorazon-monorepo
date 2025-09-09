@@ -1,7 +1,7 @@
 /// <reference path="../../types/global.d.ts" />
 
 import { Juris } from 'juris';
-import { HeadlessManager } from 'juris/juris-headless';
+import { HeadlessManager } from 'juris/juris-headless.js';
 
 export const juris = new Juris({
   states: {

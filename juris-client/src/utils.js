@@ -34,7 +34,7 @@ export const h = (tag, attrs, ...children) => ({
   },
 });
 
-const baseFieldFrame = (name, label, input) => ({
+export const baseFieldFrame = (name, label, input) => ({
   div: {
     className: 'mb-3 row',
     children: [
@@ -55,23 +55,39 @@ const baseFieldFrame = (name, label, input) => ({
   },
 });
 
-export const textField = (name, label, value, other = {}) =>
-  baseFieldFrame(name, label, {
-    input: {
-      name,
-      type: 'text',
-      className: 'form-control',
-      id: `${name}Field`,
-      value,
-      ...other,
+export const textField = (
+  name,
+  label,
+  value,
+  { type, invalid, errorText, ...extra } = {}
+) =>
+  baseFieldFrame(name, label, [
+    {
+      input: {
+        name,
+        type: type ?? 'text',
+        className: () => `form-control${invalid ? ' is-invalid' : ''}`,
+        id: `${name}Field`,
+        value,
+        ...extra,
+      },
     },
-  });
+    () =>
+      errorText
+        ? {
+            div: {
+              className: 'invalid-feedback',
+              text: errorText,
+            },
+          }
+        : null,
+  ]);
 
-export const checkboxField = (name, label, value, other = {}) =>
+export const checkboxField = (name, label, value, extra = {}) =>
   baseFieldFrame(
     name,
     '',
-    other.readonly
+    extra.readonly
       ? iconCheck(value, label)
       : [
           {
@@ -81,7 +97,7 @@ export const checkboxField = (name, label, value, other = {}) =>
               type: 'checkbox',
               id: `${name}Field`,
               checked: value,
-              ...other,
+              ...extra,
             },
           },
           {
