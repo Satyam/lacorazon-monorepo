@@ -33,3 +33,63 @@ export const h = (tag, attrs, ...children) => ({
     children,
   },
 });
+
+const baseFieldFrame = (name, label, input) => ({
+  div: {
+    className: 'mb-3 row',
+    children: [
+      {
+        label: {
+          for: `${name}Field`,
+          className: 'col-sm-2 col-form-label',
+          text: label,
+        },
+      },
+      {
+        div: {
+          className: 'col-sm-10',
+          children: input,
+        },
+      },
+    ],
+  },
+});
+
+export const textField = (name, label, value, other = {}) =>
+  baseFieldFrame(name, label, {
+    input: {
+      name,
+      type: 'text',
+      className: 'form-control',
+      id: `${name}Field`,
+      value,
+      ...other,
+    },
+  });
+
+export const checkboxField = (name, label, value, other = {}) =>
+  baseFieldFrame(
+    name,
+    '',
+    other.readonly
+      ? iconCheck(value, label)
+      : [
+          {
+            input: {
+              name,
+              className: 'form-check-input',
+              type: 'checkbox',
+              id: `${name}Field`,
+              checked: value,
+              ...other,
+            },
+          },
+          {
+            label: {
+              className: 'form-check-label',
+              for: `${name}Field`,
+              text: label,
+            },
+          },
+        ]
+  );
