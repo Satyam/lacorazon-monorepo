@@ -3,6 +3,8 @@ import juris from '@src/jurisInstance.js';
 import '@headless/Navigation.js';
 import '@headless/User.js';
 
+import { textField } from '@src/utils.js';
+
 juris.registerComponent(
   'Login',
   (props, { setState, getState, newState, User, Navigation }) => {
@@ -48,81 +50,21 @@ juris.registerComponent(
                       },
                     }
                   : null,
-              {
-                label: {
-                  className: 'form-group row',
-                  children: [
-                    {
-                      div: {
-                        className: 'col-sm-2 col-form-label',
-                        text: 'Email',
-                      },
-                    }, // div
-                    {
-                      div: {
-                        className: 'col-sm-10',
-                        children: [
-                          {
-                            input: {
-                              name: 'email',
-                              className: () =>
-                                `form-control${get401() ? ' is-invalid' : ''}`,
-                              placeholder: 'Email',
-                              required: true,
-                              value: 'pepe@correo.com',
-                              oninput: (ev) => setEmail(ev.target.value),
-                            },
-                          },
-                          {
-                            div: {
-                              className: 'invalid-feedback',
-                              text: 'Debe indicar la dirección de correo registrada',
-                            },
-                          }, // div
-                        ],
-                      },
-                    }, // div
-                  ],
-                },
-              }, // label
-              {
-                label: {
-                  className: 'form-group row',
-                  children: [
-                    {
-                      div: {
-                        className: 'col-sm-2 col-form-label',
-                        text: 'Contraseña',
-                      },
-                    }, // div
-                    {
-                      div: {
-                        className: 'col-sm-10',
-                        children: [
-                          {
-                            input: {
-                              type: 'password',
-                              name: 'password',
-                              className: () =>
-                                `form-control${get401() ? ' is-invalid' : ''}`,
-                              placeholder: 'Contraseña',
-                              required: true,
-                              value: 'pepecito',
-                              oninput: (ev) => setPassword(ev.target.value),
-                            },
-                          }, // input
-                          {
-                            div: {
-                              className: 'invalid-feedback',
-                              text: 'Debe indicar una contraseña',
-                            },
-                          }, // div
-                        ],
-                      },
-                    }, // div
-                  ],
-                },
-              }, // label
+              textField('email', 'Email', () => getEmail(), {
+                required: true,
+                invalid: get401(),
+                oninput: (ev) => setEmail(ev.target.value),
+                errorText: 'Debe indicar la dirección de correo registrada',
+                placeholder: 'Email',
+              }),
+              textField('password', 'Contraseña', () => getPassword(), {
+                type: 'password',
+                placeholder: 'Contraseña',
+                required: true,
+                oninput: (ev) => setPassword(ev.target.value),
+                invalid: get401(),
+                errorText: 'Debe indicar una contraseña',
+              }),
               {
                 button: {
                   type: 'submit',
