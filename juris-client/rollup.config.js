@@ -4,7 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
 
-import addImports from './rollupAddImports.js';
+// import addImports from './rollupAddImports.js';
 
 import { join } from 'path';
 
@@ -22,6 +22,11 @@ export default {
     mode: 'classic',
     factory: 'h',
     importSource: '@src/utils.js',
+  },
+  onLog(level, log, handler) {
+    // console.log(JSON.stringify(log, null, 2));
+    if (log.code === 'PLUGIN_WARNING' && log.plugin === 'alias') return;
+    handler(level, log);
   },
   plugins: [
     alias({
