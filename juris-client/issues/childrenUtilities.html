@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shared state and child utilities</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/juris@0.9.0/juris.js"></script>
+    <script>
+      const juris = new Juris({
+        layout: {
+          // ----
+          // this would eventually be a form with several children
+          Form: {
+            // ----
+            // notice the name, for latter
+            name: 'formName',
+            children: [
+              // ----
+              // The child fields.  Also notice the name
+              {
+                Field: {
+                  name: 'f1',
+                  label: 'Field 1',
+                },
+              },
+              {
+                Field: {
+                  name: 'f2',
+                  label: 'Field 2',
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      juris.registerComponent(
+        'Form',
+        (
+          { name, children },
+          { setState, subscribe /*, createStateRoot */ }
+        ) => {
+          // ----
+          // this is the part that Juris might provide, like:
+          // const stateRoot = createStateRoot(`form-${name}`)
+          // The actual root would contain some serial number to ensure it is unique
+          const stateRoot = `##form-${name}`;
+
+          // I'm already setting it up:
+          setState(stateRoot, {
+            fields: {},
+            errors: {},
+          });
+          // ----
+          // now I can subscribe to the state.  `newState` doesn't allow me to do this.
+          subscribe(stateRoot, console.log);
+
+          return {
+            render: () => ({
+              div: {
+                children: [
+                  {
+                    form: {
+                      name,
+                      // ----
+                      // I am passing the `stateRoot` value to the children
+                      // Might this justify some sort of utility in Juris?
+                      children: children.map((child) => {
+                        const [tag, attrs] = Object.entries(child)[0];
+                        return { [tag]: { ...attrs, stateRoot } };
+                      }),
+                    },
+                  },
+                  {
+                    pre: {
+                      text: () =>
+                        JSON.stringify(juris.stateManager.state, null, 2),
+                    },
+                  },
+                ],
+              },
+            }),
+            hooks: {
+              onUnmount: () => {
+                // ----
+                // Important, delete as much as possible.
+                // If the name had been provided by some utility,
+                // it would take care of this on its own
+                setState(stateRoot, null);
+              },
+            },
+          };
+        }
+      );
+
+      juris.registerComponent(
+        'Field',
+        ({ name, label, stateRoot }, { setState }) => {
+          // ----
+          // already using it to set each fields own branch
+          // The form will be notified of this.
+          setState(`${stateRoot}.fields.${name}`, {});
+          setState(`${stateRoot}.errors.${name}`, {});
+          return {
+            render: () => ({
+              p: {
+                text: `[${name}]: ${label}, shares root: ${stateRoot}`,
+              },
+            }),
+          };
+        }
+      );
+
+      juris.render('#app');
+    </script>
+  </body>
+</html>
