@@ -1,13 +1,12 @@
 import juris from '@src/jurisInstance.js';
+import '@components/Loading.js';
+import { iconCheck } from '../utils.js';
 
 export const Form = juris.registerComponent(
   'Form',
-  ({ name, children, onsubmit }, { getState, setState }) => {
+  ({ name, children, onsubmit }, { getState, setState, LoadingMgr }) => {
     const stateRoot = `##form${name}`;
-    setState(stateRoot, {
-      values: {},
-      errors: {},
-    });
+    setState(stateRoot, {});
     return {
       render: () => ({
         form: {
@@ -16,20 +15,21 @@ export const Form = juris.registerComponent(
             ev.preventDefault();
             ev.target.checkValidity();
             if (
-              Object.values(getState(`${stateRoot}.errors`)).some(
-                (err) => !!err
-              )
+              Object.values(getState(stateRoot)).some((state) => !!state.error)
             ) {
               return;
             }
-            return onsubmit(ev);
-
-            /*: (ev) => {
-            ev.preventDefault();
-            setSubmitting(true);
-          }*/
+            const loadingMsg = `Enviando formulario ${name}`;
+            LoadingMgr.open(loadingMsg);
+            onsubmit(
+              Object.entries(getState(stateRoot)).reduce(
+                (values, [name, state]) => ({ ...values, [name]: state.value }),
+                {}
+              ),
+              ev
+            );
+            LoadingMgr.close(loadingMsg);
           },
-          // [ {div: {a:1,b:2}}].map(child => {const [tag, attrs] = Object.entries(child)[0]; return {[tag]: {...attrs, c:3}}})
           children: children.map((child) => {
             const [tag, attrs] = Object.entries(child)[0];
             return { [tag]: { ...attrs, stateRoot } };
@@ -72,11 +72,13 @@ export const TextField = juris.registerComponent(
     { name, label, value, stateRoot, type, errorText, ...extra },
     { getState, setState }
   ) => {
-    const valueStatePath = `${stateRoot}.values.${name}`;
-    const errorStatePath = `${stateRoot}.errors.${name}`;
+    const statePath = `${stateRoot}.${name}`;
 
-    setState(valueStatePath, value);
-    setState(errorStatePath, null);
+    setState(statePath, {
+      value,
+      error: null,
+      required: !!extra.required,
+    });
 
     return baseFieldFrame(name, label, [
       {
@@ -84,22 +86,28 @@ export const TextField = juris.registerComponent(
           name,
           type: type ?? 'text',
           className: () =>
-            `form-control${getState(errorStatePath) ? ' is-invalid' : ''}`,
+            `form-control${getState(statePath).error ? ' is-invalid' : ''}`,
           id: `${name}Field`,
-          value: () => getState(valueStatePath),
-          oninput: (ev) => setState(valueStatePath, ev.target.value),
+          value: () => getState(statePath).value,
+          oninput: (ev) => {
+            setState(statePath, {
+              error: null,
+              value: ev.target.value,
+              required: !!extra.required,
+            });
+          },
           oninvalid: (ev) => {
-            setState(errorStatePath, ev.target.validationMessage);
+            setState(`${statePath}.error`, ev.target.validationMessage);
           },
           ...extra,
         },
       },
       () =>
-        getState(errorStatePath)
+        getState(statePath).error
           ? {
               div: {
                 className: 'invalid-feedback',
-                text: getState(errorStatePath),
+                text: getState(statePath).error,
               },
             }
           : null,
@@ -107,32 +115,57 @@ export const TextField = juris.registerComponent(
   }
 );
 
-export const checkboxField = (name, label, value, extra = {}) =>
-  baseFieldFrame(
-    name,
-    '',
-    extra.readonly
-      ? iconCheck(value, label)
-      : [
-          {
-            input: {
-              name,
-              className: 'form-check-input',
-              type: 'checkbox',
-              id: `${name}Field`,
-              checked: value,
-              ...extra,
+export const CheckboxField = juris.registerComponent(
+  'CheckboxField',
+  ({ name, label, value, stateRoot, ...extra }, { getState, setState }) => {
+    const statePath = `${stateRoot}.${name}`;
+    setState(statePath, {
+      value,
+      error: null,
+    });
+
+    return baseFieldFrame(
+      name,
+      '',
+      extra.readonly
+        ? iconCheck(getState(statePath).value, label)
+        : [
+            {
+              input: {
+                name,
+                className: 'form-check-input',
+                type: 'checkbox',
+                id: `${name}Field`,
+                checked: () => !!getState(statePath).value,
+                onclick: (ev) => {
+                  setState(statePath, {
+                    value: ev.target.checked,
+                    error: null,
+                  });
+                },
+                ...extra,
+              },
             },
-          },
-          {
-            label: {
-              className: 'form-check-label',
-              for: `${name}Field`,
-              text: label,
+            {
+              label: {
+                className: 'form-check-label',
+                for: `${name}Field`,
+                text: label,
+              },
             },
-          },
-        ]
-  );
+            () =>
+              getState(statePath).error
+                ? {
+                    div: {
+                      className: 'invalid-feedback',
+                      text: getState(statePath).error,
+                    },
+                  }
+                : null,
+          ]
+    );
+  }
+);
 
 export const SubmitButton = juris.registerComponent(
   'SubmitButton',
@@ -145,11 +178,8 @@ export const SubmitButton = juris.registerComponent(
           text: label,
           class: 'btn btn-primary',
           disabled: () =>
-            Object.values(getState(`${stateRoot}.errors`)).some(
-              (err) => !!err
-            ) ||
-            Object.values(getState(`${stateRoot}.values`)).some(
-              (value) => !value
+            Object.values(getState(stateRoot)).some(
+              (state) => !!state.error || (state.required && !state.value)
             ),
         },
       }),
