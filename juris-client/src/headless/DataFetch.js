@@ -1,17 +1,14 @@
 import juris from '@src/jurisInstance.js';
-
-const K_LOADING = 'fetch.loading';
-const K_DETAILS = 'fetch.details';
+import '@components/Loading.js';
 
 juris.registerHeadlessComponent(
   'DataFetch',
-  (props, { getState, setState }) => ({
+  (props, { LoadingMgr }) => ({
     api: {
       fetch: async (req, transformRequest, transformReply) => {
         const { service, op } = req;
         const details = `At: ${Date.now()}, ${service}:${op}`;
-        setState(K_LOADING, getState(K_LOADING) + 1);
-        setState(K_DETAILS, [...getState(K_DETAILS, []), details]);
+        LoadingMgr.open(details);
         const body =
           transformRequest && 'data' in req
             ? requestTransform(req, transformRequest)
@@ -44,11 +41,7 @@ juris.registerHeadlessComponent(
             return data;
           })
           .finally(() => {
-            setState(K_LOADING, Math.max(getState(K_LOADING) - 1, 0));
-            setState(
-              K_DETAILS,
-              getState(K_DETAILS).filter((f) => f != details)
-            );
+            LoadingMgr.close(details);
           });
       },
     },
