@@ -2,11 +2,24 @@ import juris from '@src/jurisInstance.js';
 import '@components/Loading.js';
 import { iconCheck } from '../utils.js';
 
-export const Form = juris.registerComponent(
+const validFieldNames = ['TextField', 'CheckboxField', 'SubmitButton'];
+
+juris.registerComponent(
   'Form',
   ({ name, children, onsubmit }, { getState, setState, LoadingMgr }) => {
     const stateRoot = `##form${name}`;
     setState(stateRoot, {});
+
+    const propagateRoot = (children) =>
+      children.map((child) => {
+        if (typeof child !== 'object') return child;
+        const [tag, attrs] = Object.entries(child)[0];
+        if (validFieldNames.includes(Object.keys(child)[0]))
+          return { [tag]: { ...attrs, stateRoot } };
+        if ('children' in attrs) return propagateRoot(attrs.children);
+        return child;
+      });
+
     return {
       render: () => ({
         form: {
@@ -30,10 +43,7 @@ export const Form = juris.registerComponent(
             );
             LoadingMgr.close(loadingMsg);
           },
-          children: children.map((child) => {
-            const [tag, attrs] = Object.entries(child)[0];
-            return { [tag]: { ...attrs, stateRoot } };
-          }),
+          children: propagateRoot(children),
         },
       }),
       hooks: {
@@ -45,7 +55,7 @@ export const Form = juris.registerComponent(
   }
 );
 
-const baseFieldFrame = (name, label, input) => ({
+export const baseFieldFrame = (name, label, input) => ({
   div: {
     className: 'mb-3 row',
     children: [
@@ -66,7 +76,7 @@ const baseFieldFrame = (name, label, input) => ({
   },
 });
 
-export const TextField = juris.registerComponent(
+juris.registerComponent(
   'TextField',
   (
     { name, label, value, stateRoot, type, errorText, ...extra },
@@ -123,7 +133,7 @@ export const TextField = juris.registerComponent(
   }
 );
 
-export const CheckboxField = juris.registerComponent(
+juris.registerComponent(
   'CheckboxField',
   ({ name, label, value, stateRoot, ...extra }, { getState, setState }) => {
     const statePath = `${stateRoot}.${name}`;
@@ -198,7 +208,7 @@ export const CheckboxField = juris.registerComponent(
   }
 );
 
-export const SubmitButton = juris.registerComponent(
+juris.registerComponent(
   'SubmitButton',
   ({ name, label, stateRoot, ...extra }, { getState, setState }) => {
     return {
