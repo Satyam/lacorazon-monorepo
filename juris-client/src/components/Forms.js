@@ -111,6 +111,14 @@ export const TextField = juris.registerComponent(
               },
             }
           : null,
+      () =>
+        extra.required
+          ? { div: { class: 'form-text', text: '* Campo obligatorio' } }
+          : null,
+      () =>
+        extra.instructions
+          ? { div: { class: 'form-text', text: extra.instructions } }
+          : null,
     ]);
   }
 );
@@ -124,46 +132,69 @@ export const CheckboxField = juris.registerComponent(
       error: null,
     });
 
-    return baseFieldFrame(
-      name,
-      '',
-      extra.readonly
-        ? iconCheck(getState(statePath).value, label)
-        : [
-            {
-              input: {
-                name,
-                className: 'form-check-input',
-                type: 'checkbox',
-                id: `${name}Field`,
-                checked: () => !!getState(statePath).value,
-                onclick: (ev) => {
-                  setState(statePath, {
-                    value: ev.target.checked,
-                    error: null,
-                  });
+    return baseFieldFrame(name, '', {
+      div: {
+        className: 'form-check',
+        children: extra.readonly
+          ? iconCheck(getState(statePath).value, label)
+          : [
+              {
+                input: {
+                  name,
+                  className: 'form-check-input',
+                  type: 'checkbox',
+                  id: `${name}Field`,
+                  checked: () => !!getState(statePath).value,
+                  onclick: (ev) => {
+                    setState(statePath, {
+                      value: ev.target.checked,
+                      error: null,
+                    });
+                  },
+                  ...extra,
                 },
-                ...extra,
               },
-            },
-            {
-              label: {
-                className: 'form-check-label',
-                for: `${name}Field`,
-                text: label,
+              {
+                label: {
+                  className: 'form-check-label',
+                  for: `${name}Field`,
+                  text: label,
+                },
               },
-            },
-            () =>
-              getState(statePath).error
-                ? {
-                    div: {
-                      className: 'invalid-feedback',
-                      text: getState(statePath).error,
-                    },
-                  }
-                : null,
-          ]
-    );
+              () =>
+                getState(statePath).error
+                  ? {
+                      div: {
+                        className: 'invalid-feedback',
+                        text: getState(statePath).error,
+                      },
+                    }
+                  : null,
+              () =>
+                getState(statePath).error
+                  ? {
+                      div: {
+                        className: 'invalid-feedback',
+                        text: getState(statePath).error,
+                      },
+                    }
+                  : null,
+              () =>
+                extra.required
+                  ? {
+                      div: {
+                        class: 'form-text',
+                        text: '* Campo obligatorio',
+                      },
+                    }
+                  : null,
+              () =>
+                extra.instructions
+                  ? { div: { class: 'form-text', text: extra.instructions } }
+                  : null,
+            ],
+      },
+    });
   }
 );
 
