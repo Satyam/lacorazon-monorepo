@@ -176,7 +176,7 @@ juris.registerComponent(
                                 {
                                   button: {
                                     onClick: () =>
-                                      Navigation.push('/ventas/new'),
+                                      Navigation.push('/venta/new'),
                                     className: 'btn btn-primary',
                                     title: 'Agregar',
                                     children: {
