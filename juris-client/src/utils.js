@@ -12,6 +12,11 @@ export const formatDate = (date) =>
     ? dateFormatter.format(new Date(date))
     : '';
 
+export const datePart = (date) => {
+  const iso = date.toISOString();
+  return iso.substring(0, iso.indexOf('T'));
+};
+
 const currFormatter = new Intl.NumberFormat(locale, {
   style: 'currency',
   currency,
@@ -33,79 +38,3 @@ export const h = (tag, attrs, ...children) => ({
     children,
   },
 });
-
-export const baseFieldFrame = (name, label, input) => ({
-  div: {
-    className: 'mb-3 row',
-    children: [
-      {
-        label: {
-          for: `${name}Field`,
-          className: 'col-sm-2 col-form-label',
-          text: label,
-        },
-      },
-      {
-        div: {
-          className: 'col-sm-10',
-          children: input,
-        },
-      },
-    ],
-  },
-});
-
-export const textField = (
-  name,
-  label,
-  value,
-  { type, invalid, errorText, ...extra } = {}
-) =>
-  baseFieldFrame(name, label, [
-    {
-      input: {
-        name,
-        type: type ?? 'text',
-        className: () => `form-control${invalid ? ' is-invalid' : ''}`,
-        id: `${name}Field`,
-        value,
-        ...extra,
-      },
-    },
-    () =>
-      errorText
-        ? {
-            div: {
-              className: 'invalid-feedback',
-              text: errorText,
-            },
-          }
-        : null,
-  ]);
-
-export const checkboxField = (name, label, value, extra = {}) =>
-  baseFieldFrame(
-    name,
-    '',
-    extra.readonly
-      ? iconCheck(value, label)
-      : [
-          {
-            input: {
-              name,
-              className: 'form-check-input',
-              type: 'checkbox',
-              id: `${name}Field`,
-              checked: value,
-              ...extra,
-            },
-          },
-          {
-            label: {
-              className: 'form-check-label',
-              for: `${name}Field`,
-              text: label,
-            },
-          },
-        ]
-  );
