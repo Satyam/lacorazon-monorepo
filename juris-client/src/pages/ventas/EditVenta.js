@@ -13,6 +13,7 @@ juris.registerComponent(
         return {
           Form: {
             name: 'EditVenta',
+            style: { maxWidth: '60em' },
             onsubmit: (values, ev) => {
               console.log(values);
             },

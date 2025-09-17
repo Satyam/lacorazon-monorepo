@@ -9,7 +9,7 @@ let rootCounter = 0;
 juris.registerComponent(
   'Form',
   (
-    { name, children, onsubmit, onChange },
+    { name, children, onsubmit, onChange, ...extra },
     { getState, setState, subscribe, executeBatch, LoadingMgr }
   ) => {
     const stateRoot = `##form${name}-${rootCounter++}`;
@@ -52,6 +52,7 @@ juris.registerComponent(
       render: () => ({
         form: {
           novalidate: true,
+          ...extra,
           onsubmit: (ev) => {
             ev.preventDefault();
             ev.target.checkValidity();
@@ -78,26 +79,52 @@ juris.registerComponent(
   }
 );
 
-export const baseFieldFrame = (name, label, input) => ({
+export const baseFieldFrame = (children) => ({
   div: {
-    className: 'mb-3 row',
-    children: [
-      {
-        label: {
-          for: `${name}Field`,
-          className: 'col-sm-2 col-form-label',
-          text: label,
-        },
-      },
-      {
-        div: {
-          className: 'col-sm-10',
-          children: input,
-        },
-      },
-    ],
+    className: 'form-floating mb-3',
+    children,
   },
 });
+
+export const checkFieldFrame = (children) => ({
+  div: {
+    className: 'form-check mb-3',
+    children,
+  },
+});
+
+export const fieldLabel = (name, label) => ({
+  label: {
+    for: `${name}Field`,
+    text: label,
+  },
+});
+
+export const checkLabel = (name, label) => ({
+  label: {
+    for: `${name}Field`,
+    className: 'form-check-label',
+    text: label,
+  },
+});
+
+export const errorFeedback = (errorMessage) =>
+  errorMessage
+    ? {
+        div: {
+          className: 'invalid-feedback',
+          text: errorMessage,
+        },
+      }
+    : null;
+
+export const requiredHelp = (isRequired) =>
+  isRequired
+    ? { div: { class: 'form-text', text: '* Campo obligatorio' } }
+    : null;
+
+export const extraHelp = (instructions) =>
+  instructions ? { div: { class: 'form-text', text: instructions } } : null;
 
 juris.registerComponent(
   'TextField',
@@ -113,7 +140,7 @@ juris.registerComponent(
       required: !!extra.required,
     });
 
-    return baseFieldFrame(name, label, [
+    return baseFieldFrame([
       {
         input: {
           name,
@@ -135,23 +162,10 @@ juris.registerComponent(
           ...extra,
         },
       },
-      () =>
-        getState(statePath).error
-          ? {
-              div: {
-                className: 'invalid-feedback',
-                text: getState(statePath).error,
-              },
-            }
-          : null,
-      () =>
-        extra.required
-          ? { div: { class: 'form-text', text: '* Campo obligatorio' } }
-          : null,
-      () =>
-        extra.instructions
-          ? { div: { class: 'form-text', text: extra.instructions } }
-          : null,
+      fieldLabel(name, label),
+      errorFeedback(getState(statePath).error),
+      requiredHelp(extra.required),
+      extraHelp(extra.instructions),
     ]);
   }
 );
@@ -165,69 +179,29 @@ juris.registerComponent(
       error: null,
     });
 
-    return baseFieldFrame(name, '', {
-      div: {
-        className: 'form-check',
-        children: extra.readonly
-          ? iconCheck(getState(statePath).value, label)
-          : [
-              {
-                input: {
-                  name,
-                  className: 'form-check-input',
-                  type: 'checkbox',
-                  id: `${name}Field`,
-                  checked: () => !!getState(statePath).value,
-                  onclick: (ev) => {
-                    setState(statePath, {
-                      value: ev.target.checked,
-                      error: null,
-                    });
-                  },
-                  ...extra,
-                },
+    return checkFieldFrame([
+      extra.readonly
+        ? iconCheck(getState(statePath).value, label)
+        : {
+            input: {
+              name,
+              className: 'form-check-input',
+              type: 'checkbox',
+              id: `${name}Field`,
+              checked: () => !!getState(statePath).value,
+              onclick: (ev) => {
+                setState(statePath, {
+                  value: ev.target.checked,
+                  error: null,
+                });
               },
-              {
-                label: {
-                  className: 'form-check-label',
-                  for: `${name}Field`,
-                  text: label,
-                },
-              },
-              () =>
-                getState(statePath).error
-                  ? {
-                      div: {
-                        className: 'invalid-feedback',
-                        text: getState(statePath).error,
-                      },
-                    }
-                  : null,
-              () =>
-                getState(statePath).error
-                  ? {
-                      div: {
-                        className: 'invalid-feedback',
-                        text: getState(statePath).error,
-                      },
-                    }
-                  : null,
-              () =>
-                extra.required
-                  ? {
-                      div: {
-                        class: 'form-text',
-                        text: '* Campo obligatorio',
-                      },
-                    }
-                  : null,
-              () =>
-                extra.instructions
-                  ? { div: { class: 'form-text', text: extra.instructions } }
-                  : null,
-            ],
-      },
-    });
+              ...extra,
+            },
+          },
+      checkLabel(name, label),
+      errorFeedback(getState(statePath).error),
+      extraHelp(extra.instructions),
+    ]);
   }
 );
 
