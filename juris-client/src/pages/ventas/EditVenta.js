@@ -16,6 +16,18 @@ juris.registerComponent(
             onsubmit: (values, ev) => {
               console.log(values);
             },
+            onChange: (values, path) => {
+              if (
+                path.includes('.cantidad') ||
+                path.includes('.precioUnitario')
+              ) {
+                return {
+                  precioTotal: formatCurrency(
+                    values.cantidad * values.precioUnitario
+                  ),
+                };
+              }
+            },
             children: [
               {
                 TextField: {
@@ -63,7 +75,7 @@ juris.registerComponent(
                   label: 'Precio Total',
                   value: () =>
                     formatCurrency(
-                      (venta?.cantidad || 0) * (venta?.precioUnitario || 0)
+                      (venta?.cantidad || 1) * (venta?.precioUnitario || 0)
                     ),
                   readonly: true,
                 },

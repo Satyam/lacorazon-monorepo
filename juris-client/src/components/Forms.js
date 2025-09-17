@@ -4,10 +4,15 @@ import { iconCheck } from '../utils.js';
 
 const validFieldNames = ['TextField', 'CheckboxField', 'SubmitButton'];
 
+let rootCounter = 0;
+
 juris.registerComponent(
   'Form',
-  ({ name, children, onsubmit }, { getState, setState, LoadingMgr }) => {
-    const stateRoot = `##form${name}`;
+  (
+    { name, children, onsubmit, onChange },
+    { getState, setState, subscribe, executeBatch, LoadingMgr }
+  ) => {
+    const stateRoot = `##form${name}-${rootCounter++}`;
     setState(stateRoot, {});
 
     const propagateRoot = (children) =>
@@ -20,6 +25,29 @@ juris.registerComponent(
         return child;
       });
 
+    const getValues = () =>
+      Object.entries(getState(stateRoot)).reduce(
+        (values, [name, state]) => ({ ...values, [name]: state.value }),
+        {}
+      );
+
+    let inOnChange = false;
+
+    const unsubscribe =
+      onChange &&
+      subscribe(stateRoot, (value, oldValue, path) => {
+        if (inOnChange) return;
+        const changes = onChange(getValues(), path, value);
+        if (changes) {
+          inOnChange = true;
+          executeBatch(() =>
+            Object.entries(changes).forEach(([name, value]) => {
+              setState(`${stateRoot}.${name}.value`, value);
+            })
+          );
+          inOnChange = false;
+        }
+      });
     return {
       render: () => ({
         form: {
@@ -34,13 +62,7 @@ juris.registerComponent(
             }
             const loadingMsg = `Enviando formulario ${name}`;
             LoadingMgr.open(loadingMsg);
-            onsubmit(
-              Object.entries(getState(stateRoot)).reduce(
-                (values, [name, state]) => ({ ...values, [name]: state.value }),
-                {}
-              ),
-              ev
-            );
+            onsubmit(getValues(), ev);
             LoadingMgr.close(loadingMsg);
           },
           children: propagateRoot(children),
@@ -48,6 +70,7 @@ juris.registerComponent(
       }),
       hooks: {
         onUnmount: () => {
+          if (unsubscribe) unsubscribe();
           setState(stateRoot, null);
         },
       },
