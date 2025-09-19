@@ -6,7 +6,7 @@ import '@headless/User.js';
 import '@components/Forms.js';
 juris.registerComponent(
   'Login',
-  (props, { setState, getState, newState, User, Navigation }) => {
+  ({ unauthorized }, { setState, getState, newState, User, Navigation }) => {
     const [get401, set401] = newState('unauthorized', false);
     return {
       render: () => {
@@ -33,6 +33,15 @@ juris.registerComponent(
                 });
             },
             children: [
+              () =>
+                unauthorized
+                  ? {
+                      div: {
+                        className: 'alert alert-warning',
+                        text: 'Su sesión ha caducado, ingrese nuevamente',
+                      },
+                    }
+                  : null,
               () =>
                 get401()
                   ? {

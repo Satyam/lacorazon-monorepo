@@ -11,6 +11,7 @@ import '@pages/ventas/EditVenta.js';
 const routes = {
   '/': 'Home',
   '/login': 'Login',
+  '/login/unauthorized': ['Login', { unauthorized: true }],
   '/vendedores': 'ListVendedores',
   '/ventas': 'ListVentas',
   '/venta/edit/:id': 'EditVenta',

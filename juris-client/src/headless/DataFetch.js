@@ -3,7 +3,7 @@ import '@components/Loading.js';
 
 juris.registerHeadlessComponent(
   'DataFetch',
-  (props, { LoadingMgr }) => ({
+  (props, { LoadingMgr, Navigation }) => ({
     api: {
       fetch: async (req, transformRequest, transformReply) => {
         const { service, op } = req;
@@ -30,6 +30,10 @@ juris.registerHeadlessComponent(
           })
           .then((resp) => {
             const { data, error } = resp;
+            if (error === 401 && data === 'Unauthorized') {
+              Navigation.push('/login/unauthorized');
+              return;
+            }
             if (error) return Promise.reject(resp);
             if (transformReply) {
               if (!data) return data;
