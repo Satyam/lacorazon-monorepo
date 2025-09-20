@@ -227,6 +227,7 @@ juris.registerComponent(
       options,
       valueFieldName,
       labelFieldName,
+      blankOptionText,
       errorText,
       ...extra
     },
@@ -240,6 +241,14 @@ juris.registerComponent(
       required: !!extra.required,
     });
 
+    const optionList = () =>
+      options.map((row) => ({
+        option: {
+          value: row[valueFieldName],
+          text: row[labelFieldName],
+        },
+      }));
+
     return baseFieldFrame([
       {
         select: {
@@ -247,12 +256,18 @@ juris.registerComponent(
           className: () =>
             `form-control${getState(statePath).error ? ' is-invalid' : ''}`,
           id: `${name}Field`,
-          children: options.map((row) => ({
-            option: {
-              value: row[valueFieldName],
-              text: row[labelFieldName],
-            },
-          })),
+          children: blankOptionText
+            ? [
+                {
+                  option: {
+                    text: blankOptionText,
+                    selected: true,
+                    value: '',
+                  },
+                },
+                ...optionList(),
+              ]
+            : optionList(),
           value: () => getState(statePath).value,
           onchange: (ev) => {
             setState(statePath, {

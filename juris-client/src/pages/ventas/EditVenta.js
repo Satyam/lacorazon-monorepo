@@ -52,6 +52,8 @@ juris.registerComponent(
                   name: 'idVendedor',
                   label: 'Vendedor',
                   value: isNew ? '' : venta.idVendedor,
+                  blankOptionText:
+                    isNew && '- Seleccione vendedor de la lista -',
                   options: vendedores,
                   valueFieldName: 'id',
                   labelFieldName: 'nombre',
