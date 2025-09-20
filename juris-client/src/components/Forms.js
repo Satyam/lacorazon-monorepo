@@ -1,15 +1,19 @@
 import juris from '@src/jurisInstance.js';
 import '@components/Loading.js';
-import { iconCheck } from '../utils.js';
 
-const validFieldNames = ['TextField', 'CheckboxField', 'SubmitButton'];
+const validFieldNames = [
+  'TextField',
+  'CheckboxField',
+  'SelectField',
+  'SubmitButton',
+];
 
 let rootCounter = 0;
 
 juris.registerComponent(
   'Form',
   (
-    { name, children, onsubmit, onChange, ...extra },
+    { name, children, onsubmit, onchange, ...extra },
     { getState, setState, subscribe, executeBatch, LoadingMgr }
   ) => {
     const stateRoot = `##form${name}-${rootCounter++}`;
@@ -34,10 +38,10 @@ juris.registerComponent(
     let inOnChange = false;
 
     const unsubscribe =
-      onChange &&
+      onchange &&
       subscribe(stateRoot, (value, oldValue, path) => {
         if (inOnChange) return;
-        const changes = onChange(getValues(), path, value);
+        const changes = onchange(getValues(), path, value);
         if (changes) {
           inOnChange = true;
           executeBatch(() =>
@@ -181,7 +185,14 @@ juris.registerComponent(
 
     return checkFieldFrame([
       extra.readonly
-        ? iconCheck(getState(statePath).value, label)
+        ? {
+            i: {
+              style: { 'margin-top': 0 },
+              className: `bi form-check-input ${
+                getState(statePath).value ? 'bi-check-square' : 'bi-square'
+              }`,
+            },
+          }
         : {
             input: {
               name,
@@ -200,6 +211,65 @@ juris.registerComponent(
           },
       checkLabel(name, label),
       errorFeedback(getState(statePath).error),
+      extraHelp(extra.instructions),
+    ]);
+  }
+);
+
+juris.registerComponent(
+  'SelectField',
+  (
+    {
+      name,
+      label,
+      value,
+      stateRoot,
+      options,
+      valueFieldName,
+      labelFieldName,
+      errorText,
+      ...extra
+    },
+    { getState, setState }
+  ) => {
+    const statePath = `${stateRoot}.${name}`;
+
+    setState(statePath, {
+      value,
+      error: null,
+      required: !!extra.required,
+    });
+
+    return baseFieldFrame([
+      {
+        select: {
+          name,
+          className: () =>
+            `form-control${getState(statePath).error ? ' is-invalid' : ''}`,
+          id: `${name}Field`,
+          children: options.map((row) => ({
+            option: {
+              value: row[valueFieldName],
+              text: row[labelFieldName],
+            },
+          })),
+          value: () => getState(statePath).value,
+          onchange: (ev) => {
+            setState(statePath, {
+              error: null,
+              value: ev.target.value,
+              required: !!extra.required,
+            });
+          },
+          oninvalid: (ev) => {
+            setState(`${statePath}.error`, ev.target.validationMessage);
+          },
+          ...extra,
+        },
+      },
+      fieldLabel(name, label),
+      errorFeedback(getState(statePath).error),
+      requiredHelp(extra.required),
       extraHelp(extra.instructions),
     ]);
   }

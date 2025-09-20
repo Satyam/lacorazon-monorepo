@@ -7,6 +7,8 @@ juris.registerComponent(
   'EditVenta',
   async ({ id, isNew }, { setState, DataApi }) => {
     const venta = isNew ? {} : await DataApi.getVenta(id);
+    const vendedores = await DataApi.listVendedores();
+
     return {
       render: () => {
         setState('title', 'Venta');
@@ -17,7 +19,7 @@ juris.registerComponent(
             onsubmit: (values, ev) => {
               console.log(values);
             },
-            onChange: (values, path) => {
+            onchange: (values, path) => {
               if (
                 path.includes('.cantidad') ||
                 path.includes('.precioUnitario')
@@ -43,6 +45,16 @@ juris.registerComponent(
                   name: 'concepto',
                   label: 'Concepto',
                   value: isNew ? '' : venta.concepto || '',
+                },
+              },
+              {
+                SelectField: {
+                  name: 'idVendedor',
+                  label: 'Vendedor',
+                  value: isNew ? '' : venta.idVendedor,
+                  options: vendedores,
+                  valueFieldName: 'id',
+                  labelFieldName: 'nombre',
                 },
               },
               {
